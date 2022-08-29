@@ -11,5 +11,6 @@ export const typeormConfig: TypeOrmModuleOptions = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     entities: [MgImageEntity, MgObjectEntity],
-    synchronize: true
+    synchronize: false,
+    logging: true
 }
