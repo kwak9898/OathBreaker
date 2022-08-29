@@ -32,10 +32,10 @@ export class MgImageEntity {
     @Column({type: "varchar", comment: "등록자 타입: MANAGER_USER, MERGE_USER", default: "MERGE_USER"})
     user_type: string;
 
-    @Column({type: "double", comment: "위도(37.56667)"})
+    @Column({type: "double", comment: "위도(37.56667)", default: 0})
     latitude: number;
 
-    @Column({type: "double", comment: "경도(126.97806)"})
+    @Column({type: "double", comment: "경도(126.97806)", default: 0})
     longitube: number;
 
     @Column({type: "varchar", comment: "mask origin name"})
@@ -50,7 +50,7 @@ export class MgImageEntity {
     @Column({type: "varchar", comment: "sallency s3 키"})
     s3_key_sallency: string;
 
-    @Column({type: "smallint", comment: "depth_camera(Lidar) 사용 여부 미사용: 0iOS Lidar 사용: 1"})
+    @Column({type: "smallint", comment: "depth_camera(Lidar) 사용 여부 미사용: 0iOS Lidar 사용: 1", default: 1})
     is_depth_camera: number;
 
     @Column({type: "jsonb", comment: "물체 너비 / 폭 / 높이 / 형태, 환경코드, 중앙점 거리값, 가속 X/Y/Z{    \"objectWidth\": 0.1240021,    \"objectLength\": 0.1285654,    \"objectHeight\": 0.1689597,    \"objectShape\": \"Ellipse\",    \"envCode\": \"Object_On_Horizontal_Plane\",    \"centerDepth\": 524.2222,    \"accelX\": 0.04507446,    \"accelY\": -0.8758545,    \"accelZ\": -0.4858856,}"})
