@@ -1,37 +1,43 @@
-import {Entity, PrimaryColumn, Column} from "typeorm";
+import {Entity, PrimaryColumn, Column, Index, OneToMany} from "typeorm";
+import {MgImageEntity} from "../mg_image/mg_image.entity";
 
-@Entity()
+@Index("mg_object_mg_id_uindex", ["mgId"], { unique: true })
+@Index("mg_object_pk", ["mgId"], { unique: true })
+@Entity("mg_object", { schema: "public" })
 export class MgObjectEntity {
-    @PrimaryColumn({type: "varchar", comment: "사물 고유값"})
-    mgId: string
+    @PrimaryColumn("character varying", {type: "varchar", comment: "사물 고유값", name: "mg_id"})
+    mgId: string;
 
-    @Column({type: "varchar", comment: "사물 그룹 아이디"})
-    mgGroupId: string
+    @Column("character varying",{ comment: "사물 그룹 아이디", name: "mg_group_id"})
+    mgGroupId: string;
 
-    @Column({type: "varchar", comment: "사물 이름"})
-    mgName: string
+    @Column({type: "varchar", comment: "사물 이름", name: "mg_name", nullable: true})
+    mgName: string | null;
 
-    @Column({type: "smallint", comment: "상태값", default: 0})
-    statusFlag: number
+    @Column({type: "smallint", comment: "상태값", default: () => 0, name: "status_flag", nullable: true})
+    statusFlag: number | null;
 
-    @Column({type: "timestamptz", comment: "생성일", default: () => "CURRENT_TIMESTAMP"})
-    createdAt: string
+    @Column("timestamp without time zone",{ comment: "생성일", default: () => "CURRENT_TIMESTAMP", name: "created_at", nullable: true})
+    createdAt: Date | null;
 
-    @Column({type: "timestamptz", comment: "수정일", default: () => "CURRENT_TIMESTAMP"})
-    updatedAt: string
+    @Column("timestamp without time zone",{ comment: "수정일", default: () => "CURRENT_TIMESTAMP", name: "updated_at", nullable: true})
+    updatedAt: Date | null;
 
-    @Column({type: "timestamptz", comment: "삭제일"})
-    deletedAt: string
+    @Column("timestamp without time zone", { comment: "삭제일", nullable: true, name: "deleted_at"})
+    deletedAt: Date | null;
 
-    @Column({type: "varchar", comment: "사물 분류"})
-    mgCategory: string
+    @Column({type: "varchar", comment: "사물 분류", nullable: true, name: "mg_category"})
+    mgCategory: string | null;
 
-    @Column({type: "bigint", comment: "좋아요 개수", default: 0})
-    likeCnt: number
+    @Column({type: "bigint", comment: "좋아요 개수", default: () => 0, name: "like_cnt", nullable: true})
+    likeCnt: number | null;
 
-    @Column({type: "int", comment: "좋아요 순위", default: 9999})
-    likeRank: number
+    @Column({type: "int", comment: "좋아요 순위", default: 9999, name: "like_rank", nullable: true})
+    likeRank: number | null;
 
-    @Column({type: "int", comment: "순위 변동", default: 0})
-    rankChange: number
+    @Column({type: "int", comment: "순위 변동", default: 0, name: "rank_change", nullable: true})
+    rankChange: number | null;
+
+    @OneToMany(() => MgImageEntity, (mgImageEntity) => mgImageEntity.mgId)
+    mgImageEntity: MgImageEntity[]
 }
