@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { MgoImage } from "../mgoimage/mgoImage.entity";
-import { MgObject } from "../mgobject/mgObject.entity";
+import { MgoImage } from "../entity/mgoImage.entity";
+import { MgObject } from "../entity/mgObject.entity";
 
 export const typeormConfig: TypeOrmModuleOptions = {
     // DataBase Type
