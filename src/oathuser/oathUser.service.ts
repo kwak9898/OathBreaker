@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class OathUserService {}
+export class OathUserService {
+    login(): string {
+        return "Test!!";
+    }
+}
