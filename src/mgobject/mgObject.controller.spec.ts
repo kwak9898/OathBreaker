@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MgObjectController } from './mg_object.controller';
+import { MgObjectController } from './mgObject.controller';
 
 describe('MgObjectController', () => {
   let controller: MgObjectController;

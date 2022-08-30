@@ -1,9 +1,9 @@
 import { Entity, PrimaryColumn, Column, Index, OneToMany } from "typeorm";
-import { MgoImage } from "../mg_image/mg_image.entity";
+import { MgoImage } from "../mgoimage/mgoImage.entity";
 
 @Index("mg_object_mg_id_uindex", ["mgId"], { unique: true })
 @Index("mg_object_pk", ["mgId"], { unique: true })
-@Entity("mg_object", { schema: "public" })
+@Entity("mgobject", { schema: "public" })
 export class MgObject {
     @PrimaryColumn("character varying", {comment: "사물 고유값", name: "mg_id"})
     mgId: string;

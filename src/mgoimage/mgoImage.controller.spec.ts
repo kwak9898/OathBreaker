@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MgImageController } from './mg_image.controller';
+import { MgImageController } from './mgoImage.controller';
 
 describe('MgImageController', () => {
   let controller: MgImageController;
@@ -16,3 +16,4 @@ describe('MgImageController', () => {
     expect(controller).toBeDefined();
   });
 });
+~
