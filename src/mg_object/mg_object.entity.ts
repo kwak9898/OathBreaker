@@ -1,43 +1,43 @@
-import {Entity, PrimaryColumn, Column, Index, OneToMany} from "typeorm";
-import {MgImageEntity} from "../mg_image/mg_image.entity";
+import { Entity, PrimaryColumn, Column, Index, OneToMany } from "typeorm";
+import { MgoImage } from "../mg_image/mg_image.entity";
 
 @Index("mg_object_mg_id_uindex", ["mgId"], { unique: true })
 @Index("mg_object_pk", ["mgId"], { unique: true })
 @Entity("mg_object", { schema: "public" })
-export class MgObjectEntity {
-    @PrimaryColumn("character varying", {type: "varchar", comment: "사물 고유값", name: "mg_id"})
+export class MgObject {
+    @PrimaryColumn("character varying", {comment: "사물 고유값", name: "mg_id"})
     mgId: string;
 
     @Column("character varying",{ comment: "사물 그룹 아이디", name: "mg_group_id"})
     mgGroupId: string;
 
     @Column({type: "varchar", comment: "사물 이름", name: "mg_name", nullable: true})
-    mgName: string | null;
+    mgName: string;
 
     @Column({type: "smallint", comment: "상태값", default: () => 0, name: "status_flag", nullable: true})
-    statusFlag: number | null;
+    statusFlag: number;
 
     @Column("timestamp without time zone",{ comment: "생성일", default: () => "CURRENT_TIMESTAMP", name: "created_at", nullable: true})
-    createdAt: Date | null;
+    createdAt: Date;
 
     @Column("timestamp without time zone",{ comment: "수정일", default: () => "CURRENT_TIMESTAMP", name: "updated_at", nullable: true})
-    updatedAt: Date | null;
+    updatedAt: Date;
 
     @Column("timestamp without time zone", { comment: "삭제일", nullable: true, name: "deleted_at"})
-    deletedAt: Date | null;
+    deletedAt: Date;
 
     @Column({type: "varchar", comment: "사물 분류", nullable: true, name: "mg_category"})
-    mgCategory: string | null;
+    mgCategory: string;
 
     @Column({type: "bigint", comment: "좋아요 개수", default: () => 0, name: "like_cnt", nullable: true})
-    likeCnt: number | null;
+    likeCnt: bigint;
 
     @Column({type: "int", comment: "좋아요 순위", default: 9999, name: "like_rank", nullable: true})
-    likeRank: number | null;
+    likeRank: number;
 
     @Column({type: "int", comment: "순위 변동", default: 0, name: "rank_change", nullable: true})
-    rankChange: number | null;
+    rankChange: number;
 
-    @OneToMany(() => MgImageEntity, (mgImageEntity) => mgImageEntity.mgId)
-    mgImageEntity: MgImageEntity[]
+    @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgId)
+    mgImageEntity: MgoImage[]
 }
