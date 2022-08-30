@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
 @Controller('mg-image')
-export class MgImageController {}
+export class MgoImageController {}
