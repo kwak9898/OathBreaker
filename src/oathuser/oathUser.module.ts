@@ -7,6 +7,7 @@ import {OathUser} from "../entity/oathUser.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([OathUser])],
   controllers: [OathUserController],
-  providers: [OathUserService]
+  providers: [OathUserService],
+  exports: [OathUserModule]
 })
 export class OathUserModule {}
