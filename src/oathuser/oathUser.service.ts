@@ -13,7 +13,7 @@ export class OathUserService {
     }
 
     async login(userId: string): Promise<OathUser> {
-        const user = await this.oathUserRepository.findOne({ userId })
+        const user = await this.oathUserRepository.findOne({})
 
         if (user) {
             return user;
