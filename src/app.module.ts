@@ -1,7 +1,8 @@
 import {Module} from "@nestjs/common";
+import {OathUserModule} from "./oathuser/oathUser.module";
 
 @Module({
-    imports: [],
+    imports: [OathUserModule],
     controllers: [],
     providers: []
 })
