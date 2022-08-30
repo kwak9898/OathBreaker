@@ -1,4 +1,5 @@
-import { Entity, PrimaryColumn, Column, Index } from "typeorm";
+import {Entity, PrimaryColumn, Column, Index, ManyToOne, JoinColumn} from "typeorm";
+import {MgObject} from "../mg_object/mg_object.entity";
 
 @Index("mgo_image_pk", ["imgID"], {unique: true})
 @Index("mgo_image_img_id_uindex", ["imgId"], {unique: true})
@@ -78,4 +79,8 @@ export class MgoImage {
 
     @Column("character varying", {comment: "머지웨어에서 생성된 Crab 이미지", nullable: true, name: "crop_img_url"})
     cropImgUrl: string;
+
+    @ManyToOne(() => MgObject, (mgObject) => mgObject.mgoImages)
+    @JoinColumn([{name: "mg_id", referencedColumnName: "mgId"}])
+    mgo: MgObject[]
 }
