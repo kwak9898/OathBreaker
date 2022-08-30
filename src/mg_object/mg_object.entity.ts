@@ -38,6 +38,6 @@ export class MgObject {
     @Column({type: "int", comment: "순위 변동", default: 0, name: "rank_change", nullable: true})
     rankChange: number;
 
-    @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgId)
-    mgImageEntity: MgoImage[]
+    @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgo)
+    mgoImages: MgoImage[]
 }
