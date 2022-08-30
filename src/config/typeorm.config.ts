@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import {MgImageEntity} from "../mg_image/mg_image.entity";
-import {MgObjectEntity} from "../mg_object/mg_object.entity";
+import { MgoImage } from "../mg_image/mg_image.entity";
+import { MgObject } from "../mg_object/mg_object.entity";
 
 export const typeormConfig: TypeOrmModuleOptions = {
     // DataBase Type
@@ -10,7 +10,7 @@ export const typeormConfig: TypeOrmModuleOptions = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [MgImageEntity, MgObjectEntity],
+    entities: [MgoImage, MgObject],
     synchronize: false,
     logging: true
 }
