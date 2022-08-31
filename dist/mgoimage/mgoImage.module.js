@@ -6,27 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.MgImageModule = void 0;
 const common_1 = require("@nestjs/common");
+const mgoImage_controller_1 = require("./mgoImage.controller");
+const mgoImage_service_1 = require("./mgoImage.service");
 const typeorm_1 = require("@nestjs/typeorm");
-const config_1 = require("@nestjs/config");
-const typeorm_service_1 = require("./config/database/typeorm.service");
-const typeorm_module_1 = require("./config/database/typeorm.module");
-let AppModule = class AppModule {
+const mgoImage_entity_1 = require("../entity/mgoImage.entity");
+let MgImageModule = class MgImageModule {
 };
-AppModule = __decorate([
+MgImageModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true }),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                imports: [typeorm_module_1.TypeormModule],
-                useClass: typeorm_service_1.TypeormService,
-                inject: [typeorm_service_1.TypeormService]
-            })
+            typeorm_1.TypeOrmModule.forFeature([mgoImage_entity_1.MgoImage])
         ],
-        controllers: [],
-        providers: []
+        controllers: [mgoImage_controller_1.MgoImageController],
+        providers: [mgoImage_service_1.MgoImageService]
     })
-], AppModule);
-exports.AppModule = AppModule;
-//# sourceMappingURL=app.module.js.map
+], MgImageModule);
+exports.MgImageModule = MgImageModule;
+//# sourceMappingURL=mgoImage.module.js.map

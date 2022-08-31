@@ -6,27 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.MgObjectModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const config_1 = require("@nestjs/config");
-const typeorm_service_1 = require("./config/database/typeorm.service");
-const typeorm_module_1 = require("./config/database/typeorm.module");
-let AppModule = class AppModule {
+const mgObject_entity_1 = require("../entity/mgObject.entity");
+const mgObject_service_1 = require("./mgObject.service");
+const mgObject_controller_1 = require("./mgObject.controller");
+let MgObjectModule = class MgObjectModule {
 };
-AppModule = __decorate([
+MgObjectModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true }),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                imports: [typeorm_module_1.TypeormModule],
-                useClass: typeorm_service_1.TypeormService,
-                inject: [typeorm_service_1.TypeormService]
-            })
+            typeorm_1.TypeOrmModule.forFeature([mgObject_entity_1.MgObject])
         ],
-        controllers: [],
-        providers: []
+        controllers: [mgObject_controller_1.MgObjectController],
+        providers: [mgObject_service_1.MgObjectService]
     })
-], AppModule);
-exports.AppModule = AppModule;
-//# sourceMappingURL=app.module.js.map
+], MgObjectModule);
+exports.MgObjectModule = MgObjectModule;
+//# sourceMappingURL=mgObject.module.js.map
