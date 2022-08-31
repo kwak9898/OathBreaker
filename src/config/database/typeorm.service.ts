@@ -3,6 +3,7 @@ import {Injectable} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 import { MgoImage } from "../../entity/mgoImage.entity";
 import { MgObject } from "../../entity/mgObject.entity";
+import { user } from "../../entity/user.entity";
 
 @Injectable()
 export class TypeormService implements TypeOrmOptionsFactory {
@@ -16,7 +17,7 @@ export class TypeormService implements TypeOrmOptionsFactory {
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-            entities: [MgoImage, MgObject],
+            entities: [MgoImage, MgObject, user],
             synchronize: false,
             logging: true
         }

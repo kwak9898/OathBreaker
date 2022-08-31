@@ -109,7 +109,7 @@ export class OathUser {
     @Column("timestamp without time zone", {name: "converted_at", comment: "비회원에서 회원으로 변경된 날짜", nullable: true})
     convertedAt: Date;
 
-    async comparePw(attempt: string): Promise<void> {
+    async comparePw(attempt: string): Promise<boolean> {
         return await bcrypt.compare(attempt, this.password)
     }
 }
