@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
-import {OathUserModule} from "./oathuser/oathUser.module";
 import * as dotenv from "dotenv";
 import * as path from "path";
+import {AppModule} from "./app.module";
 
 dotenv.config({
   path: path.resolve(
@@ -11,7 +11,7 @@ dotenv.config({
 });
 
 async function bootstrap() {
-  const app = await NestFactory.create(OathUserModule);
+  const app = await NestFactory.create(AppModule);
   await app.listen(3000);
 }
 
