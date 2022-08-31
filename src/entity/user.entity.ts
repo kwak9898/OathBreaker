@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 
 @Entity("oath_user", {schema: "public"})
-export class OathUser {
+export class user {
     @PrimaryColumn("character varying", {name: "user_id", comment: "회원 아이디"})
     userId: string;
 
