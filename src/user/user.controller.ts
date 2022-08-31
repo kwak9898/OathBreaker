@@ -9,7 +9,7 @@ export class UserController {
 
     @Post('/login')
     async login(@Body() userLoginDto: UserLoginDto) {
-        const { userId, password } = userLoginDto;
-        return await this.oathUserService.existUserLogin( userId, password )
+        const { userId } = userLoginDto;
+        return await this.oathUserService.checkUserExist(userId)
     }
 }

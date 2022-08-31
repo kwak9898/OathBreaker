@@ -3,10 +3,10 @@ import {ExtractJwt, Strategy} from "passport-jwt";
 import {UnauthorizedException} from "@nestjs/common";
 import {Payload} from "./jwt.payload";
 import {UserService} from "../../user.service";
-import {OathUser} from "../../../entity/oathUser.entity";
+import {user} from "../../../entity/user.entity";
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private oathUserService: UserService) {
+    constructor(private userService: UserService) {
         super({
             // 헤더 Authentication 에서 Bearer 토큰으로부터 Jwt를 추출하겠다는 의미
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -16,12 +16,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         });
     }
 
-    async validate(payload: Payload): Promise<OathUser> {
-        const user = await this.oathUserService.login(payload.userId, payload.password);
-        if (!user) {
-            throw new UnauthorizedException("접근 오류");
-        } else {
-            return user;
-        }
-    }
+    // async validate(payload: Payload): Promise<user> {
+    //     const user = await this.userService.login(payload.userId, payload.password);
+    //     if (!user) {
+    //         throw new UnauthorizedException("접근 오류");
+    //     } else {
+    //         return user;
+    //     }
+    // }
 }
