@@ -12,31 +12,31 @@ export class MgObject {
     mgGroupId: string;
 
     @Column({type: "varchar", comment: "사물 이름", name: "mg_name", nullable: true})
-    mgName: string;
+    mgName: string | null;
 
     @Column({type: "smallint", comment: "상태값", default: () => 0, name: "status_flag", nullable: true})
-    statusFlag: number;
+    statusFlag: number | null;
 
     @Column("timestamp without time zone",{ comment: "생성일", default: () => "CURRENT_TIMESTAMP", name: "created_at", nullable: true})
-    createdAt: Date;
+    createdAt: Date | null;
 
     @Column("timestamp without time zone",{ comment: "수정일", default: () => "CURRENT_TIMESTAMP", name: "updated_at", nullable: true})
-    updatedAt: Date;
+    updatedAt: Date | null;
 
     @Column("timestamp without time zone", { comment: "삭제일", nullable: true, name: "deleted_at"})
-    deletedAt: Date;
+    deletedAt: Date | null;
 
     @Column({type: "varchar", comment: "사물 분류", nullable: true, name: "mg_category"})
-    mgCategory: string;
+    mgCategory: string | null;
 
     @Column({type: "bigint", comment: "좋아요 개수", default: () => 0, name: "like_cnt", nullable: true})
-    likeCnt: bigint;
+    likeCnt: bigint | null;
 
     @Column({type: "int", comment: "좋아요 순위", default: 9999, name: "like_rank", nullable: true})
-    likeRank: number;
+    likeRank: number | null;
 
     @Column({type: "int", comment: "순위 변동", default: 0, name: "rank_change", nullable: true})
-    rankChange: number;
+    rankChange: number | null;
 
     @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgo)
     mgoImages: MgoImage[]
