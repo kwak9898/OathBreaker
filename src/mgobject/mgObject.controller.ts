@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller } from "@nestjs/common";
 
-@Controller('mg-object')
+@Controller("mg-object")
 export class MgObjectController {}
