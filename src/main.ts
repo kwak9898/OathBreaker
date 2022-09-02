@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import cookieParser from "cookie-parser";
 
 dotenv.config({
   path: path.resolve(
@@ -16,11 +16,7 @@ dotenv.config({
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-    })
-  );
+  app.use(cookieParser());
   await app.listen(3000);
 }
 
