@@ -17,6 +17,7 @@ export class UserService {
     private configService: ConfigService
   ) {}
 
+  // 존재하는 유저 기기
   async getByUserId(userId: string) {
     const user = await this.usersRepository.findOne({ where: { userId } });
 
@@ -29,6 +30,7 @@ export class UserService {
     return user;
   }
 
+  // 비밀번호 확인
   async verifyPassword(plainTextPassword: string, hashedPassword: string) {
     const isPasswordMatching = await bcrypt.compare(
       plainTextPassword,
@@ -43,6 +45,7 @@ export class UserService {
     }
   }
 
+  // 회원가입
   async signUp(userData: UserLoginDto) {
     const signUp = await this.usersRepository.create(userData);
 
@@ -50,6 +53,7 @@ export class UserService {
     return signUp;
   }
 
+  // 로그인
   async signIn(userId: string, hashedPassword: string) {
     try {
       const user = await this.getByUserId(userId);
@@ -66,6 +70,12 @@ export class UserService {
     }
   }
 
+  // 로그아웃
+  async signOut() {
+    return `Authentication=; HttpOnly; path=/; Max-Age=0`;
+  }
+
+  // 토큰 발급
   getCookieWithJwtToken(userId: string) {
     const payload: TokenPayload = { userId };
     const token = this.jwtService.sign(payload);

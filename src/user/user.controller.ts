@@ -10,6 +10,7 @@ import { UserService } from "./user.service";
 import { RequestWithUser } from "./interfaces/auth/requestWithUser.interface";
 import { LocalAuthenticationGuard } from "../guard/localAuthentication.guard";
 import { Response } from "express";
+import { JwtAuthGuard } from "../guard/jwtAuth.guard";
 
 @Controller("oath-user")
 export class UserController {
@@ -24,5 +25,13 @@ export class UserController {
     response.setHeader("Set-Cookie", cookie);
     user.password = undefined;
     return response.send(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("logout")
+  async logOut(@Req() request: RequestWithUser, @Res() response: Response) {
+    response.setHeader("Set-Cookie", await this.userService.signOut());
+
+    return response.sendStatus(200);
   }
 }
