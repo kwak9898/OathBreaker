@@ -4,12 +4,17 @@ import { User } from "../entity/user.entity";
 import { Repository } from "typeorm";
 import { UserLoginDto } from "./dto/userLogin.dto";
 import * as bcrypt from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { TokenPayload } from "./interfaces/jwt/tokenpayload.interface";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
+    private jwtService: JwtService,
+    private configService: ConfigService
   ) {}
 
   async getByUserId(userId: string) {
@@ -59,5 +64,13 @@ export class UserService {
       );
       console.log(err);
     }
+  }
+
+  getCookieWithJwtToken(userId: string) {
+    const payload: TokenPayload = { userId };
+    const token = this.jwtService.sign(payload);
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      "JWT_EXPIRATION_TIME"
+    )}`;
   }
 }

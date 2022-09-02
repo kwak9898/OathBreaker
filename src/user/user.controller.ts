@@ -1,32 +1,28 @@
 import {
-  Body,
   Controller,
-  Param,
-  Patch,
+  HttpCode,
   Post,
+  Req,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { UserLoginDto } from "./dto/userLogin.dto";
-import { AuthGuard } from "../guard/auth.guard";
+import { RequestWithUser } from "./interfaces/auth/requestWithUser.interface";
+import { LocalAuthenticationGuard } from "../guard/localAuthentication.guard";
+import { Response } from "express";
 
-@UseGuards(AuthGuard)
 @Controller("oath-user")
 export class UserController {
   constructor(private userService: UserService) {}
 
-  // 회원 Login Controller
-  @UseGuards(AuthGuard)
-  @Post("/login")
-  async login(@Body() userLoginDto: UserLoginDto) {
-    const { userId, password } = userLoginDto;
-    return await this.userService.signIn(userId, password);
-  }
-
-  // 회원 Password 변경
-  @Patch()
-  async updateByUserPassword(@Param() userLoginDto: UserLoginDto) {
-    const { userId, password } = userLoginDto;
-    return await this.userService.getByUserId(userId);
+  @HttpCode(200)
+  @UseGuards(LocalAuthenticationGuard)
+  @Post("login")
+  async login(@Req() request: RequestWithUser, @Res() response: Response) {
+    const { user } = request;
+    const cookie = this.userService.getCookieWithJwtToken(user.userId);
+    response.setHeader("Set-Cookie", cookie);
+    user.password = undefined;
+    return response.send(user);
   }
 }
