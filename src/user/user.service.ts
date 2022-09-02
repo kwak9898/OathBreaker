@@ -24,6 +24,20 @@ export class UserService {
     return user;
   }
 
+  async verifyPassword(plainTextPassword: string, hashedPassword: string) {
+    const isPasswordMatching = await bcrypt.compare(
+      plainTextPassword,
+      hashedPassword
+    );
+
+    if (!isPasswordMatching) {
+      throw new HttpException(
+        "잘못된 인증 정보 입니다.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
   async signUp(userData: UserLoginDto) {
     const signUp = await this.usersRepository.create(userData);
 
@@ -34,11 +48,15 @@ export class UserService {
   async signIn(userId: string, hashedPassword: string) {
     try {
       const user = await this.getByUserId(userId);
-      await bcrypt.compare(hashedPassword, user.userId);
+      await this.verifyPassword(hashedPassword, user.password);
+      user.password = undefined;
 
       return user;
     } catch (err) {
-      throw new HttpException("잘못된 경로입니다.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "잘못된 인증 정보입니다.",
+        HttpStatus.BAD_REQUEST
+      );
       console.log(err);
     }
   }
