@@ -1,19 +1,9 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../entity/user.entity";
-import { Connection, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { UserLoginDto } from "./dto/userLogin.dto";
-import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { ConfigType } from "@nestjs/config";
-import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class UserService {
@@ -39,5 +29,17 @@ export class UserService {
 
     await this.usersRepository.save(signUp);
     return signUp;
+  }
+
+  async signIn(userId: string, hashedPassword: string) {
+    try {
+      const user = await this.getByUserId(userId);
+      await bcrypt.compare(hashedPassword, user.userId);
+
+      return user;
+    } catch (err) {
+      throw new HttpException("잘못된 경로입니다.", HttpStatus.BAD_REQUEST);
+      console.log(err);
+    }
   }
 }
