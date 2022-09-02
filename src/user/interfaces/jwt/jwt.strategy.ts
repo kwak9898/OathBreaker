@@ -1,24 +1,26 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UserService } from "../../user.service";
+import { ConfigService } from "@nestjs/config";
+import { Request } from "express";
+import { TokenPayload } from "./tokenpayload.interface";
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private userService: UserService) {
+  constructor(
+    private configService: ConfigService,
+    private userService: UserService
+  ) {
     super({
-      // 헤더 Authentication 에서 Bearer 토큰으로부터 Jwt를 추출하겠다는 의미
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: "secret", // Jwt 생성시 비밀키로 사용할 텍스트
-      ignoreExpiration: false, // Jwt 만료를 무시할 것인지 (기본값: false)
-      usernameField: "userId",
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          return request?.cookies?.Authenticator;
+        },
+      ]),
+      secretOrKey: configService.get("JWT_SECRET"),
     });
   }
 
-  // async validate(payload: Payload): Promise<user> {
-  //     const user = await this.userService.login(payload.userId, payload.password);
-  //     if (!user) {
-  //         throw new UnauthorizedException("접근 오류");
-  //     } else {
-  //         return user;
-  //     }
-  // }
+  async validate(payload: TokenPayload) {
+    return this.userService.getByUserId(payload.userId);
+  }
 }
