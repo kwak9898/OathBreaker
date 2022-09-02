@@ -17,7 +17,7 @@ import * as Joi from "joi";
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
-        JET_EXPIRATION_TIME: Joi.string().required(),
+        JWT_EXPIRATION_TIME: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({

@@ -14,16 +14,32 @@ const user_service_1 = require("./user.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../entity/user.entity");
 const jwt_strategy_1 = require("./interfaces/jwt/jwt.strategy");
+const local_strategy_1 = require("./interfaces/auth/local.strategy");
+const jwt_1 = require("@nestjs/jwt");
+const passport_1 = require("@nestjs/passport");
+const config_1 = require("@nestjs/config");
 let UserModule = UserModule_1 = class UserModule {
 };
 UserModule = UserModule_1 = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.user])
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
+            passport_1.PassportModule,
+            config_1.ConfigModule,
+            jwt_1.JwtModule.registerAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => ({
+                    secret: configService.get("JWT_SECRET"),
+                    signOptions: {
+                        expiresIn: `${configService.get("JWT_EXPIRATION_TIME")}s`,
+                    },
+                }),
+            }),
         ],
         controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService, jwt_strategy_1.JwtStrategy],
-        exports: [UserModule_1]
+        providers: [user_service_1.UserService, jwt_strategy_1.JwtStrategy, local_strategy_1.LocalStrategy],
+        exports: [UserModule_1],
     })
 ], UserModule);
 exports.UserModule = UserModule;

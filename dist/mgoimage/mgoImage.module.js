@@ -16,11 +16,9 @@ let MgImageModule = class MgImageModule {
 };
 MgImageModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([mgoImage_entity_1.MgoImage])
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([mgoImage_entity_1.MgoImage])],
         controllers: [mgoImage_controller_1.MgoImageController],
-        providers: [mgoImage_service_1.MgoImageService]
+        providers: [mgoImage_service_1.MgoImageService],
     })
 ], MgImageModule);
 exports.MgImageModule = MgImageModule;

@@ -13,7 +13,7 @@ let TypeormModule = class TypeormModule {
 };
 TypeormModule = __decorate([
     (0, common_1.Module)({
-        providers: [typeorm_service_1.TypeormService]
+        providers: [typeorm_service_1.TypeormService],
     })
 ], TypeormModule);
 exports.TypeormModule = TypeormModule;

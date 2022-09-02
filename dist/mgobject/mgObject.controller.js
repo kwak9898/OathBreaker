@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 let MgObjectController = class MgObjectController {
 };
 MgObjectController = __decorate([
-    (0, common_1.Controller)('mg-object')
+    (0, common_1.Controller)("mg-object")
 ], MgObjectController);
 exports.MgObjectController = MgObjectController;
 //# sourceMappingURL=mgObject.controller.js.map

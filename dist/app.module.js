@@ -12,20 +12,34 @@ const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const typeorm_service_1 = require("./config/database/typeorm.service");
 const typeorm_module_1 = require("./config/database/typeorm.module");
+const logger_middleware_1 = require("./middleware/logger.middleware");
+const user_controller_1 = require("./user/user.controller");
+const Joi = require("joi");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer
+            .apply(logger_middleware_1.LoggerMiddleware)
+            .exclude({ path: "users", method: common_1.RequestMethod.GET })
+            .forRoutes(user_controller_1.UserController);
+    }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true }),
+            config_1.ConfigModule.forRoot({
+                validationSchema: Joi.object({
+                    JWT_SECRET: Joi.string().required(),
+                    JWT_EXPIRATION_TIME: Joi.string().required(),
+                }),
+            }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [typeorm_module_1.TypeormModule],
                 useClass: typeorm_service_1.TypeormService,
-                inject: [typeorm_service_1.TypeormService]
-            })
+                inject: [typeorm_service_1.TypeormService],
+            }),
         ],
         controllers: [],
-        providers: []
+        providers: [],
     })
 ], AppModule);
 exports.AppModule = AppModule;

@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 let MgoImageController = class MgoImageController {
 };
 MgoImageController = __decorate([
-    (0, common_1.Controller)('mg-image')
+    (0, common_1.Controller)("mg-image")
 ], MgoImageController);
 exports.MgoImageController = MgoImageController;
 //# sourceMappingURL=mgoImage.controller.js.map

@@ -2,14 +2,14 @@ import { MgoImage } from "./mgoImage.entity";
 export declare class MgObject {
     mgId: string;
     mgGroupId: string;
-    mgName: string;
-    statusFlag: number;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-    mgCategory: string;
-    likeCnt: bigint;
-    likeRank: number;
-    rankChange: number;
+    mgName: string | null;
+    statusFlag: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    deletedAt: Date | null;
+    mgCategory: string | null;
+    likeCnt: bigint | null;
+    likeRank: number | null;
+    rankChange: number | null;
     mgoImages: MgoImage[];
 }

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   HttpCode,
   Post,
   Req,
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from "../guard/jwtAuth.guard";
 export class UserController {
   constructor(private userService: UserService) {}
 
+  // 회원 로그인
   @HttpCode(200)
   @UseGuards(LocalAuthenticationGuard)
   @Post("login")
@@ -27,11 +29,22 @@ export class UserController {
     return response.send(user);
   }
 
+  // 회원 로그아웃 (JWT 파기)
   @UseGuards(JwtAuthGuard)
   @Post("logout")
   async logOut(@Req() request: RequestWithUser, @Res() response: Response) {
     response.setHeader("Set-Cookie", await this.userService.signOut());
 
     return response.sendStatus(200);
+  }
+
+  // 토큰 확인
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getByToken(@Req() request: RequestWithUser) {
+    const user = request.user;
+    user.password = undefined;
+
+    return user;
   }
 }

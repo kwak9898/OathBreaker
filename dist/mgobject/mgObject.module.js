@@ -16,11 +16,9 @@ let MgObjectModule = class MgObjectModule {
 };
 MgObjectModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([mgObject_entity_1.MgObject])
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([mgObject_entity_1.MgObject])],
         controllers: [mgObject_controller_1.MgObjectController],
-        providers: [mgObject_service_1.MgObjectService]
+        providers: [mgObject_service_1.MgObjectService],
     })
 ], MgObjectModule);
 exports.MgObjectModule = MgObjectModule;

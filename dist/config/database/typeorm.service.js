@@ -19,18 +19,17 @@ let TypeormService = class TypeormService {
     constructor(configService) {
         this.configService = configService;
     }
-    ;
     createTypeOrmOptions() {
         return {
-            type: 'postgres',
+            type: "postgres",
             host: process.env.DB_HOST,
             port: +process.env.DB_PORT,
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-            entities: [mgoImage_entity_1.MgoImage, mgObject_entity_1.MgObject, user_entity_1.user],
+            entities: [mgoImage_entity_1.MgoImage, mgObject_entity_1.MgObject, user_entity_1.User],
             synchronize: false,
-            logging: true
+            logging: true,
         };
     }
 };

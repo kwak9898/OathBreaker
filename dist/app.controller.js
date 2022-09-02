@@ -13,7 +13,7 @@ exports.CatsController = void 0;
 const common_1 = require("@nestjs/common");
 let CatsController = class CatsController {
     findAll() {
-        return 'This action returns all cats';
+        return "This action returns all cats";
     }
 };
 __decorate([
@@ -23,7 +23,7 @@ __decorate([
     __metadata("design:returntype", String)
 ], CatsController.prototype, "findAll", null);
 CatsController = __decorate([
-    (0, common_1.Controller)('cats')
+    (0, common_1.Controller)("cats")
 ], CatsController);
 exports.CatsController = CatsController;
 //# sourceMappingURL=app.controller.js.map

@@ -11,14 +11,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserLoginDto = void 0;
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
+const common_1 = require("@nestjs/common");
 class UserLoginDto {
 }
 __decorate([
+    (0, class_transformer_1.Transform)((params) => params.value.trim()),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(2),
+    (0, class_validator_1.MaxLength)(30),
     __metadata("design:type", String)
 ], UserLoginDto.prototype, "userId", void 0);
 __decorate([
+    (0, class_transformer_1.Transform)(({ value, obj }) => {
+        if (obj.password.includes(value.trim())) {
+            throw new common_1.BadRequestException("password는 ID와 같은 문자열을 포함할 수 없습니다.");
+        }
+        return value.trim();
+    }),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^[A-Za-z\d!@#$%^&*()]{8,30}$/),
     __metadata("design:type", String)
 ], UserLoginDto.prototype, "password", void 0);
 exports.UserLoginDto = UserLoginDto;

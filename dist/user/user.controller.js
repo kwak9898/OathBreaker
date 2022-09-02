@@ -15,25 +15,58 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
-const userLogin_dto_1 = require("./dto/userLogin.dto");
+const localAuthentication_guard_1 = require("../guard/localAuthentication.guard");
+const jwtAuth_guard_1 = require("../guard/jwtAuth.guard");
 let UserController = class UserController {
-    constructor(oathUserService) {
-        this.oathUserService = oathUserService;
+    constructor(userService) {
+        this.userService = userService;
     }
-    async login(userLoginDto) {
-        const { userId } = userLoginDto;
-        return await this.oathUserService.checkUserExist(userId);
+    async login(request, response) {
+        const { user } = request;
+        const cookie = this.userService.getCookieWithJwtToken(user.userId);
+        response.setHeader("Set-Cookie", cookie);
+        user.password = undefined;
+        return response.send(user);
+    }
+    async logOut(request, response) {
+        response.setHeader("Set-Cookie", await this.userService.signOut());
+        return response.sendStatus(200);
+    }
+    async getByToken(request) {
+        const user = request.user;
+        user.password = undefined;
+        return user;
     }
 };
 __decorate([
-    (0, common_1.Post)('/login'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.HttpCode)(200),
+    (0, common_1.UseGuards)(localAuthentication_guard_1.LocalAuthenticationGuard),
+    (0, common_1.Post)("login"),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [userLogin_dto_1.UserLoginDto]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "login", null);
+__decorate([
+    (0, common_1.UseGuards)(jwtAuth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)("logout"),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "logOut", null);
+__decorate([
+    (0, common_1.UseGuards)(jwtAuth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getByToken", null);
 UserController = __decorate([
-    (0, common_1.Controller)('oath-user'),
+    (0, common_1.Controller)("oath-user"),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 exports.UserController = UserController;

@@ -17,31 +17,60 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../entity/user.entity");
 const typeorm_2 = require("typeorm");
+const bcrypt = require("bcrypt");
 const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let UserService = class UserService {
-    constructor(oathUserRepository, jwtService, connection) {
-        this.oathUserRepository = oathUserRepository;
+    constructor(usersRepository, jwtService, configService) {
+        this.usersRepository = usersRepository;
+        this.jwtService = jwtService;
+        this.configService = configService;
     }
-    async checkUserExist(userId) {
-        const user = await this.oathUserRepository.findOne({ where: { userId: userId } });
-        if (user) {
+    async getByUserId(userId) {
+        const user = await this.usersRepository.findOne({ where: { userId } });
+        if (!user) {
+            throw new common_1.HttpException("유저가 존재하지 않습니다.", common_1.HttpStatus.NOT_FOUND);
+        }
+        return user;
+    }
+    async verifyPassword(plainTextPassword, hashedPassword) {
+        const isPasswordMatching = await bcrypt.compare(plainTextPassword, hashedPassword);
+        if (!isPasswordMatching) {
+            throw new common_1.HttpException("잘못된 인증 정보 입니다.", common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
+    async signUp(userData) {
+        const signUp = await this.usersRepository.create(userData);
+        await this.usersRepository.save(signUp);
+        return signUp;
+    }
+    async signIn(userId, hashedPassword) {
+        try {
+            const user = await this.getByUserId(userId);
+            await this.verifyPassword(hashedPassword, user.password);
+            user.password = undefined;
             return user;
         }
-        else {
-            throw new common_1.HttpException("존재하지 않은 아이디입니다.", common_1.HttpStatus.NOT_FOUND);
+        catch (err) {
+            throw new common_1.HttpException("잘못된 인증 정보입니다.", common_1.HttpStatus.BAD_REQUEST);
+            console.log(err);
         }
     }
-    async createUser(userId, password) {
-        const existUser = await this.checkUserExist(userId);
-        if (existUser) {
-            throw new common_1.UnprocessableEntityException("해당 아이디로는 가입할 수 없습니다.");
-        }
+    async signOut() {
+        return `Authentication=; HttpOnly; path=/; Max-Age=0`;
+    }
+    getCookieWithJwtToken(userId) {
+        const payload = { userId };
+        const token = this.jwtService.sign(payload);
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get("JWT_EXPIRATION_TIME")}`;
     }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.user)),
-    __metadata("design:paramtypes", [typeorm_2.Repository, jwt_1.JwtService, typeorm_2.Connection])
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        jwt_1.JwtService,
+        config_1.ConfigService])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map
