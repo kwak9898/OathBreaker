@@ -48,11 +48,11 @@ export class User {
   team: string | null;
 
   @Column("character varying", {
-    name: "role",
+    name: "role_name",
     comment: "역할",
     nullable: true,
   })
-  role: string | null;
+  roleName: string | null;
 
   @Column("timestamp without time zone", {
     name: "created_at",
@@ -78,11 +78,11 @@ export class User {
   deletedAt: Date | null;
 
   @Column("timestamp without time zone", {
-    name: "last_access_data",
+    name: "last_access_at",
     comment: "최근 접속일",
     nullable: true,
   })
-  LastAccessDate: Date | null;
+  LastAccessAt: Date | null;
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
