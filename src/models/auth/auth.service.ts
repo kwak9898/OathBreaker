@@ -118,10 +118,20 @@ export class AuthService {
     };
   }
 
-  async changePassword(userId: string) {
-    const user = this.usersService.findOne(userId);
+  async changePassword(userId: string, password: string, user?: User) {
+    try {
+      if (!user) {
+        user = await this.usersService.findOne(userId);
+      }
 
-    return user;
+      await user.setEncryptPassword(password);
+      await this.usersService.updateByUser(userId, password);
+
+      return user;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
   }
 
   private async verifyPassword(

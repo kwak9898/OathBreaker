@@ -92,4 +92,9 @@ export class UsersService {
       jwtToken: null,
     });
   }
+
+  // 유저 없데이트
+  async updateByUser(userId: string, password: string) {
+    return this.userRepository.update(userId, { password: password });
+  }
 }
