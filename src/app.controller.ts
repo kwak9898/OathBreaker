@@ -1,9 +1,12 @@
 import { Controller, Get } from "@nestjs/common";
+import { AppService } from "./app.service";
 
-@Controller("cats")
-export class CatsController {
+@Controller()
+export class AppController {
+  constructor(private appService: AppService) {}
+
   @Get()
-  findAll(): string {
-    return "This action returns all cats";
+  getHello(): string {
+    return this.appService.getHello();
   }
 }
