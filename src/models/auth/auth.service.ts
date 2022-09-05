@@ -14,9 +14,9 @@ export class AuthService {
   ) {}
 
   // 비밀번호 유효성 검사
-  async validateUser(email: string, plainTextPassword: string): Promise<any> {
+  async validateUser(userId: string, plainTextPassword: string): Promise<any> {
     try {
-      const user = await this.usersService.getByEmail(email);
+      const user = await this.usersService.getByEmail(userId);
       await this.verifyPassword(plainTextPassword, user.password);
       const { password, ...result } = user;
 
@@ -26,17 +26,17 @@ export class AuthService {
     }
   }
 
-  async login(user: User) {
-    const payload = { email: user.email, id: user.id };
-    const token = this.jwtService.sign(payload);
-    return {
-      token: token,
-      domain: "localhost",
-      path: "/",
-      httpOnly: true,
-      maxAge: Number(this.configService.get("JWT_EXPIRATION_TIME")) * 1000,
-    };
-  }
+  // async login(user: User) {
+  //   const payload = { userId: user.userId, userName: user.username };
+  //   const token = this.jwtService.sign(payload);
+  //   return {
+  //     token: token,
+  //     domain: "localhost",
+  //     path: "/",
+  //     httpOnly: true,
+  //     maxAge: Number(this.configService.get("JWT_EXPIRATION_TIME")) * 1000,
+  //   };
+  // }
 
   async register(user: User) {
     const hashedPassword = await hash(user.password, 12);

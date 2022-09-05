@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "../../database/entities/user.entity";
-import { Public } from "../../decorators/skipAuth.decorator";
+import { Public } from "../../dacorators/skipAuth.decorator";
 
 @Controller("users")
 export class UsersController {

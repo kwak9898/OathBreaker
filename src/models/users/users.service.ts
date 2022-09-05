@@ -17,13 +17,13 @@ export class UsersService {
   }
 
   // 특정 유저 찾기
-  findOne(id: number): Promise<User> {
-    return this.userRepository.findOne({ where: { id } });
+  findOne(userId: string): Promise<User> {
+    return this.userRepository.findOne({ where: { userId: userId } });
   }
 
   // 유저 삭제
-  async remove(id: string): Promise<void> {
-    await this.userRepository.delete(id);
+  async remove(userId: string): Promise<void> {
+    await this.userRepository.delete(userId);
   }
 
   // 유저 생성
@@ -33,13 +33,18 @@ export class UsersService {
   }
 
   // 특정 사용자 이름 찾기
-  async findByUserName(userName: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { userName } });
+  async findByUserName(
+    userId: string,
+    username: string
+  ): Promise<User | undefined> {
+    return this.userRepository.findOne({
+      where: { userId: userId, username: username },
+    });
   }
 
   // Email 값을 이용한 User 정보 가져오기
-  async getByEmail(email: string) {
-    const user = this.userRepository.findOne({ where: { email: email } });
+  async getByEmail(userId: string) {
+    const user = this.userRepository.findOne({ where: { userId: userId } });
 
     if (user) {
       return user;
@@ -52,8 +57,10 @@ export class UsersService {
   }
 
   // 유저 ID 가져오기
-  async getById(id: number) {
-    const user = await this.userRepository.findOne({ where: { id: id } });
+  async getById(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { userId: userId },
+    });
 
     if (user) {
       return user;
@@ -63,19 +70,16 @@ export class UsersService {
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장
-  async setCurrentRefreshToken(refreshToken: string, id: number) {
-    const currentHashedRefreshToken = await hash(refreshToken, 10);
-    await this.userRepository.update(id, { currentHashedRefreshToken });
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const jwtToken = await hash(refreshToken, 10); // refreshToken
+    await this.userRepository.update(userId, { jwtToken });
   }
 
   // Id 값을 이용한 Refresh Token 유효한지 확인
-  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
-    const user = await this.getById(id);
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.getById(userId);
 
-    const isRefreshTokenMatching = await compare(
-      refreshToken,
-      user.currentHashedRefreshToken
-    );
+    const isRefreshTokenMatching = await compare(refreshToken, user.jwtToken);
 
     if (isRefreshTokenMatching) {
       return user;
@@ -85,7 +89,7 @@ export class UsersService {
   // Refresh Token 초기화
   async removeRefreshToken(id: number) {
     return this.userRepository.update(id, {
-      currentHashedRefreshToken: null,
+      jwtToken: null,
     });
   }
 }
