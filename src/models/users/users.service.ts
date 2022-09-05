@@ -94,7 +94,8 @@ export class UsersService {
   }
 
   // 유저 없데이트
-  async updateByUser(userId: string, password: string) {
-    return this.userRepository.update(userId, { password: password });
+  async updateByUser(user: User): Promise<User> {
+    user.updatedAt = new Date();
+    return await this.userRepository.save(user);
   }
 }
