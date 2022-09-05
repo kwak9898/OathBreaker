@@ -16,7 +16,7 @@ export class AuthService {
   // 비밀번호 유효성 검사
   async validateUser(userId: string, plainTextPassword: string): Promise<any> {
     try {
-      const user = await this.usersService.getByEmail(userId);
+      const user = await this.usersService.getByUserId(userId);
       await this.verifyPassword(plainTextPassword, user.password);
       const { password, ...result } = user;
 

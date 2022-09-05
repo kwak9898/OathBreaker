@@ -27,7 +27,7 @@ export class UsersService {
   }
 
   // 유저 생성
-  async createUser(user: User): Promise<User> {
+  async createUser(user?: User): Promise<User> {
     await this.userRepository.save(user);
     return user;
   }
@@ -43,7 +43,7 @@ export class UsersService {
   }
 
   // Email 값을 이용한 User 정보 가져오기
-  async getByEmail(userId: string) {
+  async getByUserId(userId: string) {
     const user = this.userRepository.findOne({ where: { userId: userId } });
 
     if (user) {

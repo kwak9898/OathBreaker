@@ -77,7 +77,9 @@ export class User {
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
-    this.password = await bcrypt.hash(this.password, 12);
+    const test = (this.password = await bcrypt.hash(this.password, 12));
+
+    console.log(test);
   }
 
   @BeforeUpdate()
