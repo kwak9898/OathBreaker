@@ -30,7 +30,7 @@ export class AuthController {
     // 쿠키 저장을 위한 res 생성
     const user = req.user;
     const { accessToken, ...accessOption } =
-      await this.authService.getCookieWithJwtAccessToken(user.id);
+      this.authService.getCookieWithJwtAccessToken(user.id);
 
     const { refreshToken, ...refreshOption } =
       this.authService.getCookieWithJwtRefreshToken(user.id);

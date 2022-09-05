@@ -38,12 +38,25 @@ export class AuthService {
   //   };
   // }
 
+  // 회원가입
   async register(user: User) {
     const hashedPassword = await hash(user.password, 12);
     try {
       const { password, ...returnUser } = await this.usersService.createUser({
         ...user,
         password: hashedPassword,
+        hashPassword: function (): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        updateDate: function (): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        setEncryptPassword: function (password: string): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        comparePw: function (attempt: string): Promise<boolean> {
+          throw new Error("Function not implemented.");
+        },
       });
 
       return returnUser;
