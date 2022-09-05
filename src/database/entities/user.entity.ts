@@ -15,7 +15,6 @@ export class User {
     comment: "회원 아이디",
   })
   userId: string;
-
   @Exclude({ toPlainOnly: true })
   @Column("character varying", {
     name: "password",
@@ -24,7 +23,6 @@ export class User {
     select: false,
   })
   password: string | null;
-
   @Column("character varying", {
     name: "jwt_token",
     comment: "jwt refresh token",
@@ -32,28 +30,24 @@ export class User {
     select: false,
   })
   jwtToken: string | null;
-
   @Column("character varying", {
     name: "username",
     comment: "관리자 이름",
     nullable: true,
   })
   username: string | null;
-
   @Column("character varying", {
     name: "team",
     comment: "소속",
     nullable: true,
   })
   team: string | null;
-
   @Column("character varying", {
     name: "role_name",
     comment: "역할",
     nullable: true,
   })
   roleName: string | null;
-
   @Column("timestamp without time zone", {
     name: "created_at",
     comment: "생성일",
@@ -61,7 +55,6 @@ export class User {
     default: () => "CURRENT_TIMESTAMP",
   })
   createdAt: Date | null;
-
   @Column("timestamp without time zone", {
     name: "updated_at",
     comment: "수정일",
@@ -69,14 +62,12 @@ export class User {
     default: () => "CURRENT_TIMESTAMP",
   })
   updatedAt: Date | null;
-
   @Column("timestamp without time zone", {
     name: "deleted_at",
     comment: "삭제일",
     nullable: true,
   })
   deletedAt: Date | null;
-
   @Column("timestamp without time zone", {
     name: "last_access_at",
     comment: "최근 접속일",
