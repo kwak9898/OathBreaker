@@ -125,11 +125,13 @@ export class AuthService {
       }
 
       await user.setEncryptPassword(password);
-      await this.usersService.updateByUser(userId, password);
+      await this.usersService.updateByUser(user);
 
       return user;
     } catch (err) {
-      console.log(err);
+      if (err) {
+        throw new HttpException("잘못된 경로입니다.", HttpStatus.BAD_REQUEST);
+      }
       return err;
     }
   }
