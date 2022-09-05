@@ -118,6 +118,12 @@ export class AuthService {
     };
   }
 
+  async changePassword(userId: string) {
+    const user = this.usersService.findOne(userId);
+
+    return user;
+  }
+
   private async verifyPassword(
     plainTextPassword: string,
     hashedPassword: string
