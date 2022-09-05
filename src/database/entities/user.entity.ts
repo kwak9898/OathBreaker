@@ -77,6 +77,13 @@ export class User {
   })
   deletedAt: Date | null;
 
+  @Column("timestamp without time zone", {
+    name: "last_access_data",
+    comment: "최근 접속일",
+    nullable: true,
+  })
+  LastAccessDate: Date | null;
+
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     this.password = await bcrypt.hash(this.password, 12);
