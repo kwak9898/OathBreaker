@@ -26,18 +26,6 @@ export class AuthService {
     }
   }
 
-  // async login(user: User) {
-  //   const payload = { userId: user.userId, userName: user.username };
-  //   const token = this.jwtService.sign(payload);
-  //   return {
-  //     token: token,
-  //     domain: "localhost",
-  //     path: "/",
-  //     httpOnly: true,
-  //     maxAge: Number(this.configService.get("JWT_EXPIRATION_TIME")) * 1000,
-  //   };
-  // }
-
   // 회원가입
   async register(user: User) {
     const hashedPassword = await hash(user.password, 12);
