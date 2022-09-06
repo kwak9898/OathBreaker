@@ -2,7 +2,7 @@ import { AuthService } from "./auth.service";
 import {
   Body,
   Controller,
-  Get,
+  Get, Patch,
   Post,
   Req,
   Res,
@@ -81,6 +81,18 @@ export class AuthController {
       this.authService.getCookieWithJwtAccessToken(user.userId);
 
     res.cookie("Authentication", accessToken, accessOption);
+    return user;
+  }
+
+  @Public()
+  @Patch()
+  async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
+    const user = req.user;
+    const { accessToken, ...accessOption } = this.authService.getCookieWithJwtAccessToken(user.userId)
+
+    await this.authService.changePassword(user.userId, user.password, user);
+
+    res.cookie("Authenticaion", accessToken, accessOption);
     return user;
   }
 }

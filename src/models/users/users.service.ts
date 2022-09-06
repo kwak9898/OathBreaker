@@ -101,6 +101,7 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
+  // 유저 삭제
   async deleteByUser(userId: string) {
     return await this.userRepository.delete(userId);
   }
