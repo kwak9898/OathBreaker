@@ -7,13 +7,13 @@ import { AuthService } from "../models/auth/auth.service";
 export class LocalStrategy extends PassportStrategy(Strategy, "local") {
   constructor(private authService: AuthService) {
     super({
-      usernameField: "email",
+      usernameField: "userId",
     });
   }
 
   // 인증 전략 구현
-  async validate(email: string, password: string): Promise<any> {
-    const user = this.authService.validateUser(email, password);
+  async validate(userId: string, password: string): Promise<any> {
+    const user = this.authService.validateUser(userId, password);
 
     // 유저가 일치하지 않으면
     if (!user) {
