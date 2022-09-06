@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../../database/entities/user.entity";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
+import {count} from "rxjs";
 
 @Injectable()
 export class UsersService {
@@ -98,5 +99,9 @@ export class UsersService {
   async updateByUser(user: User): Promise<User> {
     user.updatedAt = new Date();
     return await this.userRepository.save(user);
+  }
+
+  async deleteByUser(userId: string) {
+    return await this.userRepository.delete(userId);
   }
 }
