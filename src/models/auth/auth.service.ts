@@ -59,8 +59,8 @@ export class AuthService {
   }
 
   // Access Token 발급
-  getCookieWithJwtAccessToken(id: number) {
-    const payload = { id };
+  getCookieWithJwtAccessToken(userId: string) {
+    const payload = { userId };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get("JWT_ACCESS_TOKEN_SECRET"),
       expiresIn: `${this.configService.get(
@@ -80,8 +80,8 @@ export class AuthService {
   }
 
   // Refresh Token 발급
-  getCookieWithJwtRefreshToken(id: number) {
-    const payload = { id };
+  getCookieWithJwtRefreshToken(userId: string) {
+    const payload = { userId };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get("JWT_REFRESH_TOKEN_SECRET"),
       expiresIn: `${this.configService.get(
