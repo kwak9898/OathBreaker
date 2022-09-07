@@ -27,7 +27,7 @@ export class UsersService {
   }
 
   // 유저 생성
-  async createUser(user?: User): Promise<User> {
+  async createUser(user: User): Promise<User> {
     const createUser: User = this.userRepository.create(user);
     await this.userRepository.save(createUser);
     return createUser;
