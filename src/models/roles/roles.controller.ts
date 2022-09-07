@@ -49,5 +49,6 @@ export class RolesController {
 
     res.cookie("Authentication", accessToken, accssOption);
     res.cookie("Refresh", refreshToken, refreshOption);
+    res.json({ user });
   }
 }
