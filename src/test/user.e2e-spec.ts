@@ -30,7 +30,7 @@ describe("유저 테스트", () => {
     await getConnection().dropDatabase();
     await getConnection().synchronize(true);
   });
-  describe("회원가입 테스트", async () => {
+  describe("회원가입 테스트", () => {
     it("회원가입 성공", async () => {
       const { body } = await request(app.getHttpServer()).post(
         `${domain}/user`
