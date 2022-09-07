@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
@@ -26,7 +26,26 @@ export class RolesController {
       this.authService.getCookieWithJwtRefreshToken(user.userId);
 
     await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
-    await this.rolesService.createRoles(user.roleName, user.userId);
+    await this.rolesService.createRole(user.roleName, user.userId);
+
+    res.cookie("Authentication", accessToken, accssOption);
+    res.cookie("Refresh", refreshToken, refreshOption);
+  }
+
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Get("get-user-role")
+  async getByUserRole(@Req() req, @Res({ passthrough: true }) res: Response) {
+    const user = req.user;
+
+    const { accessToken, ...accssOption } =
+      this.authService.getCookieWithJwtAccessToken(user.userId);
+
+    const { refreshToken, ...refreshOption } =
+      this.authService.getCookieWithJwtRefreshToken(user.userId);
+
+    await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
+    await this.rolesService.getByUserRole(user.userId, user.roleName);
 
     res.cookie("Authentication", accessToken, accssOption);
     res.cookie("Refresh", refreshToken, refreshOption);

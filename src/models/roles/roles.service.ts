@@ -15,7 +15,7 @@ export class RolesService {
   ) {}
 
   // 역할 생성 함수
-  async createRoles(roles: string, userId: string) {
+  async createRole(userId: string, roles: string): Promise<User> {
     const user = await this.usersService.getByUserId(userId);
 
     if (!user) {
@@ -28,5 +28,23 @@ export class RolesService {
     }
 
     return user;
+  }
+
+  // 역할 조회 함수
+  async getByUserRole(userId: string, roles: string): Promise<User> {
+    const user = await this.usersService.getByUserId(userId);
+
+    if (!user) {
+      throw new HttpException(
+        "존재하지 않는 유저입니다.",
+        HttpStatus.NOT_FOUND
+      );
+    } else {
+      await this.usersRepository.findOne({
+        where: { userId: userId, roleName: roles },
+      });
+    }
+
+    return;
   }
 }
