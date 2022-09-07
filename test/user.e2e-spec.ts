@@ -1,11 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getConnection } from "typeorm";
-import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "./../src/app.module";
+import { UsersService } from "../src/models/users/users.service";
+import { User } from "../src/database/entities/user.entity";
+import { AuthService } from "../src/models/auth/auth.service";
+import { RolesService } from "../src/models/roles/roles.service";
+import * as request from "supertest";
 
 describe("유저 테스트", () => {
   let app: INestApplication;
+  let usersRepository: User;
+  let usersService: UsersService;
+  let authService: AuthService;
+  let rolesService: RolesService;
+  let date: Date;
+  let token;
+  const domain = "localhost:3000";
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,11 +28,10 @@ describe("유저 테스트", () => {
     await getConnection().dropDatabase();
     await getConnection().synchronize(true);
   });
-
-  it("/ (GET)", () => {
-    return request(app.getHttpServer())
-      .get("/")
-      .expect(200)
-      .expect("Hello World!");
+  describe("회원가입 테스트", async () => {
+    it("회원가입 성공", async () => {
+      const { body } = await request(app.getHttpServer()).get(`${domain}/user`);
+      expect(body).toEqual(HttpStatus.OK);
+    });
   });
 });
