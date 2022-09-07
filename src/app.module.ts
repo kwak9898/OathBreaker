@@ -8,6 +8,7 @@ import { JwtAuthGuard } from "./guards/auth/jwtAuth.guard";
 import { DatabaseModule } from "./database/database.module";
 import { ConfigModule } from "@nestjs/config";
 import * as Joi from "@hapi/joi";
+import { RolesModule } from "./models/roles/roles.module";
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import * as Joi from "@hapi/joi";
     }),
     UsersModule,
     AuthModule,
+    RolesModule,
     DatabaseModule,
   ],
   controllers: [AppController],
