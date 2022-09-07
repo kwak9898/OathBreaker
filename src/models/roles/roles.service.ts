@@ -3,15 +3,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../database/entities/user.entity";
 import { UsersService } from "../users/users.service";
-import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
     private usersService: UsersService,
-    private authService: AuthService
+    @InjectRepository(User)
+    private usersRepository: Repository<User>
   ) {}
 
   // 역할 생성 함수
@@ -46,5 +44,13 @@ export class RolesService {
     }
 
     return;
+  }
+
+  // 역할 수정
+  async updateByUserRole(user: User, roles: string) {
+    user.updatedAt = new Date();
+    return await this.usersRepository.update(user.roleName, {
+      roleName: roles,
+    });
   }
 }

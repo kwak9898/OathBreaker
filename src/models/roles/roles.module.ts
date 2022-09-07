@@ -5,15 +5,17 @@ import { UsersModule } from "../users/users.module";
 import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
-import { LocalStrategy } from "../../strategies/local.strategy";
-import { JwtStrategy } from "../../strategies/jwt.strategy";
-import { JwtRefreshStrategy } from "../../strategies/jwtRefresh.strategy";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "../../database/entities/user.entity";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
   imports: [
     UsersModule,
+    AuthModule,
     PassportModule,
     ConfigModule,
+    TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -27,7 +29,7 @@ import { JwtRefreshStrategy } from "../../strategies/jwtRefresh.strategy";
       }),
     }),
   ],
-  providers: [RolesService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
+  providers: [RolesService],
   exports: [RolesService, JwtModule],
   controllers: [RolesController],
 })

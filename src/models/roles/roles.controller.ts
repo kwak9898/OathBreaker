@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Patch,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
 import { Response } from "express";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
@@ -50,5 +60,25 @@ export class RolesController {
     res.cookie("Authentication", accessToken, accssOption);
     res.cookie("Refresh", refreshToken, refreshOption);
     res.json({ user });
+  }
+
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Patch("update-user-role")
+  async updateByUserRole(
+    @Req() req,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const user = req.user;
+
+    if (!user) {
+      throw new HttpException(
+        "존재하지 않는 유저입니다.",
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    await this.rolesService.updateByUserRole(user, user.roleName);
+    return user;
   }
 }
