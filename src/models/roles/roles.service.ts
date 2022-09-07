@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../database/entities/user.entity";
@@ -14,8 +14,19 @@ export class RolesService {
     private authService: AuthService
   ) {}
 
-  // 관리자인지 등록자인지의 역할 관련 함수
-  async rolesName() {
-    return;
+  // 역할 생성 함수
+  async createRoles(roles: string, userId: string) {
+    const user = await this.usersService.getByUserId(userId);
+
+    if (!user) {
+      throw new HttpException(
+        "존재하지 않는 유저입니다.",
+        HttpStatus.NOT_FOUND
+      );
+    } else {
+      await this.usersRepository.save({ roleName: roles });
+    }
+
+    return user;
   }
 }
