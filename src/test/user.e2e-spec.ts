@@ -30,8 +30,16 @@ describe("유저 테스트", () => {
   });
   describe("회원가입 테스트", async () => {
     it("회원가입 성공", async () => {
-      const { body } = await request(app.getHttpServer()).get(`${domain}/user`);
+      const { body } = await request(app.getHttpServer()).post(
+        `${domain}/user`
+      );
       expect(body).toEqual(HttpStatus.OK);
+    });
+
+    it("회원가입 시 비밀번호를 적지 않았을 때", async () => {
+      const { body } = await request(
+        app.getHttpServer().post(`${domain}/user`)
+      );
     });
   });
 });
