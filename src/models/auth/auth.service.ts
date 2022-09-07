@@ -20,7 +20,7 @@ export class AuthService {
       await this.verifyPassword(plainTextPassword, user.password);
       const { password, ...result } = user;
 
-      return user;
+      return result;
     } catch (err) {
       throw new HttpException("잘못된 인증입니다.", HttpStatus.BAD_REQUEST);
     }

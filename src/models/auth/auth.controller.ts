@@ -81,7 +81,7 @@ export class AuthController {
   }
 
   @Public()
-  @Patch()
+  @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = req.user;
     const { accessToken, ...accessOption } =
