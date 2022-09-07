@@ -51,7 +51,7 @@ export class AuthService {
     } catch (err) {
       if (err?.code === "ER_DUP_ENTRY") {
         throw new HttpException(
-          "이미 존재하는 이메일입니다.",
+          "이미 존재하는 아이디입니다..",
           HttpStatus.BAD_REQUEST
         );
       }

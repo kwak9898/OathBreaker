@@ -30,21 +30,16 @@ export class AuthController {
   async login(@Req() req, @Res({ passthrough: true }) res: Response) {
     // 쿠키 저장을 위한 res 생성
     const user = req.user;
-    console.log(user);
     const { accessToken, ...accessOption } =
       this.authService.getCookieWithJwtAccessToken(user.userId);
 
-    console.log("여기는 지나가려나?");
     const { refreshToken, ...refreshOption } =
       this.authService.getCookieWithJwtRefreshToken(user.userId);
 
-    console.log("여기는?");
     await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
 
-    console.log("여기는?2");
     res.cookie("Authentication", accessToken, accessOption);
     res.cookie("Refresh", refreshToken, refreshOption);
-    console.log("여기는?3");
   }
 
   @Public()
