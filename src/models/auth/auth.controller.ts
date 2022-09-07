@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Patch,
   Post,
   Req,
@@ -83,13 +85,17 @@ export class AuthController {
   @Public()
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const user = req.user;
-    const { accessToken, ...accessOption } =
-      this.authService.getCookieWithJwtAccessToken(user.userId);
+    const user = await this.usersService.findOne(req.user.userId);
 
-    await this.authService.changePassword(user.userId, user.password, user);
+    if (!user) {
+      throw new HttpException(
+        "존재하지 않는 유저입니다.",
+        HttpStatus.NOT_FOUND
+      );
+    }
 
-    res.cookie("Authenticaion", accessToken, accessOption);
-    return user;
+    await this.authService.changePassword(user.userId, user.password);
+
+    return res.status(HttpStatus.OK).json(user);
   }
 }
