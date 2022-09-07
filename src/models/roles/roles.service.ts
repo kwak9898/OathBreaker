@@ -53,4 +53,15 @@ export class RolesService {
       roleName: roles,
     });
   }
+
+  // 역할 삭제
+  async deleteByUserRole(user: User, userId, roles: string) {
+    user.deletedAt = new Date();
+    return await this.usersRepository
+      .createQueryBuilder()
+      .delete()
+      .from(User)
+      .where("userId = :userId", { userId })
+      .execute();
+  }
 }
