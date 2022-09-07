@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../../database/entities/user.entity";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
-import {count} from "rxjs";
 
 @Injectable()
 export class UsersService {
