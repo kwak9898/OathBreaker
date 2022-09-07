@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getConnection } from "typeorm";
-import { HttpStatus, INestApplication } from "@nestjs/common";
-import { AppModule } from "./../src/app.module";
-import { UsersService } from "../src/models/users/users.service";
-import { User } from "../src/database/entities/user.entity";
-import { AuthService } from "../src/models/auth/auth.service";
-import { RolesService } from "../src/models/roles/roles.service";
+import { INestApplication } from "@nestjs/common";
+import { AppModule } from "../app.module";
+import { UsersService } from "../models/users/users.service";
+import { User } from "../database/entities/user.entity";
+import { AuthService } from "../models/auth/auth.service";
+import { RolesService } from "../models/roles/roles.service";
 import * as request from "supertest";
 
 describe("유저 테스트", () => {
@@ -15,6 +15,8 @@ describe("유저 테스트", () => {
   let authService: AuthService;
   let rolesService: RolesService;
   let date: Date;
+  let userId: string | undefined;
+  let password: string | undefined;
   let token;
   const domain = "localhost:3000";
 
@@ -33,13 +35,16 @@ describe("유저 테스트", () => {
       const { body } = await request(app.getHttpServer()).post(
         `${domain}/user`
       );
-      expect(body).toEqual(HttpStatus.OK);
+      userId = "test000";
+      password = "test1234@";
+      expect(body).toEqual(body["password"]);
     });
 
-    it("회원가입 시 비밀번호를 적지 않았을 때", async () => {
-      const { body } = await request(
-        app.getHttpServer().post(`${domain}/user`)
-      );
-    });
+    // it("회원가입 시 중복 된 아이디를 적었을 경우", async () => {
+    //   const { body } = await request(
+    //     app.getHttpServer().post(`${domain}/user`)
+    //   );
+    //   expect(body).toBeNull(body.password);
+    // });
   });
 });
