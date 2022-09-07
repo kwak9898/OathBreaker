@@ -1,4 +1,12 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post} from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "../../database/entities/user.entity";
 import { Public } from "../../dacorators/skipAuth.decorator";
@@ -31,7 +39,7 @@ export class UsersController {
   }
 
   @Public()
-  @Patch("change-password")
+  @Patch("delete-user")
   async deleteByUser(@Body() userId: string) {
     return await this.usersService.deleteByUser(userId);
   }
