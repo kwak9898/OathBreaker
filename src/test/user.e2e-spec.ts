@@ -16,9 +16,11 @@ describe("유저 테스트", () => {
   let rolesService: RolesService;
   let date: Date;
   let userId: string | undefined;
+  let username: string | undefined;
   let password: string | undefined;
   let token;
-  const domain = "/users";
+  const UserDomain = "/users";
+  const AuthDomain = "/auth";
   let databaseSource: DataSource;
 
   beforeEach(async () => {
@@ -50,18 +52,20 @@ describe("유저 테스트", () => {
     it("회원가입 성공", async () => {
       // Given
       userId = "test000";
+      username = "Tester";
       password = "test1234@";
 
       console.log("given");
       // When
       const { body } = await request(app.getHttpServer())
-        .post(domain)
-        .send({ userId: userId, password: password });
+        .post(`${AuthDomain}/register/`)
+        .send({ userId: userId, password: password, username: username });
       console.log(body);
       console.log("when");
 
       // Then
-      expect(body["password"]).toEqual(password);
+      expect(body["username"]).toEqual(username);
+      // expect(200).toEqual(body.status);
       console.log("then");
     });
 
