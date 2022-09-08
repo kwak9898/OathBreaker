@@ -17,6 +17,7 @@ import { User } from "./entities/user.entity";
         database: configService.get("DB_NAME"),
         entities: [User],
         synchronize: true,
+        name: "default",
       }),
     }),
   ],
