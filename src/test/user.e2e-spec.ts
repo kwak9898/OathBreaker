@@ -23,12 +23,16 @@ describe("유저 테스트", () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
+      providers: [UsersService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    await getConnection().dropDatabase();
-    await getConnection().synchronize(true);
+    // await Connection().dropDatabase();
+    // await Connection().synchronize(true);
+    const conn = getConnection("default");
+    await conn.dropDatabase();
+    await conn.synchronize(true);
   });
   describe("회원가입 테스트", () => {
     it("회원가입 성공", async () => {
@@ -48,3 +52,7 @@ describe("유저 테스트", () => {
     // });
   });
 });
+
+function getEntityManager() {
+  throw new Error("Function not implemented.");
+}
