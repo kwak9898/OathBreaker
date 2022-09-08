@@ -55,25 +55,14 @@ describe("유저 테스트", () => {
       username = "Tester";
       password = "test1234@";
 
-      console.log("given");
       // When
       const { body } = await request(app.getHttpServer())
         .post(`${AuthDomain}/register/`)
         .send({ userId: userId, password: password, username: username });
       console.log(body);
-      console.log("when");
 
       // Then
       expect(body["username"]).toEqual(username);
-      // expect(200).toEqual(body.status);
-      console.log("then");
     });
-
-    // it("회원가입 시 중복 된 아이디를 적었을 경우", async () => {
-    //   const { body } = await request(
-    //     app.getHttpServer().post(`${domain}/user`)
-    //   );
-    //   expect(body).toBeNull(body.password);
-    // });
   });
 });
