@@ -18,7 +18,7 @@ describe("유저 테스트", () => {
   let userId: string | undefined;
   let password: string | undefined;
   let token;
-  const domain = "localhost:3000";
+  const domain = "/users";
   let databaseSource: DataSource;
 
   beforeEach(async () => {
@@ -48,12 +48,21 @@ describe("유저 테스트", () => {
 
   describe("회원가입 테스트", () => {
     it("회원가입 성공", async () => {
-      const { body } = await request(app.getHttpServer()).post(
-        `${domain}/user`
-      );
+      // Given
       userId = "test000";
       password = "test1234@";
-      expect(body).toEqual(body["password"]);
+
+      console.log("given");
+      // When
+      const { body } = await request(app.getHttpServer())
+        .post(domain)
+        .send({ userId: userId, password: password });
+      console.log(body);
+      console.log("when");
+
+      // Then
+      expect(body["password"]).toEqual(password);
+      console.log("then");
     });
 
     // it("회원가입 시 중복 된 아이디를 적었을 경우", async () => {
