@@ -1,6 +1,5 @@
 import { AuthService } from "./auth.service";
 import {
-  Body,
   Controller,
   Get,
   HttpException,
@@ -15,7 +14,6 @@ import { Response } from "express";
 import { LocalAuthGuard } from "../../guards/auth/localAuth.guard";
 import { JwtAuthGuard } from "../../guards/auth/jwtAuth.guard";
 import { Public } from "../../dacorators/skipAuth.decorator";
-import { User } from "../../database/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "../../guards/jwtRefresh.guard";
 
@@ -64,11 +62,11 @@ export class AuthController {
     return req.user;
   }
 
-  @Public()
-  @Post("register")
-  async register(@Body() user: User): Promise<any> {
-    return this.authService.register(user);
-  }
+  // @Public()
+  // @Post("register")
+  // async register(@Body() user: User): Promise<any> {
+  //   return this.authService.register(user);
+  // }
 
   @Public()
   @UseGuards(JwtRefreshGuard)
