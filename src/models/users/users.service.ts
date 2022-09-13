@@ -65,7 +65,7 @@ export class UsersService {
 
   // Id 값을 이용한 Refresh Token 유효한지 확인
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
-    const user = await this.getById(userId);
+    const user = await this.getByUserId(userId);
 
     const isRefreshTokenMatching = await compare(refreshToken, user.jwtToken);
 
