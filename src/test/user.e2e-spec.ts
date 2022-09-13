@@ -48,8 +48,8 @@ describe("유저 테스트", () => {
     await databaseSource.destroy();
   });
 
-  describe("회원가입 테스트", () => {
-    it("회원가입 성공", async () => {
+  describe("계정 생성 테스트", () => {
+    it("계정 생성 성공", async () => {
       // Given
       userId = "test000";
       username = "Tester";
@@ -57,7 +57,7 @@ describe("유저 테스트", () => {
 
       // When
       const { body } = await request(app.getHttpServer())
-        .post(`${AuthDomain}/register/`)
+        .post(`${UserDomain}`)
         .send({ userId: userId, password: password, username: username });
       console.log(body);
 
@@ -65,34 +65,50 @@ describe("유저 테스트", () => {
       expect(body["username"]).toEqual(username);
     });
 
-    it("회원가입 시 비밀번호를 안 적었을 경우", async () => {
+    it("계정 생성 시 비밀번호를 안 적을 경우", async () => {
       //Given
       userId = "Tester1";
       username = "Tester1";
 
       // When
       const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/register/`)
+        .post(`${UserDomain}`)
         .send({ userId: userId, username: username });
-      console.log(response);
+      console.log(response.status);
 
       // Then
       expect(response.status).toEqual(500);
     });
+  });
+  describe("계정 조회 테스트", () => {
+    it("여러 계정 조회", async () => {
+      const response = await request(app.getHttpServer()).get(`${UserDomain}`);
+      console.log("여러 계정 조회: ", response.body);
 
-    it("회원가입한 유저의 로그인", async () => {
+      expect(response.status).toEqual(200);
+    });
+
+    it("특정 계정 조회", async () => {
       // Given
-      userId = "test000";
-      password = "test1234@";
+      userId = "test134";
 
       // When
       const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/login/`)
-        .send({ userId: userId, password: password });
-      console.log(response);
+        .get(`${UserDomain}`)
+        .set({ userId: userId });
+      console.log("특정 계정 조회: ", response.body);
 
-      //Then
+      // Then
       expect(response.status).toEqual(200);
+      expect(response.body["userId"]).toEqual(userId);
+    });
+
+    it("특정 계정 수정", async () => {
+      userId = "test000";
+
+      const response = await request(app.getHttpServer()).patch(
+        `${UserDomain}`
+      );
     });
   });
 });
