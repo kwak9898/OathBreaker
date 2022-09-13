@@ -17,6 +17,7 @@ export class AuthService {
   async validateUser(userId: string, plainTextPassword: string): Promise<any> {
     try {
       const user = await this.usersService.getByUserId(userId);
+      console.log(user);
       await this.verifyPassword(plainTextPassword, user.password);
       const { password, ...result } = user;
 
@@ -130,7 +131,7 @@ export class AuthService {
     hashedPassword: string
   ) {
     const isPasswordMatch = await compare(plainTextPassword, hashedPassword);
-
+    console.log("verifyPassword", isPasswordMatch);
     if (!isPasswordMatch) {
       throw new HttpException("잘못된 인증입니다.", HttpStatus.BAD_REQUEST);
     }

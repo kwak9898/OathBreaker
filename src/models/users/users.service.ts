@@ -45,7 +45,7 @@ export class UsersService {
 
   // Email 값을 이용한 User 정보 가져오기
   async getByUserId(userId: string) {
-    const user = this.userRepository.findOne({ where: { userId: userId } });
+    const user = await this.userRepository.findOne({ where: { userId } });
 
     if (user) {
       return user;
