@@ -64,5 +64,35 @@ describe("유저 테스트", () => {
       // Then
       expect(body["username"]).toEqual(username);
     });
+
+    it("회원가입 시 비밀번호를 안 적었을 경우", async () => {
+      //Given
+      userId = "Tester1";
+      username = "Tester1";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .post(`${AuthDomain}/register/`)
+        .send({ userId: userId, username: username });
+      console.log(response);
+
+      // Then
+      expect(response.status).toEqual(500);
+    });
+
+    it("회원가입한 유저의 로그인", async () => {
+      // Given
+      userId = "test000";
+      password = "test1234@";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .post(`${AuthDomain}/login/`)
+        .send({ userId: userId, password: password });
+      console.log(response);
+
+      //Then
+      expect(response.status).toEqual(200);
+    });
   });
 });
