@@ -20,6 +20,7 @@ export class AuthService {
       console.log(user);
       await this.verifyPassword(plainTextPassword, user.password);
       const { password, ...result } = user;
+      console.log("비밀번호 유효성 검사", user.password, password, result);
 
       return result;
     } catch (err) {
@@ -133,7 +134,10 @@ export class AuthService {
     const isPasswordMatch = await compare(plainTextPassword, hashedPassword);
     console.log("verifyPassword", isPasswordMatch);
     if (!isPasswordMatch) {
-      throw new HttpException("잘못된 인증입니다.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        "비밀번호가 일치하지 않습니다.",
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 }
