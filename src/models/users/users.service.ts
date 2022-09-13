@@ -43,7 +43,7 @@ export class UsersService {
     });
   }
 
-  // Email 값을 이용한 User 정보 가져오기
+  // UserId 값을 이용한 User 정보 가져오기
   async getByUserId(userId: string) {
     const user = await this.userRepository.findOne({ where: { userId } });
 
@@ -55,19 +55,6 @@ export class UsersService {
         HttpStatus.NOT_FOUND
       );
     }
-  }
-
-  // 유저 ID 가져오기
-  async getById(userId: string) {
-    const user = await this.userRepository.findOne({
-      where: { userId: userId },
-    });
-
-    if (user) {
-      return user;
-    }
-
-    throw new HttpException("존재하지 않은 유저입니다.", HttpStatus.NOT_FOUND);
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장
