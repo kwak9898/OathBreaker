@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { User } from "../../database/entities/user.entity";
 import { JwtService } from "@nestjs/jwt";
-import { compare, hash } from "bcrypt";
+import { compare } from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 
 @Injectable()
@@ -27,25 +27,25 @@ export class AuthService {
   }
 
   // 회원가입
-  async register(user: User) {
-    const hashedPassword = await hash(user.password, 12);
-    try {
-      user.password = hashedPassword;
-
-      const { password, ...returnUser } = await this.usersService.createUser(
-        user
-      );
-
-      return returnUser;
-    } catch (err) {
-      if (err?.code === "ER_DUP_ENTRY") {
-        throw new HttpException(
-          "이미 존재하는 아이디입니다..",
-          HttpStatus.BAD_REQUEST
-        );
-      }
-    }
-  }
+  // async register(user: User) {
+  //   const hashedPassword = await hash(user.password, 12);
+  //   try {
+  //     user.password = hashedPassword;
+  //
+  //     const { password, ...returnUser } = await this.usersService.createUser(
+  //       user
+  //     );
+  //
+  //     return returnUser;
+  //   } catch (err) {
+  //     if (err?.code === "ER_DUP_ENTRY") {
+  //       throw new HttpException(
+  //         "이미 존재하는 아이디입니다..",
+  //         HttpStatus.BAD_REQUEST
+  //       );
+  //     }
+  //   }
+  // }
 
   // Access Token 발급
   getCookieWithJwtAccessToken(userId: string) {
