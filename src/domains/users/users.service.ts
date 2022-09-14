@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
@@ -18,7 +18,10 @@ export class UsersService {
 
   // 특정 유저 찾기
   findOne(userId: string): Promise<User> {
-    return this.userRepository.findOne({ where: { userId: userId } });
+    return this.userRepository.findOne({
+      where: { userId },
+      select: ["userId", "username", "roleName", "team", "password"],
+    });
   }
 
   // 유저 삭제
@@ -43,20 +46,6 @@ export class UsersService {
     });
   }
 
-  // UserId 값을 이용한 User 정보 가져오기
-  async getByUserId(userId: string) {
-    const user = await this.userRepository.findOne({ where: { userId } });
-
-    if (user) {
-      return user;
-    } else {
-      throw new HttpException(
-        "존재하지 않은 유저입니다.",
-        HttpStatus.NOT_FOUND
-      );
-    }
-  }
-
   // DB에 발급받은 Refresh Token 암호화 저장
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
     const jwtToken = await hash(refreshToken, 10); // refreshToken
@@ -65,7 +54,7 @@ export class UsersService {
 
   // Id 값을 이용한 Refresh Token 유효한지 확인
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
-    const user = await this.getByUserId(userId);
+    const user = await this.findOne(userId);
 
     const isRefreshTokenMatching = await compare(refreshToken, user.jwtToken);
 
