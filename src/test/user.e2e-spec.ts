@@ -68,54 +68,55 @@ describe("유저 테스트", () => {
       done();
     });
 
-    //   it("계정 생성 시 비밀번호를 안 적을 경우", async (done) => {
-    //     //Given
-    //     userId = "Tester1";
-    //     username = "Tester1";
-    //
-    //     // When
-    //     const response = await request(app.getHttpServer())
-    //       .post(`${UserDomain}`)
-    //       .send({ userId: userId, username: username });
-    //     console.log(response.status);
-    //
-    //     // Then
-    //     expect(response.status).toEqual(500);
-    //     done();
-    //   });
-  });
-
-  describe("계정 조회 테스트", () => {
-    it("여러 계정 조회", async (done) => {
-      const response = await request(app.getHttpServer()).get(`${UserDomain}`);
-      console.log("여러 계정 조회: ", response.body);
-
-      expect(response.status).toEqual(200);
-      done();
-    });
-
-    it("특정 계정 조회", async (done) => {
-      // Given
-      userId = "test000";
+    it("계정 생성 시 비밀번호를 안 적을 경우", async (done) => {
+      //Given
+      userId = "Tester1";
+      username = "Tester1";
 
       // When
       const response = await request(app.getHttpServer())
-        .get(`${UserDomain}`)
-        .set({ userId: userId });
-      console.log("특정 계정 조회: ", response.body);
+        .post(`${UserDomain}`)
+        .send({ userId: userId, username: username });
+      console.log(response.status);
 
       // Then
-      expect(response.status).toEqual(200);
-      expect(response.body["userId"]).toEqual(userId);
+      expect(response.status).toEqual(500);
+      expect(response.error).toThrowError();
       done();
     });
-
-    // it("특정 계정 수정", async () => {
-    //   userId = "test000";
-    //
-    //   const response = await request(app.getHttpServer()).patch(
-    //     `${UserDomain}`
-    //   );
-    // });
   });
+
+  // describe("계정 조회 테스트", () => {
+  //   it("여러 계정 조회", async (done) => {
+  //     const response = await request(app.getHttpServer()).get(`${UserDomain}`);
+  //     console.log("여러 계정 조회: ", response.body);
+  //
+  //     expect(response.status).toEqual(200);
+  //     done();
+  //   });
+  //
+  //   it("특정 계정 조회", async (done) => {
+  //     // Given
+  //     userId = "test000";
+  //
+  //     // When
+  //     const response = await request(app.getHttpServer())
+  //       .get(`${UserDomain}`)
+  //       .set({ userId: userId });
+  //     console.log("특정 계정 조회: ", response.body);
+  //
+  //     // Then
+  //     expect(response.status).toEqual(200);
+  //     expect(response.body["userId"]).toEqual(userId);
+  //     done();
+  //   });
+
+  // it("특정 계정 수정", async () => {
+  //   userId = "test000";
+  //
+  //   const response = await request(app.getHttpServer()).patch(
+  //     `${UserDomain}`
+  //   );
+  // });
+  // });
 });
