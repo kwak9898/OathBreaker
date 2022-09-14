@@ -11,11 +11,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { LocalAuthGuard } from "../../guards/auth/localAuth.guard";
-import { JwtAuthGuard } from "../../guards/auth/jwtAuth.guard";
-import { Public } from "../../dacorators/skipAuth.decorator";
+import { LocalAuthGuard } from "../../guards/local-auth.guard";
+import { JwtAuthGuard } from "../../guards/jwt-auth.guard";
+import { Public } from "../../dacorators/skip-auth.decorator";
 import { UsersService } from "../users/users.service";
-import { JwtRefreshGuard } from "../../guards/jwtRefresh.guard";
+import { JwtRefreshGuard } from "../../guards/jwt-refresh.guard";
 
 @Controller("auth")
 export class AuthController {

@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../../database/entities/user.entity";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {

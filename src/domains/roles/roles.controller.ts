@@ -10,11 +10,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
+import { RolesService } from "./roles.service";
+import { Public } from "../../dacorators/skip-auth.decorator";
+import { LocalAuthGuard } from "../../guards/local-auth.guard";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
-import { RolesService } from "./roles.service";
-import { Public } from "../../dacorators/skipAuth.decorator";
-import { LocalAuthGuard } from "../../guards/auth/localAuth.guard";
 
 @Controller("roles")
 export class RolesController {

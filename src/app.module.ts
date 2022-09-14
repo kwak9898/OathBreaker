@@ -1,14 +1,14 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { UsersModule } from "./models/users/users.module";
-import { AuthModule } from "./models/auth/auth.module";
 import { APP_GUARD } from "@nestjs/core";
-import { JwtAuthGuard } from "./guards/auth/jwtAuth.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { DatabaseModule } from "./database/database.module";
 import { ConfigModule } from "@nestjs/config";
 import * as Joi from "@hapi/joi";
-import { RolesModule } from "./models/roles/roles.module";
+import { UsersModule } from "./domains/users/users.module";
+import { AuthModule } from "./domains/auth/auth.module";
+import { RolesModule } from "./domains/roles/roles.module";
 
 @Module({
   imports: [

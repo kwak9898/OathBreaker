@@ -6,7 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { MgObject } from "./mgObject.entity";
+import { MgObject } from "../../mg-object/entities/mg-object.entity";
 
 @Index("mgo_image_pk", ["imgID"], { unique: true })
 @Index("mgo_image_img_id_uindex", ["imgId"], { unique: true })

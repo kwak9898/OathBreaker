@@ -8,8 +8,8 @@ import {
   Post,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { User } from "../../database/entities/user.entity";
-import { Public } from "../../dacorators/skipAuth.decorator";
+import { Public } from "../../dacorators/skip-auth.decorator";
+import { User } from "./entities/user.entity";
 
 @Controller("users")
 export class UsersController {

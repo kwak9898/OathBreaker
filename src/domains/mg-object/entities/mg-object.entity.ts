@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, Index, OneToMany } from "typeorm";
-import { MgoImage } from "./mgoImage.entity";
+import { MgoImage } from "../../mgo-image/entities/mgoImage.entity";
 
 @Index("mg_object_mg_id_uindex", ["mgId"], { unique: true })
 @Index("mg_object_pk", ["mgId"], { unique: true })

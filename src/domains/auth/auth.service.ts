@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
-import { User } from "../../database/entities/user.entity";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import { ConfigService } from "@nestjs/config";
+import { User } from "../users/entities/user.entity";
 
 @Injectable()
 export class AuthService {
