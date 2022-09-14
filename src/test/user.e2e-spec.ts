@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DataSource } from "typeorm";
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
 import { UsersService } from "../models/users/users.service";
 import { User } from "../database/entities/user.entity";
@@ -23,7 +23,7 @@ describe("유저 테스트", () => {
   const AuthDomain = "/auth";
   let databaseSource: DataSource;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -41,6 +41,10 @@ describe("유저 테스트", () => {
     });
     await databaseSource.initialize();
     await databaseSource.synchronize(true);
+
+    token = moduleFixture
+      .get<AuthService>(AuthService)
+      .getCookieWithJwtAccessToken(userId);
   });
 
   // afterAll(async () => {
@@ -50,7 +54,7 @@ describe("유저 테스트", () => {
   //   // server.close();
   // });
 
-  describe("계정 생성 테스트", () => {
+  describe("계정 생성/조회/수정/삭제 테스트", () => {
     it("계정 생성 성공", async (done) => {
       // Given
       userId = "test000";
@@ -60,63 +64,58 @@ describe("유저 테스트", () => {
       // When
       const { body } = await request(app.getHttpServer())
         .post(`${UserDomain}`)
-        .send({ userId: userId, password: password, username: username });
-      console.log(body);
+        .send({ userId, password, username });
+      console.log("계정 생성: ", body);
 
       // Then
       expect(body["username"]).toEqual(username);
       done();
     });
 
-    it("계정 생성 시 비밀번호를 안 적을 경우", async (done) => {
-      //Given
-      userId = "Tester1";
-      username = "Tester1";
+    it("계정 조회 테스트", async (done) => {
+      // Given
+
+      // When
+      const response = await request(app.getHttpServer()).get(`${UserDomain}/`);
+      console.log("계정 조회 테스트", response.body);
+
+      // Then
+      expect(response.status).toEqual(HttpStatus.OK);
+      done();
+    });
+
+    it("계정 수정 테스트", async (done) => {
+      // Given
+      userId = "test001";
+      username = "55";
 
       // When
       const response = await request(app.getHttpServer())
-        .post(`${UserDomain}`)
-        .send({ userId: userId, username: username });
-      console.log(response.status);
+        .patch(`${UserDomain}/update-user`)
+        .set("Authentication", "Bearer " + token)
+        .send({ userId, username });
+      console.log("계정 수정 테스트: ", response.body);
 
       // Then
-      expect(response.status).toEqual(500);
-      expect(response.error).toThrowError();
+      expect(response.body[userId]).toEqual(userId);
+      expect(response.body[username]).toEqual(username);
+      done();
+    });
+
+    it("계정 삭제 테스트", async (done) => {
+      // Given
+      userId = "test000";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .delete(`${UserDomain}/${userId}`)
+        .set({ userId });
+      console.log("계정 삭제 테스트: ", response.body);
+
+      // Then
+      expect(response.status).toEqual(HttpStatus.OK);
+      expect(response.body).toBeNull();
       done();
     });
   });
-
-  // describe("계정 조회 테스트", () => {
-  //   it("여러 계정 조회", async (done) => {
-  //     const response = await request(app.getHttpServer()).get(`${UserDomain}`);
-  //     console.log("여러 계정 조회: ", response.body);
-  //
-  //     expect(response.status).toEqual(200);
-  //     done();
-  //   });
-  //
-  //   it("특정 계정 조회", async (done) => {
-  //     // Given
-  //     userId = "test000";
-  //
-  //     // When
-  //     const response = await request(app.getHttpServer())
-  //       .get(`${UserDomain}`)
-  //       .set({ userId: userId });
-  //     console.log("특정 계정 조회: ", response.body);
-  //
-  //     // Then
-  //     expect(response.status).toEqual(200);
-  //     expect(response.body["userId"]).toEqual(userId);
-  //     done();
-  //   });
-
-  // it("특정 계정 수정", async () => {
-  //   userId = "test000";
-  //
-  //   const response = await request(app.getHttpServer()).patch(
-  //     `${UserDomain}`
-  //   );
-  // });
-  // });
 });
