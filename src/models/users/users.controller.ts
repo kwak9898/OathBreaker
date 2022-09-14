@@ -38,9 +38,13 @@ export class UsersController {
     return user;
   }
 
-  @Public()
-  @Patch("delete-user")
-  async deleteByUser(@Body() userId: string) {
+  @Patch("update-user")
+  async updateByUser(@Body() user: User): Promise<User> {
+    return await this.usersService.updateByUser(user);
+  }
+
+  @Delete(":userId")
+  async deleteByUser(@Param() userId: string) {
     return await this.usersService.deleteByUser(userId);
   }
 }
