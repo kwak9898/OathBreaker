@@ -2,11 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataSource } from "typeorm";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
-import { UsersService } from "../models/users/users.service";
-import { User } from "../database/entities/user.entity";
-import { AuthService } from "../models/auth/auth.service";
-import { RolesService } from "../models/roles/roles.service";
 import * as request from "supertest";
+import { User } from "../domains/users/entities/user.entity";
+import { UsersService } from "../domains/users/users.service";
+import { AuthService } from "../domains/auth/auth.service";
+import { RolesService } from "../domains/roles/roles.service";
 
 describe("유저 테스트", () => {
   let app: INestApplication;
