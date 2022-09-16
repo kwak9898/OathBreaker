@@ -82,10 +82,23 @@ export class UsersService {
   }
 
   // 유저 없데이트
-  async updateByUser(user: User): Promise<User> {
-    user.updatedAt = new Date();
-    return await this.userRepository.save(user);
-  }
+  // async updateByUser(user: User): Promise<User> {
+  //   user.updatedAt = new Date();
+  //   const userId = user.userId;
+  //   const existUser = await this.userRepository.findOne({
+  //     where: { userId },
+  //     select: ["userId", "username", "password", "roleName", "team"],
+  //   });
+  //
+  //   if (!existUser) {
+  //     throw new HttpException(
+  //       "존재하지 않는 유저입니다.",
+  //       HttpStatus.NOT_FOUND
+  //     );
+  //   }
+  //
+  //   return await this.userRepository.save(user);
+  // }
 
   // 유저 삭제
   async deleteByUser(userId: string) {
