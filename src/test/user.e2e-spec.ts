@@ -86,7 +86,7 @@ describe("유저 테스트", () => {
 
     it("계정 삭제 테스트", async (done) => {
       // Given
-      userId = "test001";
+      userId = "test000";
 
       // When
       const response = await request(app.getHttpServer())
