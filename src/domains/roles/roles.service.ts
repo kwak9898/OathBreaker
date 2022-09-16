@@ -59,7 +59,7 @@ export class RolesService {
     user.deletedAt = new Date();
     return await this.usersRepository
       .createQueryBuilder()
-      .delete()
+      .delete(roles)
       .from(User)
       .where("userId = :userId", { userId })
       .execute();

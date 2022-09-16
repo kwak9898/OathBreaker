@@ -25,8 +25,9 @@ export class UsersService {
   }
 
   // 유저 삭제
-  async remove(userId: string): Promise<void> {
-    const deleteUser = await this.userRepository.delete(userId);
+  async remove(user: User): Promise<void> {
+    user.deletedAt = new Date();
+    const deleteUser = await this.userRepository.delete(user.userId);
 
     if (!deleteUser) {
       throw new HttpException(
