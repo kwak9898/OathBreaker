@@ -12,8 +12,10 @@ export class UsersService {
   ) {}
 
   // 모든 유저 찾기
-  findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(): Promise<User[]> {
+    // const roleName = await this.userRepository.findOne({where: {roleName: }})
+    const findUser = await this.userRepository.find();
+    return findUser;
   }
 
   // 특정 유저 찾기
