@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
@@ -35,36 +35,16 @@ export class UsersService {
     const existUser = await this.userRepository.findOne({
       where: { userId: "register12345" },
     });
-<<<<<<< HEAD
 
-    if (existUser != null) {
+    if (existUser !== null) {
       throw new HttpException(
-        "이미 존재하는 아이디입니다.",
+        "이미 존재하는 아이디 입니다.",
         HttpStatus.BAD_REQUEST
       );
     }
 
     return await this.userRepository.save(createUser);
   }
-=======
->>>>>>> acb1f7284f5d2ff2a45613df6cb98172de92c8c6
-
-    if (existUser != null) {
-      throw new BadRequestException("이미 ~~ ");
-    }
-
-    return await this.userRepository.save(createUser);
-  }
-
-  // 특정 사용자 이름 찾기
-  // async findByUserName(
-  //   userId: string,
-  //   username: string
-  // ): Promise<User | undefined> {
-  //   return this.userRepository.findOne({
-  //     where: { userId: userId, username: username },
-  //   });
-  // }
 
   // DB에 발급받은 Refresh Token 암호화 저장
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
@@ -95,10 +75,5 @@ export class UsersService {
     user.updatedAt = new Date();
 
     return await this.userRepository.save(user);
-  }
-
-  // 유저 삭제
-  async deleteByUser(userId: string) {
-    return await this.userRepository.delete(userId);
   }
 }
