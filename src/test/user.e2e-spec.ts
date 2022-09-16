@@ -88,22 +88,22 @@ describe("유저 테스트", () => {
       done();
     });
 
-    // it("계정 삭제 테스트", async (done) => {
-    //   // Given
-    //   userId = "test000";
-    //
-    //   // When
-    //   const response = await request(app.getHttpServer())
-    //     .delete(`${UserDomain}/${userId}`)
-    //     .auth(token, { type: "bearer" })
-    //     .set({ userId });
-    //
-    //   console.log("계정 삭제 테스트: ", response);
-    //   console.log("토큰값 : ", token);
-    //
-    //   // Then
-    //   expect(response.status).toEqual(HttpStatus.OK);
-    //   done();
-    // });
+    it("계정 삭제 테스트", async (done) => {
+      // Given
+      userId = "test000";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .delete(`${UserDomain}/${userId}`)
+        .auth(token, { type: "bearer" })
+        .set({ userId });
+
+      console.log("계정 삭제 테스트: ", response);
+      console.log("토큰값 : ", token);
+
+      // Then
+      expect(response.status).toEqual(HttpStatus.OK);
+      done();
+    });
   });
 });
