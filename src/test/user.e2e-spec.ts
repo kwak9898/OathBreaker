@@ -63,7 +63,7 @@ describe("유저 테스트", () => {
 
       // When
       const { body } = await request(app.getHttpServer())
-        .post(`${UserDomain}`)
+        .post(`${AuthDomain}`)
         .send({ userId, password, username });
       console.log("계정 생성: ", body);
 
