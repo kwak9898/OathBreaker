@@ -29,25 +29,16 @@ export class AuthService {
   }
 
   // 회원가입
-  // async register(user: User) {
-  //   const hashedPassword = await hash(user.password, 12);
-  //   try {
-  //     user.password = hashedPassword;
-  //
-  //     const { password, ...returnUser } = await this.usersService.createUser(
-  //       user
-  //     );
-  //
-  //     return returnUser;
-  //   } catch (err) {
-  //     if (err?.code === "ER_DUP_ENTRY") {
-  //       throw new HttpException(
-  //         "이미 존재하는 아이디입니다..",
-  //         HttpStatus.BAD_REQUEST
-  //       );
-  //     }
-  //   }
-  // }
+  async register(user: User) {
+    const { password, ...returnUser } = await this.usersService.createUser(
+      user
+    );
+
+    console.log("회원가입 성공 유저", returnUser);
+    console.log("회원가입 성공 유저의 비밀번호", password);
+
+    return returnUser;
+  }
 
   // Access Token 발급
   getCookieWithJwtAccessToken(userId: string) {

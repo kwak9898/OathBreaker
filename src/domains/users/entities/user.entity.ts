@@ -13,8 +13,10 @@ export class User {
   @PrimaryColumn("character varying", {
     name: "user_id",
     comment: "회원 아이디",
+    unique: true,
   })
   userId: string;
+
   @Exclude({ toPlainOnly: true })
   @Column("character varying", {
     name: "password",
