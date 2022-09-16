@@ -33,7 +33,7 @@ export class UsersService {
   async createUser(user: User): Promise<User> {
     const createUser: User = this.userRepository.create(user);
     const existUser = await this.userRepository.findOne({
-      where: { userId: "register12345" },
+      where: { userId: user.userId },
     });
 
     if (existUser !== null) {
@@ -64,8 +64,8 @@ export class UsersService {
   }
 
   // Refresh Token 초기화
-  async removeRefreshToken(id: number) {
-    return this.userRepository.update(id, {
+  async removeRefreshToken(userId: string) {
+    return this.userRepository.update(userId, {
       jwtToken: null,
     });
   }

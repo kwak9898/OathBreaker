@@ -44,7 +44,6 @@ export class AuthController {
     res.cookie("Refresh", refreshToken, refreshOption);
   }
 
-  @Public()
   @UseGuards(JwtRefreshGuard)
   @Post("logout")
   async logOut(@Req() req, @Res({ passthrough: true }) res: Response) {
@@ -70,7 +69,6 @@ export class AuthController {
     return this.authService.register(user);
   }
 
-  @Public()
   @UseGuards(JwtRefreshGuard)
   @Get("refresh")
   refresh(@Req() req, @Res({ passthrough: true }) res: Response) {
