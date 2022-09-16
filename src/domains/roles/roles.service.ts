@@ -55,13 +55,21 @@ export class RolesService {
   }
 
   // 역할 삭제
-  async deleteByUserRole(user: User, userId, roles: string) {
+  async deleteByUserRole(user: User) {
     user.deletedAt = new Date();
-    return await this.usersRepository
-      .createQueryBuilder()
-      .delete(roles)
-      .from(User)
-      .where("userId = :userId", { userId })
-      .execute();
+    const findUser = await this.usersRepository.findOne({
+      where: { userId: user.userId },
+    });
+
+    if (!findUser) {
+      throw new HttpException(
+        "존재하지 않는 유저입니다.",
+        HttpStatus.NOT_FOUND
+      );
+    } else {
+      await this.usersRepository.delete(user.roleName);
+    }
+
+    return user;
   }
 }
