@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { Controller, Delete, Get, Param } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { User } from "./entities/user.entity";
@@ -21,13 +21,6 @@ export class UsersController {
   @Delete(":userId")
   async remove(@Param() userId: string): Promise<void> {
     return this.usersService.remove(userId);
-  }
-
-  @Public()
-  @Post()
-  async createUser(@Body() user: User): Promise<User> {
-    await this.usersService.createUser(user);
-    return user;
   }
 
   @Delete(":userId")

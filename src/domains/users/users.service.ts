@@ -43,16 +43,6 @@ export class UsersService {
     return await this.userRepository.save(createUser);
   }
 
-  // 특정 사용자 이름 찾기
-  // async findByUserName(
-  //   userId: string,
-  //   username: string
-  // ): Promise<User | undefined> {
-  //   return this.userRepository.findOne({
-  //     where: { userId: userId, username: username },
-  //   });
-  // }
-
   // UserId 값을 이용한 User 정보 가져오기
   async getByUserId(userId: string) {
     const user = await this.userRepository.findOne({ where: { userId } });
