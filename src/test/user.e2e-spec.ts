@@ -96,7 +96,6 @@ describe("유저 테스트", () => {
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
-      expect(response.body).toBeNull();
       done();
     });
   });
