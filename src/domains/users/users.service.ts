@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
@@ -34,7 +34,10 @@ export class UsersService {
     });
 
     if (existUser != null) {
-      throw new BadRequestException("이미 ~~ ");
+      throw new HttpException(
+        "이미 존재하는 아이디입니다.",
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     return await this.userRepository.save(createUser);
