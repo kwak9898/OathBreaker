@@ -1,5 +1,6 @@
 import { AuthService } from "./auth.service";
 import {
+  Body,
   Controller,
   Get,
   HttpException,
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from "../../guards/jwt-auth.guard";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "../../guards/jwt-refresh.guard";
+import { User } from "../users/entities/user.entity";
 
 @Controller("auth")
 export class AuthController {
@@ -62,11 +64,11 @@ export class AuthController {
     return req.user;
   }
 
-  // @Public()
-  // @Post("register")
-  // async register(@Body() user: User): Promise<any> {
-  //   return this.authService.register(user);
-  // }
+  @Public()
+  @Post("register")
+  async register(@Body() user: User): Promise<any> {
+    return this.authService.register(user);
+  }
 
   @Public()
   @UseGuards(JwtRefreshGuard)

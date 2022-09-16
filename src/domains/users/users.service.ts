@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { compare, hash } from "bcrypt";
@@ -31,19 +31,16 @@ export class UsersService {
 
   // 유저 생성
   async createUser(user: User): Promise<User> {
-    try {
-      const createUser: User = this.userRepository.create(user);
+    const createUser: User = this.userRepository.create(user);
+    const existUser = await this.userRepository.findOne({
+      where: { userId: "register12345" },
+    });
 
-      await this.userRepository.save(createUser);
-      return createUser;
-    } catch (err) {
-      if (err?.code === "ER_DUP_ENTRY") {
-        throw new HttpException(
-          "이미 존재하는 이이디입니다.",
-          HttpStatus.BAD_REQUEST
-        );
-      }
+    if (existUser != null) {
+      throw new BadRequestException("이미 ~~ ");
     }
+
+    return await this.userRepository.save(createUser);
   }
 
   // 특정 사용자 이름 찾기
