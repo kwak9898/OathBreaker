@@ -64,8 +64,8 @@ describe("유저 테스트", () => {
       // When
       const { body } = await request(app.getHttpServer())
         .post(`${AuthDomain}/register`)
+        .auth(token, { type: "bearer" })
         .send({ userId, password, username });
-      console.log("계정 생성: ", body);
 
       // Then
       expect(body["username"]).toEqual(username);
@@ -76,27 +76,34 @@ describe("유저 테스트", () => {
       // Given
 
       // When
-      const response = await request(app.getHttpServer()).get(`${UserDomain}/`);
-      console.log("계정 조회 테스트", response.body);
-
-      // Then
-      expect(response.status).toEqual(HttpStatus.OK);
-      done();
-    });
-
-    it("계정 삭제 테스트", async (done) => {
-      // Given
-      userId = "test000";
-
-      // When
       const response = await request(app.getHttpServer())
-        .delete(`${UserDomain}/${userId}`)
-        .set({ userId });
-      console.log("계정 삭제 테스트: ", response.body);
+        .get(`${UserDomain}/`)
+        .auth(token, { type: "bearer" });
+
+      console.log("계정 조회 테스트", response);
+      console.log("토큰값 : ", token);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
       done();
     });
+
+    // it("계정 삭제 테스트", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .delete(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" })
+    //     .set({ userId });
+    //
+    //   console.log("계정 삭제 테스트: ", response);
+    //   console.log("토큰값 : ", token);
+    //
+    //   // Then
+    //   expect(response.status).toEqual(HttpStatus.OK);
+    //   done();
+    // });
   });
 });
