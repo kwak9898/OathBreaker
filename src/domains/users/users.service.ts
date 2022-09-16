@@ -26,7 +26,14 @@ export class UsersService {
 
   // 유저 삭제
   async remove(userId: string): Promise<void> {
-    await this.userRepository.delete(userId);
+    const deleteUser = await this.userRepository.delete(userId);
+
+    if (!deleteUser) {
+      throw new HttpException(
+        "존재하지 않는 유저입니다.",
+        HttpStatus.NOT_FOUND
+      );
+    }
   }
 
   // 유저 생성
