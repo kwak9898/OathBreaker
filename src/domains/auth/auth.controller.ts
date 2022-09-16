@@ -84,6 +84,7 @@ export class AuthController {
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.findOne(req.user.userId);
+    console.log(user);
 
     if (!user) {
       throw new HttpException(
@@ -92,8 +93,11 @@ export class AuthController {
       );
     }
 
-    await this.authService.changePassword(user.userId, user.password);
+    const changePw = await this.authService.changePassword(
+      user.userId,
+      user.password
+    );
 
-    return res.status(HttpStatus.OK).json(user);
+    return res.status(HttpStatus.OK).json(changePw);
   }
 }
