@@ -84,24 +84,6 @@ describe("유저 테스트", () => {
       done();
     });
 
-    it("계정 수정 테스트", async (done) => {
-      // Given
-      userId = "test001";
-      username = "55";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .patch(`${UserDomain}/update-user`)
-        .set("Authentication", "Bearer " + token)
-        .send({ userId, username });
-      console.log("계정 수정 테스트: ", response.body);
-
-      // Then
-      expect(response.body[userId]).toEqual(userId);
-      expect(response.body[username]).toEqual(username);
-      done();
-    });
-
     it("계정 삭제 테스트", async (done) => {
       // Given
       userId = "test001";
