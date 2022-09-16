@@ -28,9 +28,19 @@ export class UsersService {
 
   // 유저 생성
   async createUser(user: User): Promise<User> {
-    const createUser: User = this.userRepository.create(user);
-    await this.userRepository.save(createUser);
-    return createUser;
+    try {
+      const createUser: User = this.userRepository.create(user);
+
+      await this.userRepository.save(createUser);
+      return createUser;
+    } catch (err) {
+      if (err?.code === "ER_DUP_ENTRY") {
+        throw new HttpException(
+          "이미 존재하는 이이디입니다.",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
   }
 
   // 특정 사용자 이름 찾기
