@@ -65,5 +65,13 @@ describe("회원 인증 관련 테스트", () => {
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
     });
+
+    it("로그아웃 성공 테스트", async (done) => {
+      it.todo("추후 구현 예정");
+    });
+
+    it("비밀번호 변경 성공 테스트", async (done) => {
+      it.todo("추구 구현 예정");
+    });
   });
 });
