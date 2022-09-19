@@ -24,7 +24,7 @@ describe("유저 테스트", () => {
   let databaseSource: DataSource;
 
   beforeAll(async () => {
-    userId = "test000";
+    userId = "test1235";
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -59,17 +59,22 @@ describe("유저 테스트", () => {
     it("계정 생성 성공", async (done) => {
       // Given
 
+      userId = "test000";
       username = "Tester";
       password = "test1234@";
 
       // When
-      const { body } = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post(`${AuthDomain}/register`)
         .auth(token, { type: "bearer" })
         .send({ userId, password, username });
 
+      console.log("특정 계정 조회 테스트 : ", response.body);
+
       // Then
-      expect(body["username"]).toEqual(username);
+      expect(response.status).toEqual(HttpStatus.CREATED);
+      expect(response.body["userId"]).toEqual(userId);
+      expect(response.body["username"]).toEqual(username);
       done();
     });
 
@@ -81,24 +86,46 @@ describe("유저 테스트", () => {
         .get(`${UserDomain}/`)
         .auth(token, { type: "bearer" });
 
+      console.log("계정 전체 조회 테스트 : ", response.body);
+
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
       done();
     });
 
-    it("특정 계정 삭제 테스트", async (done) => {
+    it("특정 계정 조회 테스트", async (done) => {
       // Given
       userId = "test000";
 
       // When
       const response = await request(app.getHttpServer())
-        .delete(`${UserDomain}/${userId}`)
+        .get(`${UserDomain}/${userId}`)
         .auth(token, { type: "bearer" })
         .set({ userId });
 
+      console.log("특정 계정 조회 테스트 : ", response.body);
+
       // Then
+      expect(response.body["userId"]).toEqual(userId);
       expect(response.status).toEqual(HttpStatus.OK);
       done();
     });
+
+    // it("특정 계정 삭제 테스트", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .delete(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" })
+    //     .set({ userId });
+    //
+    //   console.log("특정 계정 삭제 테스트 : ", response.body);
+    //
+    //   // Then
+    //   expect(response.status).toEqual(HttpStatus.OK);
+    //   done();
+    // });
   });
 });
