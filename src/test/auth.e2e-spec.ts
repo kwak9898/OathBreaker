@@ -48,7 +48,7 @@ describe("회원 인증 관련 테스트", () => {
       .getCookieWithJwtAccessToken(userId).accessToken;
   });
 
-  describe("로그인, 로그아웃, 비밀번호 변경 테스트", () => {
+  describe("성공", () => {
     it("로그인 성공 테스트", async (done) => {
       // Given
       userId = "test000";
@@ -71,7 +71,21 @@ describe("회원 인증 관련 테스트", () => {
     });
 
     it("비밀번호 변경 성공 테스트", async (done) => {
-      it.todo("추구 구현 예정");
+      it.todo("추후 구현 예정");
+    });
+  });
+
+  describe("실패", () => {
+    it("로그인 실패 테스트", async (done) => {
+      it.todo("추후 구현 예정");
+    });
+
+    it("로그아웃 실패 테스트", async (done) => {
+      it.todo("추후 구현 예정");
+    });
+
+    it("비밀번호 변경 실패 테스트", async (done) => {
+      it.todo("추후 구현 예정");
     });
   });
 });
