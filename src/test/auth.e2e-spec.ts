@@ -8,7 +8,7 @@ import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
 import { RolesService } from "../domains/roles/roles.service";
 
-describe("유저 테스트", () => {
+describe("회원 인증 관련 테스트", () => {
   let app: INestApplication;
   let usersRepository: User;
   let usersService: UsersService;
@@ -48,76 +48,22 @@ describe("유저 테스트", () => {
       .getCookieWithJwtAccessToken(userId).accessToken;
   });
 
-  // afterAll(async () => {
-  //   //   await databaseSource.dropDatabase();
-  //   //   await databaseSource.destroy();
-  //   // await app.close();
-  //   // server.close();
-  // });
-
-  describe("계정 생성/조회/수정/삭제 테스트", () => {
-    it("계정 생성 성공", async (done) => {
+  describe("로그인, 로그아웃, 비밀번호 변경 테스트", () => {
+    it("로그인 성공 테스트", async (done) => {
       // Given
-
       userId = "test000";
-      username = "Tester";
-      password = "test1234@";
+      password = "test123@";
 
       // When
       const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/register`)
+        .post(`${AuthDomain}/login`)
         .auth(token, { type: "bearer" })
-        .send({ userId, password, username });
+        .send({ userId, password });
 
-      // Then
-      expect(response.status).toEqual(HttpStatus.CREATED);
-      expect(response.body["userId"]).toEqual(userId);
-      expect(response.body["username"]).toEqual(username);
-      done();
-    });
-
-    it("계정 전체 조회 테스트", async (done) => {
-      // Given
-
-      // When
-      const response = await request(app.getHttpServer())
-        .get(`${UserDomain}/`)
-        .auth(token, { type: "bearer" });
+      console.log(response.body);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
-      done();
-    });
-
-    it("특정 계정 조회 테스트", async (done) => {
-      // Given
-      userId = "test000";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .get(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" })
-        .set({ userId });
-
-      // Then
-      expect(response.body["userId"]).toEqual(userId);
-      expect(response.status).toEqual(HttpStatus.OK);
-      done();
-    });
-
-    it("특정 계정 삭제 테스트", async (done) => {
-      // Given
-      userId = "test000";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .delete(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" })
-        .set({ userId });
-
-      // Then
-      expect(response.status).toEqual(HttpStatus.OK);
-      done();
     });
   });
 });
