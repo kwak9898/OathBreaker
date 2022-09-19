@@ -12,12 +12,12 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { LocalAuthGuard } from "../../guards/local-auth.guard";
 import { JwtAuthGuard } from "../../guards/jwt-auth.guard";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "../../guards/jwt-refresh.guard";
 import { User } from "../users/entities/user.entity";
+import { LocalAuthGuard } from "../../guards/local-auth.guard";
 
 @Controller("auth")
 export class AuthController {

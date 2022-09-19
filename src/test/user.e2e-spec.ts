@@ -24,6 +24,7 @@ describe("유저 테스트", () => {
   let databaseSource: DataSource;
 
   beforeAll(async () => {
+    userId = "test000";
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -44,7 +45,7 @@ describe("유저 테스트", () => {
 
     token = moduleFixture
       .get<AuthService>(AuthService)
-      .getCookieWithJwtAccessToken(userId);
+      .getCookieWithJwtAccessToken(userId).accessToken;
   });
 
   // afterAll(async () => {
@@ -57,9 +58,11 @@ describe("유저 테스트", () => {
   describe("계정 생성/조회/수정/삭제 테스트", () => {
     it("계정 생성 성공", async (done) => {
       // Given
-      userId = "test000";
+
       username = "Tester";
       password = "test1234@";
+
+      console.log(token);
 
       // When
       const { body } = await request(app.getHttpServer())
@@ -72,7 +75,7 @@ describe("유저 테스트", () => {
       done();
     });
 
-    it("계정 조회 테스트", async (done) => {
+    it("계정 전체 조회 테스트", async (done) => {
       // Given
 
       // When
@@ -80,15 +83,16 @@ describe("유저 테스트", () => {
         .get(`${UserDomain}/`)
         .auth(token, { type: "bearer" });
 
-      console.log("계정 조회 테스트", response);
-      console.log("토큰값 : ", token);
+      console.log(token);
+      // console.log("계정 조회 테스트", response);
+      // console.log("토큰값 : ", token);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
       done();
     });
 
-    it("계정 삭제 테스트", async (done) => {
+    it("특정 계정 삭제 테스트", async (done) => {
       // Given
       userId = "test000";
 
@@ -98,8 +102,8 @@ describe("유저 테스트", () => {
         .auth(token, { type: "bearer" })
         .set({ userId });
 
-      console.log("계정 삭제 테스트: ", response);
-      console.log("토큰값 : ", token);
+      // console.log("계정 삭제 테스트: ", response);
+      // console.log("토큰값 : ", token);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
