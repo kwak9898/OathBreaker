@@ -60,18 +60,45 @@ describe("회원 인증 관련 테스트", () => {
         .auth(token, { type: "bearer" })
         .send({ userId, password });
 
-      console.log(response.body);
+      console.log("로그인 성공 테스트 : ", response.body);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
     });
 
     it("로그아웃 성공 테스트", async (done) => {
-      it.todo("추후 구현 예정");
+      // TODO 추후 구현 예정
+      // Given
+      userId = "test000";
+      password = "test123@";
+      // When
+      const response = await request(app.getHttpServer())
+        .post(`${AuthDomain}/logout`)
+        .auth(token, { type: "bearer" })
+        .send({ userId, password });
+
+      console.log("로그아웃 성공 테스트 : ", response.body);
+
+      // Then
+      expect(response.status).toEqual(HttpStatus.OK);
     });
 
     it("비밀번호 변경 성공 테스트", async (done) => {
-      it.todo("추후 구현 예정");
+      // TODO 추후 구현 예정
+      // Given
+      userId = "test000";
+      password = "test12@";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .post(`${AuthDomain}/change-password`)
+        .auth(token, { type: "bearer" })
+        .send({ userId, password });
+
+      console.log("비밀번호 변경 성공 테스트 : ", response.body);
+
+      // Then
+      expect(response.status).toEqual(HttpStatus.OK);
     });
   });
 
