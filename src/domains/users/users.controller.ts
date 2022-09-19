@@ -4,7 +4,6 @@ import { User } from "./entities/user.entity";
 import { JwtAuthGuard } from "../../guards/jwt-auth.guard";
 
 @Controller("users")
-// @Public()
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
