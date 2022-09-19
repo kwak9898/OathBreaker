@@ -35,9 +35,6 @@ export class AuthService {
       user
     );
 
-    console.log("회원가입 성공 유저", returnUser);
-    console.log("회원가입 성공 유저의 비밀번호", password);
-
     return returnUser;
   }
 
