@@ -80,11 +80,10 @@ export class AuthController {
     return user;
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.findOne(req.user.userId);
-    console.log(user);
 
     if (!user) {
       throw new HttpException(
