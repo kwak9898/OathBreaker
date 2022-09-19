@@ -15,13 +15,15 @@ export class JwtRefreshStrategy extends PassportStrategy(
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
       secretOrKey: configService.get("JWT_REFRESH_TOKEN_SECRET"),
       passReqToCallback: true,
     });
   }
 
   async validate(req, payload: any) {
-    const refreshToken = req.cookies?.Refresh;
+    console.log("여기얌");
+    const refreshToken = req.token;
     const a = await this.usersService.getUserIfRefreshTokenMatches(
       refreshToken,
       payload.userId
