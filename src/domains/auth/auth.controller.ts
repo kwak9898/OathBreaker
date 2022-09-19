@@ -80,7 +80,7 @@ export class AuthController {
     return user;
   }
 
-  @Public()
+  @UseGuards(LocalAuthGuard)
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.findOne(req.user.userId);
