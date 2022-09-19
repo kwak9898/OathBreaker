@@ -62,8 +62,6 @@ describe("유저 테스트", () => {
       username = "Tester";
       password = "test1234@";
 
-      console.log(token);
-
       // When
       const { body } = await request(app.getHttpServer())
         .post(`${AuthDomain}/register`)
@@ -83,10 +81,6 @@ describe("유저 테스트", () => {
         .get(`${UserDomain}/`)
         .auth(token, { type: "bearer" });
 
-      console.log(token);
-      // console.log("계정 조회 테스트", response);
-      // console.log("토큰값 : ", token);
-
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
       done();
@@ -101,9 +95,6 @@ describe("유저 테스트", () => {
         .delete(`${UserDomain}/${userId}`)
         .auth(token, { type: "bearer" })
         .set({ userId });
-
-      // console.log("계정 삭제 테스트: ", response);
-      // console.log("토큰값 : ", token);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
