@@ -41,7 +41,7 @@ describe("유저 테스트", () => {
       entities: [User],
     });
     await databaseSource.initialize();
-    await databaseSource.synchronize(true);
+    await databaseSource.synchronize(false);
 
     token = moduleFixture
       .get<AuthService>(AuthService)
