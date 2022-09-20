@@ -57,13 +57,13 @@ describe("회원 인증 관련 테스트", () => {
       // When
       const response = await request(app.getHttpServer())
         .post(`${AuthDomain}/login`)
-        .auth(token, { type: "bearer" })
         .send({ userId, password });
 
-      console.log("로그인 성공 테스트 : ", response.body);
+      console.log("로그인 성공 테스트 : ", response.error);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
+      done();
     });
 
     it("로그아웃 성공 테스트", async (done) => {
@@ -77,10 +77,11 @@ describe("회원 인증 관련 테스트", () => {
         .auth(token, { type: "bearer" })
         .send({ userId, password });
 
-      console.log("로그아웃 성공 테스트 : ", response.body);
+      console.log("로그아웃 성공 테스트 : ", response.error);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
+      done();
     });
 
     it("비밀번호 변경 성공 테스트", async (done) => {
@@ -91,28 +92,37 @@ describe("회원 인증 관련 테스트", () => {
 
       // When
       const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/change-password`)
+        .patch(`${AuthDomain}/change-password`)
         .auth(token, { type: "bearer" })
         .send({ userId, password });
 
-      console.log("비밀번호 변경 성공 테스트 : ", response.body);
+      console.log("비밀번호 변경 성공 테스트 : ", response.error);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
+      done();
     });
   });
 
-  describe("실패", () => {
-    it("로그인 실패 테스트", async (done) => {
-      it.todo("추후 구현 예정");
-    });
-
-    it("로그아웃 실패 테스트", async (done) => {
-      it.todo("추후 구현 예정");
-    });
-
-    it("비밀번호 변경 실패 테스트", async (done) => {
-      it.todo("추후 구현 예정");
-    });
-  });
+  // describe("실패", () => {
+  //   it("로그인 실패 테스트", async (done) => {
+  //     // TODO 추후 구현 예정
+  //     // Given
+  //     userId = "test000";
+  //     password = "test123@";
+  //
+  //     // When
+  //     const response = await request(app.getHttpServer()).post(
+  //       `${AuthDomain}/login`
+  //     );
+  //   });
+  //
+  //   it("로그아웃 실패 테스트", async (done) => {
+  //     it.todo("추후 구현 예정");
+  //   });
+  //
+  //   it("비밀번호 변경 실패 테스트", async (done) => {
+  //     it.todo("추후 구현 예정");
+  //   });
+  // });
 });

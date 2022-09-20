@@ -105,19 +105,19 @@ describe("유저 테스트", () => {
       done();
     });
 
-    it("특정 계정 삭제 테스트", async (done) => {
-      // Given
-      userId = "test000";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .delete(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" })
-        .set({ userId });
-
-      // Then
-      expect(response.status).toEqual(HttpStatus.OK);
-      done();
-    });
+    // it("특정 계정 삭제 테스트", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .delete(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" })
+    //     .set({ userId });
+    //
+    //   // Then
+    //   expect(response.status).toEqual(HttpStatus.OK);
+    //   done();
+    // });
   });
 });
