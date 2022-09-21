@@ -3,11 +3,11 @@ import { AuthService } from "./auth.service";
 import { UsersModule } from "../users/users.module";
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
-import { LocalStrategy } from "../../strategies/local.strategy";
-import { JwtStrategy } from "../../strategies/jwt.strategy";
+import { LocalStrategy } from "./strategies/local.strategy";
+import { JwtStrategy } from "./strategies/jwt.strategy";
 import { AuthController } from "./auth.controller";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtRefreshStrategy } from "../../strategies/jwt-refresh.strategy";
+import { JwtRefreshStrategy } from "./strategies/jwt-refresh.strategy";
 
 @Module({
   imports: [

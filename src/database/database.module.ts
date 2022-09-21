@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { User } from "../domains/users/entities/user.entity";
+import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
+import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
 
 @Module({
   imports: [
@@ -12,12 +14,13 @@ import { User } from "../domains/users/entities/user.entity";
         type: "postgres",
         host: "127.0.0.1",
         port: 5432,
-        username: "kwaktaemin",
-        password: "ian123@",
-        database: "test_data",
-        entities: [User],
+        username: "postgres",
+        password: "dbMerge135!#%",
+        database: "merge_main_db",
+        entities: [User, MgObject, MgoImage],
         synchronize: true,
-        name: "default",
+        retryAttempts: 2,
+        logging: true,
       }),
       // useFactory: (configService: ConfigService) => ({
       //   type: "postgres",
@@ -26,7 +29,7 @@ import { User } from "../domains/users/entities/user.entity";
       //   username: configService.get("DB_USERNAME"),
       //   password: configService.get("DB_PASSWORD"),
       //   database: configService.get("DB_NAME"),
-      //   entities: [User],
+      //   entities: [User, MgObject, MgoImage],
       //   synchronize: false,
       // }),
     }),
