@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, Index, OneToMany } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
 import { MgoImage } from "../../mgo-image/entities/mgoImage.entity";
 import { BaseEntity } from "../../base/base.entity";
 

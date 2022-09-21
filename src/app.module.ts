@@ -10,6 +10,7 @@ import { UsersModule } from "./domains/users/users.module";
 import { AuthModule } from "./domains/auth/auth.module";
 import { RolesModule } from "./domains/roles/roles.module";
 import { MgObjectModule } from "./domains/mg-object/mg-object.module";
+import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MgObjectModule } from "./domains/mg-object/mg-object.module";
     RolesModule,
     DatabaseModule,
     MgObjectModule,
+    MgoImageModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

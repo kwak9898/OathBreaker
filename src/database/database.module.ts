@@ -20,6 +20,7 @@ import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
         entities: [User, MgObject, MgoImage],
         synchronize: true,
         retryAttempts: 2,
+        logging: true,
       }),
       // useFactory: (configService: ConfigService) => ({
       //   type: "postgres",
