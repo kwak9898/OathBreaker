@@ -12,7 +12,7 @@ import {
 import { Response } from "express";
 import { RolesService } from "./roles.service";
 import { Public } from "../../dacorators/skip-auth.decorator";
-import { LocalAuthGuard } from "../../guards/local-auth.guard";
+import { LocalAuthGuard } from "../auth/guards/local-auth.guard";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
 

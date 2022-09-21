@@ -1,6 +1,5 @@
 import { AuthService } from "./auth.service";
 import {
-  Body,
   Controller,
   Get,
   HttpException,
@@ -12,12 +11,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { JwtAuthGuard } from "../../guards/jwt-auth.guard";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { UsersService } from "../users/users.service";
-import { JwtRefreshGuard } from "../../guards/jwt-refresh.guard";
-import { User } from "../users/entities/user.entity";
-import { LocalAuthGuard } from "../../guards/local-auth.guard";
+import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -44,6 +42,7 @@ export class AuthController {
     res.cookie("Refresh", refreshToken, refreshOption);
   }
 
+  @Public()
   @UseGuards(JwtRefreshGuard)
   @Post("logout")
   async logOut(@Req() req, @Res({ passthrough: true }) res: Response) {
@@ -63,12 +62,13 @@ export class AuthController {
     return req.user;
   }
 
-  @Public()
-  @Post("register")
-  async register(@Body() user: User): Promise<any> {
-    return this.authService.register(user);
-  }
+  // @Public()
+  // @Post("register")
+  // async register(@Body() user: User): Promise<any> {
+  //   return this.authService.register(user);
+  // }
 
+  @Public()
   @UseGuards(JwtRefreshGuard)
   @Get("refresh")
   refresh(@Req() req, @Res({ passthrough: true }) res: Response) {
@@ -80,7 +80,7 @@ export class AuthController {
     return user;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.findOne(req.user.userId);
@@ -92,11 +92,8 @@ export class AuthController {
       );
     }
 
-    const changePw = await this.authService.changePassword(
-      user.userId,
-      user.password
-    );
+    await this.authService.changePassword(user.userId, user.password);
 
-    return res.status(HttpStatus.OK).json(changePw);
+    return res.status(HttpStatus.OK).json(user);
   }
 }

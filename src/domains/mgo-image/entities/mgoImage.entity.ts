@@ -1,83 +1,52 @@
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  Index,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { MgObject } from "../../mg-object/entities/mg-object.entity";
+import { BaseEntity } from "../../base/base.entity";
 
-@Index("mgo_image_pk", ["imgID"], { unique: true })
-@Index("mgo_image_img_id_uindex", ["imgId"], { unique: true })
 @Entity("mgo_image", { schema: "public" })
-export class MgoImage {
+export class MgoImage extends BaseEntity {
   @PrimaryColumn("character varying", {
     comment: "이미지 고유값",
     nullable: false,
     name: "img_id",
   })
-  imgId: string | null;
+  imgId: string;
 
   @Column("character varying", {
     comment: "사물 고유값",
     nullable: true,
     name: "mg_id",
   })
-  mgId: string | null;
+  mgId?: string;
 
   @Column("character varying", {
     comment: "이미지 파일명",
     nullable: true,
     name: "img_name",
   })
-  imgName: string | null;
+  imgName?: string;
 
   @Column("character varying", {
     comment: "이미지 url",
     nullable: true,
     name: "img_url",
   })
-  imgUrl: string | null;
+  imgUrl?: string;
 
   @Column("character varying", {
     comment: "이미지 s3 key",
     nullable: true,
     name: "s3_key",
   })
-  s3Key: string | null;
+  s3Key?: string;
 
   @Column({
     type: "smallint",
     comment: "사물 이미지 상태값",
-    default: () => 0,
+    default: 0,
     nullable: true,
     name: "status_flag",
   })
-  statusFlag: number | null;
-
-  @Column("timestamp without time zone", {
-    comment: "생성일",
-    default: () => "CURRENT_TIMESTAMP",
-    nullable: true,
-    name: "created_at",
-  })
-  createdAt: string | null;
-
-  @Column("timestamp without time zone", {
-    comment: "수정일",
-    default: () => "CURRENT_TIMESTAMP",
-    nullable: true,
-    name: "updated_at",
-  })
-  updatedAt: string | null;
-
-  @Column("timestamp without time zone", {
-    comment: "삭제일",
-    nullable: true,
-    name: "deleted_at",
-  })
-  deletedAt: string | null;
+  statusFlag?: number;
 
   @Column("character varying", {
     comment: "등록자 타입: MANAGER_USER, MERGE_USER",
@@ -85,62 +54,60 @@ export class MgoImage {
     nullable: true,
     name: "user_type",
   })
-  userType: string | null;
+  userType?: string;
 
   @Column("double precision", {
     comment: "위도(37.56667)",
-    default: () => 0,
-    precision: 53,
+    default: 0.0,
     nullable: true,
     name: "latitude",
   })
-  latitude: number | null;
+  latitude?: number;
 
   @Column("double precision", {
     comment: "경도(126.97806)",
-    default: () => 0,
-    precision: 53,
+    default: 0.0,
     nullable: true,
-    name: "longitube",
+    name: "longitude",
   })
-  longitube: number | null;
+  longitude?: number;
 
   @Column("character varying", {
     comment: "mask origin name",
     nullable: true,
     name: "mask_name",
   })
-  maskName: string | null;
+  maskName?: string;
 
   @Column("character varying", {
     comment: "mask s3 키",
     nullable: true,
     name: "s3_key_mask",
   })
-  s3KeyMask: string | null;
+  s3KeyMask?: string;
 
   @Column("character varying", {
     comment: "sallency origin name",
     nullable: true,
     name: "sailency_name",
   })
-  sailencyName: string | null;
+  sailencyName?: string;
 
   @Column("character varying", {
     comment: "sallency s3 키",
     nullable: true,
     name: "s3_key_sailency",
   })
-  s3KeySailency: string | null;
+  s3KeySailency?: string;
 
   @Column({
     type: "smallint",
     comment: "depth_camera(Lidar) 사용 여부 미사용: 0iOS Lidar 사용: 1",
-    default: () => 0,
+    default: 0,
     nullable: true,
     name: "is_depth_camera",
   })
-  isDepthCamera: number | null;
+  isDepthCamera?: number;
 
   @Column({
     type: "jsonb",
@@ -149,56 +116,56 @@ export class MgoImage {
     nullable: true,
     name: "meta_data",
   })
-  metaData: string | null;
+  metaData?: string;
 
   @Column("character varying", {
     comment: "depth origin 파일명",
     nullable: true,
     name: "depth_name",
   })
-  depthName: string | null;
+  depthName?: string;
 
   @Column("character varying", {
     comment: "depth s3 키",
     nullable: true,
     name: "s3_key_depth",
   })
-  s3KeyDepth: string | null;
+  s3KeyDepth?: string;
 
   @Column("character varying", {
     comment: "confidence origin 파일명",
     nullable: true,
     name: "confidence_name",
   })
-  confidenceName: string | null;
+  confidenceName?: string;
 
   @Column("character varying", {
     comment: "confidence s3 키",
     nullable: true,
     name: "s3_key_confidence",
   })
-  s3KeyConfidence: string | null;
+  s3KeyConfidence?: string;
 
   @Column("character varying", {
     comment: "회원 아이디",
     nullable: true,
     name: "user_id",
   })
-  userId: string | null;
+  userId?: string;
 
   @Column("character varying", {
     comment: "사람이 직접 입력한 옳은 이름",
     nullable: true,
     name: "correct_name",
   })
-  correctName: string | null;
+  correctName?: string;
 
   @Column("character varying", {
     comment: "머지웨어에서 생성된 Crab 이미지",
     nullable: true,
     name: "crop_img_url",
   })
-  cropImgUrl: string | null;
+  cropImgUrl?: string;
 
   @ManyToOne(() => MgObject, (mgObject) => mgObject.mgoImages)
   @JoinColumn([{ name: "mg_id", referencedColumnName: "mgId" }])
