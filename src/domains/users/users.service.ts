@@ -46,7 +46,37 @@ export class UsersService {
       where: { userId: user.userId },
     });
 
+<<<<<<< HEAD
     if (existUser !== null) {
+=======
+    if (existUser != null) {
+      throw new HttpException(
+        "이미 존재하는 아이디입니다.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    return await this.userRepository.save(createUser);
+  }
+
+  // 특정 사용자 이름 찾기
+  // async findByUserName(
+  //   userId: string,
+  //   username: string
+  // ): Promise<User | undefined> {
+  //   return this.userRepository.findOne({
+  //     where: { userId: userId, username: username },
+  //   });
+  // }
+
+  // UserId 값을 이용한 User 정보 가져오기
+  async getByUserId(userId: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+
+    if (user) {
+      return user;
+    } else {
+>>>>>>> 91f39efd (계정 생성 완료)
       throw new HttpException(
         "이미 존재하는 아이디 입니다.",
         HttpStatus.BAD_REQUEST
