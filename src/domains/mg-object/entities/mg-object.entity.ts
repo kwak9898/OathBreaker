@@ -1,18 +1,18 @@
 import { Entity, PrimaryColumn, Column, Index, OneToMany } from "typeorm";
 import { MgoImage } from "../../mgo-image/entities/mgoImage.entity";
+import { BaseEntity } from "../../base/base.entity";
 
-@Index("mg_object_mg_id_uindex", ["mgId"], { unique: true })
-@Index("mg_object_pk", ["mgId"], { unique: true })
-@Entity("mgobject", { schema: "public" })
-export class MgObject {
+@Entity("mg_object", { schema: "public" })
+export class MgObject extends BaseEntity {
   @PrimaryColumn("character varying", { comment: "사물 고유값", name: "mg_id" })
   mgId: string;
 
   @Column("character varying", {
     comment: "사물 그룹 아이디",
     name: "mg_group_id",
+    nullable: true,
   })
-  mgGroupId: string;
+  mgGroupId?: string;
 
   @Column({
     type: "varchar",
@@ -20,39 +20,16 @@ export class MgObject {
     name: "mg_name",
     nullable: true,
   })
-  mgName: string | null;
+  mgName?: string;
 
   @Column({
     type: "smallint",
     comment: "상태값",
-    default: () => 0,
     name: "status_flag",
     nullable: true,
+    default: 0,
   })
-  statusFlag: number | null;
-
-  @Column("timestamp without time zone", {
-    comment: "생성일",
-    default: () => "CURRENT_TIMESTAMP",
-    name: "created_at",
-    nullable: true,
-  })
-  createdAt: Date | null;
-
-  @Column("timestamp without time zone", {
-    comment: "수정일",
-    default: () => "CURRENT_TIMESTAMP",
-    name: "updated_at",
-    nullable: true,
-  })
-  updatedAt: Date | null;
-
-  @Column("timestamp without time zone", {
-    comment: "삭제일",
-    nullable: true,
-    name: "deleted_at",
-  })
-  deletedAt: Date | null;
+  statusFlag?: number;
 
   @Column({
     type: "varchar",
@@ -60,16 +37,15 @@ export class MgObject {
     nullable: true,
     name: "mg_category",
   })
-  mgCategory: string | null;
+  mgCategory?: string;
 
   @Column({
     type: "bigint",
     comment: "좋아요 개수",
-    default: () => 0,
     name: "like_cnt",
-    nullable: true,
+    default: 0,
   })
-  likeCnt: bigint | null;
+  likeCnt: bigint;
 
   @Column({
     type: "int",
@@ -78,7 +54,7 @@ export class MgObject {
     name: "like_rank",
     nullable: true,
   })
-  likeRank: number | null;
+  likeRank?: number;
 
   @Column({
     type: "int",
@@ -87,7 +63,7 @@ export class MgObject {
     name: "rank_change",
     nullable: true,
   })
-  rankChange: number | null;
+  rankChange?: number;
 
   @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgo)
   mgoImages: MgoImage[];
