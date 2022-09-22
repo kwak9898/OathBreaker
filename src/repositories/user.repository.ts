@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -28,8 +29,11 @@ export class UserRepository extends Repository<User> {
       password,
       roleName: Roles.choose,
     });
+    const existUser = await this.findOne({ where: { userId } });
 
-    console.error(user);
+    if (existUser !== null) {
+      throw new BadRequestException("이미 존재하는 아이디입니다.");
+    }
 
     return await this.save(user);
   }
@@ -47,7 +51,10 @@ export class UserRepository extends Repository<User> {
 
   // 특정 유저 조회
   async getUserById(userId: string): Promise<User> {
-    const findUser = await this.findOne({ where: { userId } });
+    const findUser = await this.findOne({
+      select: ["userId", "password", "username", "roleName", "team"],
+      where: { userId },
+    });
 
     if (!findUser) {
       throw new NotFoundException("존재하지 않는 유저입니다.");
