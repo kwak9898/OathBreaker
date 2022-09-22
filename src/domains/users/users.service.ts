@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./repositories/user.repository";
 import { User } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -9,6 +10,11 @@ export class UsersService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository
   ) {}
+
+  // 유저 생성
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    return this.userRepository.createUser(createUserDto);
+  }
 
   // 유저 전체 조회
   async getAllUsers(): Promise<User[]> {
@@ -21,8 +27,8 @@ export class UsersService {
   }
 
   // 특정 유저 수정
-  async updateUser(user: User): Promise<User> {
-    return this.userRepository.updateUser(user);
+  async updateUser(userId: string, user: User): Promise<User> {
+    return this.userRepository.updateUser(userId, user);
   }
 
   // // 특정 유저 찾기
@@ -44,39 +50,6 @@ export class UsersService {
   //       HttpStatus.NOT_FOUND
   //     );
   //   }
-  // }
-  //
-  // // 유저 생성
-  // async createUser(user: User): Promise<User> {
-  //   const createUser: User = this.userRepository.create(user);
-  //   const existUser = await this.userRepository.findOne({
-  //     where: { userId: user.userId },
-  //   });
-  //
-  //   if (existUser != null) {
-  //     throw new HttpException(
-  //       "이미 존재하는 아이디입니다.",
-  //       HttpStatus.BAD_REQUEST
-  //     );
-  //   }
-  //
-  //   return await this.userRepository.save(createUser);
-  // }
-  //
-  // // UserId 값을 이용한 User 정보 가져오기
-  // async getByUserId(userId: string) {
-  //   const user = await this.userRepository.findOne({ where: { userId } });
-  //
-  //   if (user) {
-  //     return user;
-  //   } else {
-  //     throw new HttpException(
-  //       "이미 존재하는 아이디 입니다.",
-  //       HttpStatus.BAD_REQUEST
-  //     );
-  //   }
-  //
-  //   return await this.userRepository.save(createUser);
   // }
   //
   // // DB에 발급받은 Refresh Token 암호화 저장
