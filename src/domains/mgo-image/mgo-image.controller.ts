@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { Public } from "../../dacorators/skip-auth.decorator";
-import { MyPaginationQuery } from "../../dacorators/PaginateQuery";
+import { MyPaginationQuery } from "../base/pagination-query";
 import { MgoImageService } from "./mgo-image.service";
 
 @Controller("/mgo-images")

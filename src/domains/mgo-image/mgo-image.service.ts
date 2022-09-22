@@ -1,9 +1,9 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
-import { MyPaginationQuery } from "../../dacorators/PaginateQuery";
 import { MgoImage } from "./entities/mgoImage.entity";
 import { MgoImageRepository } from "./mgo-image.repository";
 import { Injectable } from "@nestjs/common";
+import { MyPaginationQuery } from "../base/pagination-query";
 
 @Injectable()
 export class MgoImageService {
