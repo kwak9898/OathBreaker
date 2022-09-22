@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
-import { User } from "../entities/user.entity";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { Roles } from "../../../enum/roles.enum";
+import { User } from "../domains/users/entities/user.entity";
+import { CreateUserDto } from "../domains/users/dto/create-user.dto";
+import { Roles } from "../enum/roles.enum";
 import { compare, hash } from "bcrypt";
 
 @Injectable()
