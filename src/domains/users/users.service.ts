@@ -31,28 +31,12 @@ export class UsersService {
     return this.userRepository.updateUser(userId, user);
   }
 
-  // // 특정 유저 찾기
-  // findOne(userId: string): Promise<User> {
-  //   return this.userRepository.findOne({
-  //     where: { userId },
-  //     select: ["userId", "username", "roleName", "team", "password"],
-  //   });
-  // }
-  //
-  // // 유저 삭제
-  // async remove(userId: string): Promise<void> {
-  //   // user.deletedAt = new Date();
-  //   const deleteUser = await this.userRepository.delete(userId);
-  //
-  //   if (!deleteUser) {
-  //     throw new HttpException(
-  //       "존재하지 않는 유저입니다.",
-  //       HttpStatus.NOT_FOUND
-  //     );
-  //   }
-  // }
-  //
-  // // DB에 발급받은 Refresh Token 암호화 저장
+  // 특정 유저 삭제
+  async deleteUser(userId: string): Promise<void> {
+    return this.userRepository.deleteUser(userId);
+  }
+
+  // DB에 발급받은 Refresh Token 암호화 저장
   // async setCurrentRefreshToken(refreshToken: string, userId: string) {
   //   const jwtToken = await hash(refreshToken, 10); // refreshToken
   //   await this.userRepository.update(userId, { jwtToken });
