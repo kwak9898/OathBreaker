@@ -1,30 +1,37 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "../domains/users/entities/user.entity";
 import { CreateUserDto } from "../domains/users/dto/create-user.dto";
+import * as bcrypt from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
 import { Roles } from "../enum/roles.enum";
-import { compare, hash } from "bcrypt";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
-  constructor(private readonly dataSource: DataSource) {
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly jwtService: JwtService
+  ) {
     super(User, dataSource.createEntityManager());
   }
 
   // 유저 생성
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { userId, password } = createUserDto;
-    const existUser = this.create({ userId, password, roleName: Roles.choose });
+    const { userId, username, password } = createUserDto;
+    const user = this.create({
+      userId,
+      username,
+      password,
+      roleName: Roles.choose,
+    });
 
-    if (existUser !== null) {
-      throw new BadRequestException("이미 존재하는 아이디입니다.");
-    }
+    console.error(user);
 
-    return await this.save(existUser);
+    return await this.save(user);
   }
 
   // 유저 전체 조회
@@ -69,7 +76,7 @@ export class UserRepository extends Repository<User> {
 
   // DB에 발급받은 Refresh Token 암호화 저장
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
-    const jwtToken = await hash(refreshToken, 12); // refreshToken
+    const jwtToken = await bcrypt.hash(refreshToken, 12); // refreshToken
     await this.update(userId, { jwtToken });
   }
 
@@ -77,7 +84,10 @@ export class UserRepository extends Repository<User> {
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
     const user = await this.getUserById(userId);
 
-    const isRefreshTokenMatching = await compare(refreshToken, user.jwtToken);
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.jwtToken
+    );
 
     if (isRefreshTokenMatching) {
       return user;
@@ -89,5 +99,20 @@ export class UserRepository extends Repository<User> {
     return this.update(userId, {
       jwtToken: null,
     });
+  }
+
+  // 회원 로그인
+  async login(createUserDto: CreateUserDto): Promise<{ accessToken }> {
+    const { userId, password } = createUserDto;
+    const user = await this.getUserById(userId);
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const payload = { userId };
+      const accessToken = this.jwtService.sign(payload);
+
+      return { accessToken };
+    } else {
+      throw new UnauthorizedException("로그인 실패");
+    }
   }
 }
