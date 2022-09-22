@@ -35,7 +35,7 @@ export class RolesController {
     const { refreshToken, ...refreshOption } =
       this.authService.getCookieWithJwtRefreshToken(user.userId);
 
-    await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
+    // await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
     await this.rolesService.createRole(user.roleName, user.userId);
 
     res.cookie("Authentication", accessToken, accssOption);
@@ -54,7 +54,7 @@ export class RolesController {
     const { refreshToken, ...refreshOption } =
       this.authService.getCookieWithJwtRefreshToken(user.userId);
 
-    await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
+    // await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
     await this.rolesService.getByUserRole(user.userId, user.roleName);
 
     res.cookie("Authentication", accessToken, accssOption);

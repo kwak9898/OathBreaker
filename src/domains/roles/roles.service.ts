@@ -14,7 +14,7 @@ export class RolesService {
 
   // 역할 생성 함수
   async createRole(userId: string, roles: string): Promise<User> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.getUserById(userId);
 
     if (!user) {
       throw new HttpException(
@@ -30,7 +30,7 @@ export class RolesService {
 
   // 역할 조회 함수
   async getByUserRole(userId: string, roles: string): Promise<User> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.getUserById(userId);
 
     if (!user) {
       throw new HttpException(
