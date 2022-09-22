@@ -46,9 +46,6 @@ export class UsersService {
       where: { userId: user.userId },
     });
 
-<<<<<<< HEAD
-    if (existUser !== null) {
-=======
     if (existUser != null) {
       throw new HttpException(
         "이미 존재하는 아이디입니다.",
@@ -66,7 +63,6 @@ export class UsersService {
     if (user) {
       return user;
     } else {
->>>>>>> 91f39efd (계정 생성 완료)
       throw new HttpException(
         "이미 존재하는 아이디 입니다.",
         HttpStatus.BAD_REQUEST
