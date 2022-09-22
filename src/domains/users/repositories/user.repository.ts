@@ -51,14 +51,9 @@ export class UserRepository extends Repository<User> {
   // 특정 유저 수정
   async updateUser(userId: string, user: User): Promise<User> {
     user.updatedAt = new Date();
-    const existUser = await this.findOne({ where: { userId } });
+    const existUser = this.getUserById(userId);
 
-    if (!existUser) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    } else {
-      await this.save(user);
-    }
-
+    await this.save(user);
     return existUser;
   }
 
