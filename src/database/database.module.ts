@@ -18,7 +18,7 @@ import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_NAME"),
         entities: [User, MgObject, MgoImage],
-        synchronize: false,
+        synchronize: true,
         retryAttempts: 2,
       }),
     }),
