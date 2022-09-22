@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { User } from "../users/entities/user.entity";
+import { CreateUserDto } from "../users/dto/create-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,7 @@ export class AuthService {
   // 비밀번호 유효성 검사
   async validateUser(userId: string, plainTextPassword: string): Promise<any> {
     try {
-      const user = await this.usersService.findOne(userId);
+      const user = await this.usersService.getUserById(userId);
       await this.verifyPassword(plainTextPassword, user.password);
       const { password, ...result } = user;
 
@@ -29,14 +30,15 @@ export class AuthService {
     }
   }
 
-  // 회원가입
-  async register(user: User) {
-    const { password, ...returnUser } = await this.usersService.createUser(
-      user
-    );
-
-    return returnUser;
+  // 유저 생성
+  async signUp(createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
   }
+
+  // 회원 로그인
+  // async signIn(createUserDto: CreateUserDto): Promise<{ accessToken }> {
+  //   return this.usersService.login(createUserDto);
+  // }
 
   // Access Token 발급
   getCookieWithJwtAccessToken(userId: string) {
@@ -101,11 +103,11 @@ export class AuthService {
   async changePassword(userId: string, password: string, user?: User) {
     try {
       if (!user) {
-        user = await this.usersService.findOne(userId);
+        user = await this.usersService.getUserById(userId);
       }
 
       await user.setEncryptPassword(password);
-      await this.usersService.updateByUser(user);
+      await this.usersService.updateUser(userId, user);
 
       return user;
     } catch (err) {
