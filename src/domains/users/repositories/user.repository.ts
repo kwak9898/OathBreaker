@@ -7,6 +7,7 @@ import { DataSource, Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { Roles } from "../../../enum/roles.enum";
+import { compare, hash } from "bcrypt";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -64,5 +65,29 @@ export class UserRepository extends Repository<User> {
     if (!existUser) {
       throw new NotFoundException("존재하지 않는 유저입니다.");
     }
+  }
+
+  // DB에 발급받은 Refresh Token 암호화 저장
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const jwtToken = await hash(refreshToken, 12); // refreshToken
+    await this.update(userId, { jwtToken });
+  }
+
+  // Id 값을 이용한 Refresh Token 유효한지 확인
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.getUserById(userId);
+
+    const isRefreshTokenMatching = await compare(refreshToken, user.jwtToken);
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  // Refresh Token 초기화
+  async removeRefreshToken(userId: string) {
+    return this.update(userId, {
+      jwtToken: null,
+    });
   }
 }
