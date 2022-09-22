@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserRepository } from "./repositories/user.repository";
+import { UserRepository } from "../../repositories/user.repository";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 
@@ -51,5 +51,10 @@ export class UsersService {
   // Refresh Token 초기화
   removeRefreshToken(userId: string) {
     return this.userRepository.removeRefreshToken(userId);
+  }
+
+  // 로그인
+  login(createUserDto: CreateUserDto) {
+    return this.userRepository.login(createUserDto);
   }
 }

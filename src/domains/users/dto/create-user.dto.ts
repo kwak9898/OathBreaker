@@ -1,4 +1,5 @@
 import { IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { Roles } from "../../../enum/roles.enum";
 
 export class CreateUserDto {
   @IsString()
@@ -19,4 +20,6 @@ export class CreateUserDto {
   // 영문 + 숫자 + 특수문자 유효성 체크
   @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
   password: string;
+
+  roleName: Roles;
 }

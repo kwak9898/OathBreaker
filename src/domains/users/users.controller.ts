@@ -27,6 +27,7 @@ export class UsersController {
     return this.usersService.updateUser(userId, user);
   }
 
+  // 특정 유저 삭제
   @Delete(":userId/delete")
   async deleteUser(@Param("userId") userId: string): Promise<void> {
     return this.usersService.deleteUser(userId);
