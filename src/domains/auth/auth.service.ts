@@ -16,18 +16,10 @@ export class AuthService {
 
   // 비밀번호 유효성 검사
   async validateUser(userId: string, plainTextPassword: string): Promise<any> {
-    try {
-      const user = await this.usersService.getUserById(userId);
-      await this.verifyPassword(plainTextPassword, user.password);
-      const { password, ...result } = user;
-
-      return result;
-    } catch (err) {
-      throw new HttpException(
-        "아이디/비밀번호가 일치하지 않습니다.",
-        HttpStatus.BAD_REQUEST
-      );
-    }
+    const user = await this.usersService.getUserById(userId);
+    await this.verifyPassword(plainTextPassword, user.password);
+    const { password, ...result } = user;
+    return result;
   }
 
   // 유저 생성
@@ -118,11 +110,8 @@ export class AuthService {
     }
   }
 
-  private async verifyPassword(
-    plainTextPassword: string,
-    hashedPassword: string
-  ) {
-    const isPasswordMatch = await compare(plainTextPassword, hashedPassword);
+  private async verifyPassword(password: string, hashedPassword: string) {
+    const isPasswordMatch = await compare(password, hashedPassword);
 
     if (!isPasswordMatch) {
       throw new HttpException(

@@ -28,6 +28,7 @@ export class AuthController {
   ) {}
 
   // 유저 생성
+  @Public()
   @Post("/signup")
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<User> {
     return this.authService.signUp(createUserDto);
