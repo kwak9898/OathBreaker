@@ -45,10 +45,12 @@ export class User extends BaseEntity {
     nullable: true,
   })
   team?: string;
-  @Column("character varying", {
+  @Column({
+    type: "enum",
+    enum: ["관리자", "등록자"],
     name: "role_name",
     comment: "역할",
-    nullable: true,
+    nullable: false,
   })
   roleName?: string;
 
