@@ -8,6 +8,7 @@ import {
 import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
+import { Roles } from "../../../enum/roles.enum";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {
@@ -47,7 +48,7 @@ export class User extends BaseEntity {
   team?: string;
   @Column({
     type: "enum",
-    enum: ["관리자", "등록자"],
+    enum: Roles,
     name: "role_name",
     comment: "역할",
     nullable: false,
