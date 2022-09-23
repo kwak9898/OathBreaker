@@ -52,7 +52,7 @@ export class AuthService {
       domain: "localhost",
       path: "/",
       httpOnly: true,
-      maxAge: this.configService.get("JWT_ACCESS_TOKEN_EXPIRATION_TIME"),
+      maxAge: 3600,
     };
   }
 
@@ -71,7 +71,7 @@ export class AuthService {
       domain: "localhost",
       path: "/",
       httpOnly: true,
-      maxAge: this.configService.get("JWT_REFRESH_TOKEN_EXPIRATION_TIME"),
+      maxAge: 108000,
     };
   }
 
