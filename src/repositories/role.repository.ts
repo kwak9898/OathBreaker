@@ -16,6 +16,11 @@ class RoleRepository extends Repository<User> {
   // 유저 역할 조회
   async getRoleByUser(userId: string, roleName: string): Promise<User> {
     const user = await this.findOne({ where: { userId, roleName } });
+
+    if (!user.userId) {
+      throw new NotFoundException("존재하지 않는 유저입니다.");
+    }
+
     return user;
   }
 
