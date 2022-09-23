@@ -33,11 +33,27 @@ export class MgObject extends BaseEntity {
 
   @Column({
     type: "varchar",
-    comment: "사물 분류",
+    comment: "사물 대 분류",
     nullable: true,
-    name: "mg_category",
+    name: "main_mg_category",
   })
-  mgCategory?: string;
+  mainMgCategory?: string;
+
+  @Column({
+    type: "varchar",
+    comment: "사물 중 분류",
+    nullable: true,
+    name: "medium_mg_category",
+  })
+  mediumMgCategory?: string;
+
+  @Column({
+    type: "varchar",
+    comment: "사물 소 분류",
+    nullable: true,
+    name: "sub_mg_category",
+  })
+  subMgCategory?: string;
 
   @Column({
     type: "bigint",
@@ -64,6 +80,9 @@ export class MgObject extends BaseEntity {
     nullable: true,
   })
   rankChange?: number;
+
+  @Column({ nullable: true })
+  lastTransferTmp?: Date;
 
   @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgo)
   mgoImages: MgoImage[];
