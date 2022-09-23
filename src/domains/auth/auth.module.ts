@@ -21,9 +21,7 @@ import { UserRepository } from "../../repositories/user.repository";
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get("JWT_ACCESS_TOKEN_SECRET"),
         signOptions: {
-          expiresIn: `${configService.get(
-            "JWT_ACCESS_TOKEN_EXPIRATION_TIME"
-          )}s`,
+          expiresIn: `${configService.get("JWT_ACCESS_TOKEN_EXPIRATION_TIME")}`,
         },
       }),
     }),

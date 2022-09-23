@@ -44,7 +44,11 @@ export class AuthService {
       secret: this.configService.get("JWT_ACCESS_TOKEN_SECRET"),
       expiresIn: `${this.configService.get(
         "JWT_ACCESS_TOKEN_EXPIRATION_TIME"
+<<<<<<< HEAD
       )}h`,
+=======
+      )}`,
+>>>>>>> develop
     });
 
     return {
@@ -65,7 +69,11 @@ export class AuthService {
       secret: this.configService.get("JWT_REFRESH_TOKEN_SECRET"),
       expiresIn: `${this.configService.get(
         "JWT_REFRESH_TOKEN_EXPIRATION_TIME"
+<<<<<<< HEAD
       )}d`,
+=======
+      )}`,
+>>>>>>> develop
     });
 
     return {

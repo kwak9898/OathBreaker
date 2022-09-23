@@ -15,7 +15,12 @@ import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env?.NODE_ENV ?? "development"}`,
       validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid("development", "production", "test", "staging")
+          .default("development"),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),

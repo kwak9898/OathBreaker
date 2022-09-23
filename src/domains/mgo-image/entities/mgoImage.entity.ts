@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { MgObject } from "../../mg-object/entities/mg-object.entity";
 import { BaseEntity } from "../../base/base.entity";
 
@@ -46,7 +46,7 @@ export class MgoImage extends BaseEntity {
     nullable: true,
     name: "status_flag",
   })
-  statusFlag?: number;
+  statusFlag?: ImageStatusFlag;
 
   @Column("character varying", {
     comment: "등록자 타입: MANAGER_USER, MERGE_USER",
@@ -170,4 +170,10 @@ export class MgoImage extends BaseEntity {
   @ManyToOne(() => MgObject, (mgObject) => mgObject.mgoImages)
   @JoinColumn([{ name: "mg_id", referencedColumnName: "mgId" }])
   mgo: MgObject[];
+}
+
+export enum ImageStatusFlag {
+  UNCOMPLETED,
+  COMPLETED,
+  TEMP,
 }

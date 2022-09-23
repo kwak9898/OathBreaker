@@ -10,6 +10,22 @@ import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+<<<<<<< HEAD
+=======
+      // useFactory: (configService: ConfigService) => ({
+      //   type: "postgres",
+      //   host: "127.0.0.1",
+      //   port: 5432,
+      //   username: "postgres",
+      //   password: "dbMerge135!#%",
+      //   database: "merge_main_db",
+      //   entities: [User, MgObject, MgoImage],
+      //   synchronize: true,
+      //   retryAttempts: 2,
+      //   logging: true,
+      //   dropSchema:true
+      // }),
+>>>>>>> develop
       useFactory: (configService: ConfigService) => ({
         type: "postgres",
         host: configService.get("DB_HOST"),
@@ -18,8 +34,13 @@ import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_NAME"),
         entities: [User, MgObject, MgoImage],
+<<<<<<< HEAD
         synchronize: false,
         retryAttempts: 2,
+=======
+        synchronize: configService.get("NODE_ENV") !== "production",
+        dropSchema: configService.get("NODE_ENV") === "test",
+>>>>>>> develop
       }),
     }),
   ],
