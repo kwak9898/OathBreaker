@@ -98,6 +98,8 @@ export class UserRepository extends Repository<User> {
 
     if (isRefreshTokenMatching) {
       return user;
+    } else {
+      throw new BadRequestException("토큰이 유효하지 않습니다.");
     }
   }
 
@@ -121,5 +123,10 @@ export class UserRepository extends Repository<User> {
     } else {
       throw new UnauthorizedException("로그인 실패");
     }
+  }
+
+  // 유저의 refreshToken 조회
+  async findRefreshToken(jwtToken: string): Promise<User> {
+    return await this.findOne({ where: { jwtToken } });
   }
 }

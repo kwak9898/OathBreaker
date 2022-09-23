@@ -57,4 +57,9 @@ export class UsersService {
   login(createUserDto: CreateUserDto) {
     return this.userRepository.login(createUserDto);
   }
+
+  // 유저의 refreshToken 조회
+  findRefreshToken(jwtToken: string): Promise<User> {
+    return this.userRepository.findRefreshToken(jwtToken);
+  }
 }

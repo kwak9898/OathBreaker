@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
@@ -90,6 +95,19 @@ export class AuthService {
         maxAge: 0,
       },
     };
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    const user = await this.usersService.findRefreshToken(refreshToken);
+
+    if (!user) {
+      throw new NotFoundException("토근이 유효하지 않습니다.");
+    }
+
+    user.jwtToken = "";
+
+    await this.usersService.updateUser(user.userId, user);
+    return;
   }
 
   async changePassword(userId: string, password: string, user?: User) {
