@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "../users/users.service";
 import { User } from "../users/entities/user.entity";
 import { RoleRepository } from "./role.repository";
+import { RolesDto } from "./dto/roles.dto";
 
 @Injectable()
 export class RolesService {
@@ -23,7 +24,7 @@ export class RolesService {
   }
 
   // 유저 역할 삭제
-  deleteRoleByUser(userId: string, roleName: string): Promise<void> {
+  deleteRoleByUser(userId: string, roleName: RolesDto): Promise<void> {
     return this.roleRepository.deleteRoleByUser(userId, roleName);
   }
 }

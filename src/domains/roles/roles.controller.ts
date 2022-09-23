@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { RolesService } from "./roles.service";
 import { User } from "../users/entities/user.entity";
+import { RolesDto } from "./dto/roles.dto";
 
 @Controller("roles")
 export class RolesController {
@@ -23,16 +24,17 @@ export class RolesController {
   @Patch("/update/:userId")
   updateRoleBYUser(
     @Param("userId") userId: string,
-    @Body() roleName: string
+    @Body() roleName: any
   ): Promise<User> {
-    return this.rolesService.updateRoleByUser(userId, roleName);
+    console.log(roleName[0]);
+    return this.rolesService.updateRoleByUser(userId, roleName[0].roleName);
   }
 
   // 유저 역할 삭제
   @Delete("/delete/:userId")
   deleteRoleByUser(
     @Param("userId") userId: string,
-    roleName: string
+    roleName: RolesDto
   ): Promise<void> {
     return this.rolesService.deleteRoleByUser(userId, roleName);
   }
