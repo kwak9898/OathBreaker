@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "../domains/users/entities/user.entity";
-import { Roles } from "../enum/roles.enum";
 import { UsersService } from "../domains/users/users.service";
 
 @Injectable()
@@ -25,14 +24,18 @@ export class RoleRepository extends Repository<User> {
   }
 
   // 유저 역할 수정
-  async updateRoleByUser(userId: string, role: Roles): Promise<User> {
-    const user = await this.userService.getUserById(userId);
+  async updateRoleByUser(userId: string, roleName: string): Promise<User> {
+    try {
+      const user = await this.userService.getUserById(userId);
 
-    user.roleName = role;
-    user.updatedAt = new Date();
-    await this.save(user);
+      user.roleName = roleName;
+      await this.save(user);
+      user.updatedAt = new Date();
 
-    return user;
+      return user;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // 유저 역할 삭제

@@ -10,6 +10,7 @@ import { UsersModule } from "../users/users.module";
 import { AuthModule } from "../auth/auth.module";
 import { UsersService } from "../users/users.service";
 import { RoleRepository } from "../../repositories/role.repository";
+import { UserRepository } from "../../repositories/user.repository";
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { RoleRepository } from "../../repositories/role.repository";
       }),
     }),
   ],
-  providers: [RolesService, UsersService, RoleRepository],
+  providers: [RolesService, UsersService, RoleRepository, UserRepository],
   exports: [RolesService, JwtModule],
   controllers: [RolesController],
 })

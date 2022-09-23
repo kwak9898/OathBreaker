@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "../users/users.service";
 import { User } from "../users/entities/user.entity";
 import { RoleRepository } from "../../repositories/role.repository";
-import { Roles } from "../../enum/roles.enum";
 
 @Injectable()
 export class RolesService {
@@ -19,8 +18,8 @@ export class RolesService {
   }
 
   // 유저 역할 수정
-  updateRoleByUser(userId: string, role: Roles): Promise<User> {
-    return this.roleRepository.updateRoleByUser(userId, role);
+  updateRoleByUser(userId: string, roleName: string): Promise<User> {
+    return this.roleRepository.updateRoleByUser(userId, roleName);
   }
 
   // 유저 역할 삭제

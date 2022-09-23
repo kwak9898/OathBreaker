@@ -1,8 +1,7 @@
-import { Body, Controller, Delete, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { RolesService } from "./roles.service";
 import { User } from "../users/entities/user.entity";
-import { Roles } from "../../enum/roles.enum";
 
 @Controller("roles")
 export class RolesController {
@@ -12,10 +11,10 @@ export class RolesController {
   ) {}
 
   // 유저 역할 조회
-  @Post("/create/:userId")
+  @Get("/create/:userId/:roleName")
   getRoleByUser(
     @Param("userId") userId: string,
-    @Body() roleName: string
+    @Param("roleName") roleName: string
   ): Promise<User> {
     return this.rolesService.getRoleByUser(userId, roleName);
   }
@@ -24,9 +23,9 @@ export class RolesController {
   @Patch("/update/:userId")
   updateRoleBYUser(
     @Param("userId") userId: string,
-    @Body() role: Roles
+    @Body() roleName: string
   ): Promise<User> {
-    return this.rolesService.updateRoleByUser(userId, role);
+    return this.rolesService.updateRoleByUser(userId, roleName);
   }
 
   // 유저 역할 삭제
