@@ -1,5 +1,5 @@
 export class CountForDashboardResponseDto {
   mgObjectCnt: number;
-  imageCnt: number;
+  imageTotalCnt: number;
   tmpCnt: number;
 }

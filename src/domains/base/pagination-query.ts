@@ -10,9 +10,7 @@ export interface MyPaginationQuery<CustomMetaType = IPaginationMeta> {
 
   searchBy?: string[];
 
-  filter?: {
-    [column: string]: string | string[];
-  };
+  filter?: string;
   sortBy?: [string, string][];
 
   /**

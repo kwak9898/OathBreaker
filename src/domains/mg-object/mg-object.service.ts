@@ -1,24 +1,82 @@
 import { MgObjectRepository } from "./mg-object.repository";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  paginate,
-  paginateRaw,
-  paginateRawAndEntities,
-  Pagination,
-} from "nestjs-typeorm-paginate";
-import { MgObject } from "./entities/mg-object.entity";
+import { paginateRawAndEntities, Pagination } from "nestjs-typeorm-paginate";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response";
-import { number } from "@hapi/joi";
 import { MyPagination } from "../base/pagination-response";
+import { MgObject } from "./entities/mg-object.entity";
+import { MgObjectUpdateDto } from "./dto/request/MgObjectUpdateDto";
+import { NotFoundException } from "@nestjs/common";
+import { MGOBJECT_EXCEPTION } from "../../exception/error-code";
+import { MgoImageRepository } from "../mgo-image/mgo-image.repository";
 
 export class MgObjectService {
   constructor(
-    @InjectRepository(MgObjectRepository) private repository: MgObjectRepository
+    @InjectRepository(MgObjectRepository)
+    private repository: MgObjectRepository,
+    @InjectRepository(MgoImageRepository)
+    private imageRepository: MgoImageRepository
   ) {}
 
   async totalCount(): Promise<number> {
     return this.repository.count();
+  }
+
+  async imageCounts(id: string): Promise<{
+    imageTotalCount: number;
+    imageTempCount: number;
+    imageCompleteCount: number;
+    imageUnCompleteCount: number;
+  }> {
+    const queryBuilder = this.repository.createQueryBuilder("mgo");
+    queryBuilder
+      .addSelect(
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
+        "image_total_cnt"
+      )
+      .addSelect(
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
+        "image_uncomplete_cnt"
+      )
+      .addSelect(
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
+        "image_complete_cnt"
+      )
+      .addSelect(
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
+        "image_temp_cnt"
+      )
+      .where("mgo.mg_id = :mgId", { mgId: id });
+
+    const counts = await queryBuilder.getRawOne();
+    return {
+      imageTotalCount: Number(counts.image_total_cnt),
+      imageTempCount: Number(counts.image_temp_cnt),
+      imageCompleteCount: Number(counts.image_complete_cnt),
+      imageUnCompleteCount: Number(counts.image_uncomplete_cnt),
+    };
+  }
+
+  async findOneOrFail(id: string): Promise<MgObject> {
+    const mgObject = await this.repository.findOne({ where: { mgId: id } });
+    if (mgObject == null) {
+      throw new NotFoundException(MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND);
+    }
+    return mgObject;
+  }
+
+  async update(id: string, updateDto: MgObjectUpdateDto): Promise<MgObject> {
+    const mgObject = await this.findOneOrFail(id);
+    if (updateDto.mainMgCategory) {
+      mgObject.mainMgCategory = updateDto.mainMgCategory;
+    }
+    if (updateDto.mediumMgCategory) {
+      mgObject.mediumMgCategory = updateDto.mediumMgCategory;
+    }
+    if (updateDto.subMgCategory) {
+      mgObject.subMgCategory = updateDto.subMgCategory;
+    }
+    return await this.repository.save(mgObject);
   }
 
   async paginate(
