@@ -36,7 +36,7 @@ export class RoleRepository extends Repository<User> {
   }
 
   // 유저 역할 삭제
-  async getDelete(userId: string, roleName: string): Promise<void> {
+  async deleteRoleByUser(userId: string, roleName: string): Promise<void> {
     const user = await this.userService.getUserById(userId);
 
     if (user) {

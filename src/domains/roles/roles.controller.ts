@@ -1,84 +1,40 @@
-import {
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Patch,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from "@nestjs/common";
-import { Response } from "express";
-import { RolesService } from "./roles.service";
-import { Public } from "../../dacorators/skip-auth.decorator";
-import { LocalAuthGuard } from "../auth/guards/local-auth.guard";
-import { AuthService } from "../auth/auth.service";
+import { Body, Controller, Delete, Param, Patch, Post } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
+import { RolesService } from "./roles.service";
+import { User } from "../users/entities/user.entity";
+import { Roles } from "../../enum/roles.enum";
 
 @Controller("roles")
 export class RolesController {
   constructor(
-    private authService: AuthService,
     private usersService: UsersService,
     private rolesService: RolesService
   ) {}
 
-  @Public()
-  @UseGuards(LocalAuthGuard)
-  @Post("create-user")
-  async createRole(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const user = req.user;
-    const { accessToken, ...accssOption } =
-      this.authService.getCookieWithJwtAccessToken(user.userId);
-
-    const { refreshToken, ...refreshOption } =
-      this.authService.getCookieWithJwtRefreshToken(user.userId);
-
-    // await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
-    await this.rolesService.createRole(user.roleName, user.userId);
-
-    res.cookie("Authentication", accessToken, accssOption);
-    res.cookie("Refresh", refreshToken, refreshOption);
+  // 유저 역할 조회
+  @Post("/create/:userId")
+  getRoleByUser(
+    @Param("userId") userId: string,
+    @Body() roleName: string
+  ): Promise<User> {
+    return this.rolesService.getRoleByUser(userId, roleName);
   }
 
-  @Public()
-  @UseGuards(LocalAuthGuard)
-  @Get("get-user-role")
-  async getByUserRole(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const user = req.user;
-
-    const { accessToken, ...accssOption } =
-      this.authService.getCookieWithJwtAccessToken(user.userId);
-
-    const { refreshToken, ...refreshOption } =
-      this.authService.getCookieWithJwtRefreshToken(user.userId);
-
-    // await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
-    await this.rolesService.getByUserRole(user.userId, user.roleName);
-
-    res.cookie("Authentication", accessToken, accssOption);
-    res.cookie("Refresh", refreshToken, refreshOption);
-    res.json({ user });
+  // 유저 역할 수정
+  @Patch("/update/:userId")
+  updateRoleBYUser(
+    @Param("userId") userId: string,
+    @Body() role: Roles
+  ): Promise<User> {
+    return this.rolesService.updateRoleByUser(userId, role);
   }
 
-  @Public()
-  @UseGuards(LocalAuthGuard)
-  @Patch("update-user-role")
-  async updateByUserRole(
-    @Req() req,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const user = req.user;
-
-    if (!user) {
-      throw new HttpException(
-        "존재하지 않는 유저입니다.",
-        HttpStatus.NOT_FOUND
-      );
-    }
-
-    await this.rolesService.updateByUserRole(user, user.roleName);
-    return user;
+  // 유저 역할 삭제
+  @Delete("/delete/:userId")
+  deleteRoleByUser(
+    @Param("userId") userId: string,
+    roleName: string
+  ): Promise<void> {
+    return this.rolesService.deleteRoleByUser(userId, roleName);
   }
 }
