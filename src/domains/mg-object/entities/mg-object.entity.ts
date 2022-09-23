@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { MgoImage } from "../../mgo-image/entities/mgoImage.entity";
 import { BaseEntity } from "../../base/base.entity";
 
@@ -84,6 +84,6 @@ export class MgObject extends BaseEntity {
   @Column({ nullable: true })
   lastTransferTmp?: Date;
 
-  @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgo)
+  @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgObject)
   mgoImages: MgoImage[];
 }

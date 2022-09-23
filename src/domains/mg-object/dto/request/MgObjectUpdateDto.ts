@@ -6,6 +6,7 @@ export class MgObjectUpdateDto extends PickType(MgObject, [
   "mainMgCategory",
   "mediumMgCategory",
   "subMgCategory",
+  "mgName",
 ]) {
   @IsString()
   @IsOptional()
@@ -18,4 +19,8 @@ export class MgObjectUpdateDto extends PickType(MgObject, [
   @IsString()
   @IsOptional()
   subMgCategory?: string;
+
+  @IsString()
+  @IsOptional()
+  mgName?: string;
 }

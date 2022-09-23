@@ -32,3 +32,7 @@ export class RequestHelper {
       .set({ Authorization: `Bearer ${this.token}` });
   }
 }
+
+export function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
