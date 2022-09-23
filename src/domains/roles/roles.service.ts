@@ -1,75 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
+import { UserRepository } from "../../repositories/user.repository";
 
 @Injectable()
 export class RolesService {
   constructor(
     private usersService: UsersService,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>
+    @InjectRepository(Ro)
+    private usersRepository: UserRepository
   ) {}
 
-  // 역할 생성 함수
-  async createRole(userId: string, roles: string): Promise<User> {
-    const user = await this.usersService.getUserById(userId);
-
-    if (!user) {
-      throw new HttpException(
-        "존재하지 않는 유저입니다.",
-        HttpStatus.NOT_FOUND
-      );
-    } else {
-      await this.usersRepository.save({ roleName: roles });
-    }
-
-    return user;
-  }
-
-  // 역할 조회 함수
-  async getByUserRole(userId: string, roles: string): Promise<User> {
-    const user = await this.usersService.getUserById(userId);
-
-    if (!user) {
-      throw new HttpException(
-        "존재하지 않는 유저입니다.",
-        HttpStatus.NOT_FOUND
-      );
-    } else {
-      await this.usersRepository.findOne({
-        where: { userId: userId, roleName: roles },
-      });
-    }
-
-    return;
-  }
-
-  // 역할 수정
-  async updateByUserRole(user: User, roles: string) {
-    user.updatedAt = new Date();
-    return await this.usersRepository.update(user.roleName, {
-      roleName: roles,
-    });
-  }
-
-  // 역할 삭제
-  async deleteByUserRole(user: User) {
-    user.deletedAt = new Date();
-    const findUser = await this.usersRepository.findOne({
-      where: { userId: user.userId },
-    });
-
-    if (!findUser) {
-      throw new HttpException(
-        "존재하지 않는 유저입니다.",
-        HttpStatus.NOT_FOUND
-      );
-    } else {
-      await this.usersRepository.delete(user.roleName);
-    }
-
-    return user;
-  }
+  // 유저 역할 생ㅅ어
 }

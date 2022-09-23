@@ -5,7 +5,7 @@ import { Roles } from "../enum/roles.enum";
 import { UsersService } from "../domains/users/users.service";
 
 @Injectable()
-class RoleRepository extends Repository<User> {
+export class RoleRepository extends Repository<User> {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userService: UsersService
