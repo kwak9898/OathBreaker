@@ -26,7 +26,7 @@ export class MgObjectService {
     imageTotalCount: number;
     imageTempCount: number;
     imageCompleteCount: number;
-    imageUnCompleteCount: number;
+    imageInCompleteCount: number;
   }> {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
     queryBuilder
@@ -36,7 +36,7 @@ export class MgObjectService {
       )
       .addSelect(
         "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
-        "image_uncomplete_cnt"
+        "image_incomplete_cnt"
       )
       .addSelect(
         "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
@@ -53,7 +53,7 @@ export class MgObjectService {
       imageTotalCount: Number(counts.image_total_cnt),
       imageTempCount: Number(counts.image_temp_cnt),
       imageCompleteCount: Number(counts.image_complete_cnt),
-      imageUnCompleteCount: Number(counts.image_uncomplete_cnt),
+      imageInCompleteCount: Number(counts.image_incomplete_cnt),
     };
   }
 
@@ -75,6 +75,9 @@ export class MgObjectService {
     }
     if (updateDto.subMgCategory) {
       mgObject.subMgCategory = updateDto.subMgCategory;
+    }
+    if (updateDto.mgName) {
+      mgObject.mgName = updateDto.mgName;
     }
     return await this.repository.save(mgObject);
   }
@@ -117,10 +120,10 @@ export class MgObjectService {
         const raw = raws
           .map((r) => r as any)
           .find((raw) => raw.mgo_mg_id == item.mgId);
-        item.image_total_cnt = Number(raw.image_total_cnt);
-        item.image_incomplete_cnt = Number(raw.image_incomplete_cnt);
-        item.image_complete_cnt = Number(raw.image_complete_cnt);
-        item.image_temp_cnt = Number(raw.image_temp_cnt);
+        item.imageTotalCnt = Number(raw.image_total_cnt);
+        item.imageIncompleteCnt = Number(raw.image_incomplete_cnt);
+        item.imageCompleteCnt = Number(raw.image_complete_cnt);
+        item.imageTempCnt = Number(raw.image_temp_cnt);
         return item;
       });
 

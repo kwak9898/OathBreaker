@@ -5,11 +5,11 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
-import { User } from "../domains/users/entities/user.entity";
-import { CreateUserDto } from "../domains/users/dto/create-user.dto";
+import { User } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { Roles } from "../enum/roles.enum";
+import { Roles } from "../../enum/roles.enum";
 
 @Injectable()
 export class UserRepository extends Repository<User> {

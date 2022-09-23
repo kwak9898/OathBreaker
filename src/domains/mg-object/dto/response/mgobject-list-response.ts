@@ -24,8 +24,8 @@ export class MgObjectListResponseDto extends OmitType(MgObject, [
     ]);
   }
 
-  image_total_cnt: number;
-  image_incomplete_cnt: number;
-  image_complete_cnt: number;
-  image_temp_cnt: number;
+  imageTotalCnt: number;
+  imageIncompleteCnt: number;
+  imageCompleteCnt: number;
+  imageTempCnt: number;
 }

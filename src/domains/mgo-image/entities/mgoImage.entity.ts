@@ -169,11 +169,11 @@ export class MgoImage extends BaseEntity {
 
   @ManyToOne(() => MgObject, (mgObject) => mgObject.mgoImages)
   @JoinColumn([{ name: "mg_id", referencedColumnName: "mgId" }])
-  mgo: MgObject[];
+  mgObject: MgObject;
 }
 
 export enum ImageStatusFlag {
-  UNCOMPLETED,
+  INCOMPLETED,
   COMPLETED,
   TEMP,
 }

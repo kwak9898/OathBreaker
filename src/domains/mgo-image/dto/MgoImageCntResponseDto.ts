@@ -1,6 +1,6 @@
 export class MgoImageCntResponseDto {
   imageTotalCnt: number;
   imageCompleteCnt: number;
-  imageUncompleteCnt: number;
+  imageIncompleteCnt: number;
   imageTempCnt: number;
 }
