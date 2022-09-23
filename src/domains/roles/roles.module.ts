@@ -8,6 +8,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../users/entities/user.entity";
 import { UsersModule } from "../users/users.module";
 import { AuthModule } from "../auth/auth.module";
+import { UserRepository } from "../../repositories/user.repository";
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { AuthModule } from "../auth/auth.module";
       }),
     }),
   ],
-  providers: [RolesService],
+  providers: [RolesService, UserRepository],
   exports: [RolesService, JwtModule],
   controllers: [RolesController],
 })
