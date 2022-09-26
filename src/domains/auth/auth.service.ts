@@ -32,11 +32,6 @@ export class AuthService {
     return this.usersService.createUser(createUserDto);
   }
 
-  // 회원 로그인
-  // async signIn(createUserDto: CreateUserDto): Promise<{ accessToken }> {
-  //   return this.usersService.login(createUserDto);
-  // }
-
   // Access Token 발급
   getCookieWithJwtAccessToken(userId: string) {
     const payload = { userId };
