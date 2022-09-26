@@ -3,18 +3,13 @@ import { DataSource } from "typeorm";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
 import * as request from "supertest";
-import { User } from "../domains/users/entities/user.entity";
 import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
-import { RolesService } from "../domains/roles/roles.service";
 
 describe("유저 테스트", () => {
   let app: INestApplication;
-  let usersRepository: User;
   let usersService: UsersService;
   let authService: AuthService;
-  let rolesService: RolesService;
-  let date: Date;
   let userId: string | undefined;
   let username: string | undefined;
   let password: string | undefined;
@@ -24,36 +19,20 @@ describe("유저 테스트", () => {
   let databaseSource: DataSource;
 
   beforeAll(async () => {
-    userId = "test000";
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    authService = moduleFixture.get(AuthService);
+    usersService = moduleFixture.get(UsersService);
+    databaseSource = moduleFixture.get(DataSource);
+    await databaseSource.synchronize(true);
+
+    token = authService.getCookieWithJwtAccessToken(userId).accessToken;
+
     await app.init();
-    databaseSource = new DataSource({
-      type: "postgres",
-      host: "127.0.0.1",
-      username: "kwaktaemin",
-      password: "ian123@",
-      database: "test_data",
-      port: 5432,
-      entities: [User],
-    });
-    await databaseSource.initialize();
-    await databaseSource.synchronize(false);
-
-    token = moduleFixture
-      .get<AuthService>(AuthService)
-      .getCookieWithJwtAccessToken(userId).accessToken;
   });
-
-  // afterAll(async () => {
-  //   //   await databaseSource.dropDatabase();
-  //   //   await databaseSource.destroy();
-  //   // await app.close();
-  //   // server.close();
-  // });
 
   describe("계정 생성/조회/수정/삭제 테스트", () => {
     it("계정 생성 성공", async (done) => {

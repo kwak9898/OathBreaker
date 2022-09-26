@@ -3,49 +3,68 @@ import { DataSource } from "typeorm";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
 import * as request from "supertest";
-import { User } from "../domains/users/entities/user.entity";
-import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
-import { RolesService } from "../domains/roles/roles.service";
+import { UsersService } from "../domains/users/users.service";
 
 describe("회원 인증 관련 테스트", () => {
   let app: INestApplication;
-  let usersRepository: User;
-  let usersService: UsersService;
+  let token;
+  const AuthDomain = "/auth";
   let authService: AuthService;
-  let rolesService: RolesService;
-  let date: Date;
+  let usersService: UsersService;
   let userId: string | undefined;
   let username: string | undefined;
   let password: string | undefined;
-  let token;
-  const UserDomain = "/users";
-  const AuthDomain = "/auth";
   let databaseSource: DataSource;
 
   beforeAll(async () => {
-    userId = "test000";
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await app.init();
-    databaseSource = new DataSource({
-      type: "postgres",
-      host: "127.0.0.1",
-      username: "kwaktaemin",
-      password: "ian123@",
-      database: "test_data",
-      port: 5432,
-      entities: [User],
-    });
-    await databaseSource.initialize();
-    await databaseSource.synchronize(false);
+    authService = moduleFixture.get(AuthService);
+    usersService = moduleFixture.get(UsersService);
+    databaseSource = moduleFixture.get(DataSource);
+    await databaseSource.synchronize(true);
 
-    token = moduleFixture
-      .get<AuthService>(AuthService)
-      .getCookieWithJwtAccessToken(userId).accessToken;
+    token = authService.getCookieWithJwtAccessToken(userId).accessToken;
+
+    await app.init();
+  });
+
+  describe("계성 생성 테스트", () => {
+    it("생성 성공", async () => {
+      // Given
+      userId = "testian123";
+      username = "testian";
+      password = "test12345@";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .post(`${AuthDomain}/signup`)
+        .send({ userId, username, password });
+
+      // Then
+      expect(response.statusCode).toBe(201);
+      expect(response.body["userId"]).toBe(userId);
+      expect(response.body["username"]).toBe(username);
+    });
+    it("생성 시 아이디 길이가 4이하일 경우", async () => {
+      //Given
+      userId = "re1";
+      username = "testian1";
+      password = "test12345@";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .post(`${AuthDomain}/signup`)
+        .send({ userId, username, password });
+
+      // Then
+      expect(response.statusCode).toBe(400);
+      expect(response.body.error).toBe("Bad Request");
+    });
   });
 
   describe("성공", () => {
@@ -59,7 +78,7 @@ describe("회원 인증 관련 테스트", () => {
         .post(`${AuthDomain}/login`)
         .send({ userId, password });
 
-      console.log("로그인 성공 테스트 : ", response.error);
+      console.log("로그인 성공 테스트 : ", response.body);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
