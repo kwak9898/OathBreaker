@@ -24,10 +24,9 @@ export class RolesController {
   @Patch("/update/:userId")
   updateRoleBYUser(
     @Param("userId") userId: string,
-    @Body() roleName: any
+    @Body() dto: RolesDto
   ): Promise<User> {
-    console.log(roleName[0]);
-    return this.rolesService.updateRoleByUser(userId, roleName[0].roleName);
+    return this.rolesService.updateRoleByUser(userId, dto.roleName);
   }
 
   // 유저 역할 삭제
@@ -36,6 +35,6 @@ export class RolesController {
     @Param("userId") userId: string,
     roleName: RolesDto
   ): Promise<void> {
-    return this.rolesService.deleteRoleByUser(userId, roleName);
+    return this.rolesService.deleteRoleByUser(userId, roleName.roleName);
   }
 }
