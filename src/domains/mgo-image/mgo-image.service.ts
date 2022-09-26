@@ -80,4 +80,10 @@ export class MgoImageService {
     imageObject.statusFlag = ImageStatusFlag.COMPLETED;
     return await this.repository.save(imageObject);
   }
+
+  async tempList(mgobjectId: string): Promise<MgoImage[]> {
+    return this.repository.find({
+      where: { mgId: mgobjectId, statusFlag: ImageStatusFlag.TEMP },
+    });
+  }
 }

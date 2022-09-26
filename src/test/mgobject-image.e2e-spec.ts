@@ -291,6 +291,32 @@ describe("MgObject Image 테스트", () => {
     });
   });
 
+  describe("TEMP IMAGE LIST", () => {
+    it("성공", async () => {
+      const mgObject = mgObjects[getRandomInt(100)];
+      const imageIds = mgObject.mgoImages.map((image) => image.imgId);
+      const dto = new UpdateMgoImageStatusDto();
+      dto.imageIds = imageIds;
+      dto.isComplete = false;
+
+      // When
+      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
+
+      // Then
+      expect(response.status).toBe(200);
+
+      const { body } = await requestHelper.get(
+        `${DOMAIN}/${mgObject.mgId}/temp`
+      );
+
+      expect(body.length).toBe(3);
+
+      for (const item of body) {
+        expect(item.statusFlag).toBe(2);
+      }
+    });
+  });
+
   const createBaseMgObject = async () => {
     const promises = [];
     for (let i = 0; i < 100; i++) {

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Patch, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Query,
+} from "@nestjs/common";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { MgoImageService } from "./mgo-image.service";
@@ -36,5 +44,10 @@ export class MgoImageController {
   ): Promise<MgoImage> {
     const mgObject = await this.mgObjectService.findOneOrFail(dto.mgObjectId);
     return await this.mgoImageService.updateMgObject(dto.imageId, mgObject);
+  }
+
+  @Get("/:id/temp")
+  async tempList(@Param("id") mgobjectId: string): Promise<MgoImage[]> {
+    return await this.mgoImageService.tempList(mgobjectId);
   }
 }
