@@ -167,13 +167,16 @@ export class MgoImage extends BaseEntity {
   })
   cropImgUrl?: string;
 
-  @ManyToOne(() => MgObject, (mgObject) => mgObject.mgoImages)
+  @ManyToOne(() => MgObject, (mgObject) => mgObject.mgoImages, {
+    nullable: true,
+  })
   @JoinColumn([{ name: "mg_id", referencedColumnName: "mgId" }])
-  mgObject: MgObject;
+  mgObject?: MgObject;
 }
 
 export enum ImageStatusFlag {
   INCOMPLETED,
   COMPLETED,
   TEMP,
+  OTHER = 3,
 }

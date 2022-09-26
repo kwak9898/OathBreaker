@@ -26,16 +26,16 @@ export class MgoImageController {
   @Get("/")
   async paginate(
     @Query() query: MyPaginationQuery,
-    @Query("mgObjectId") mgObjectId: string,
+    @Query("mgObjectId") mgObjectId?: string,
     @Query("statusFlag") statusFlag?: ImageStatusFlag
   ) {
-    return await this.mgoImageService.paginate(mgObjectId, query, statusFlag);
+    return await this.mgoImageService.paginate(query, mgObjectId, statusFlag);
   }
 
   @Patch("/status")
   @HttpCode(200)
   async updateStatus(@Body() dto: UpdateMgoImageStatusDto) {
-    await this.mgoImageService.updateImageStatus(dto.imageIds, dto.isComplete);
+    await this.mgoImageService.updateImageStatus(dto.imageIds, dto.statusFlag);
   }
 
   @Patch("/mgobject")
@@ -49,5 +49,10 @@ export class MgoImageController {
   @Get("/:id/temp")
   async tempList(@Param("id") mgobjectId: string): Promise<MgoImage[]> {
     return await this.mgoImageService.tempList(mgobjectId);
+  }
+
+  @Get("/:id/other")
+  async otherList(@Param("id") mgobjectId: string): Promise<MgoImage[]> {
+    return await this.mgoImageService.otherList(mgobjectId);
   }
 }

@@ -1,10 +1,11 @@
-import { ArrayNotEmpty, IsArray, IsBoolean } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsNotEmpty } from "class-validator";
+import { ImageStatusFlag } from "../entities/mgoImage.entity";
 
 export class UpdateMgoImageStatusDto {
   @IsArray()
   @ArrayNotEmpty()
   imageIds: string[];
 
-  @IsBoolean()
-  isComplete: boolean;
+  @IsNotEmpty()
+  statusFlag: ImageStatusFlag;
 }

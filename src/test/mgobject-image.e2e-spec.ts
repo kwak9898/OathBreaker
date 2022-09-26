@@ -117,15 +117,45 @@ describe("MgObject Image 테스트", () => {
       expect(body).toHaveProperty("items");
       expect(body).toHaveProperty("meta");
     });
+
+    it("[조회] temp 상태인 이미지만 => statusFlag = 2", async () => {
+      // Given
+
+      // When
+      const { body } = await requestHelper.get(
+        `${DOMAIN}?mgObjectId=${
+          mgObjects[getRandomInt(10)].mgId
+        }&page=1&limit=10&statusFlag=${ImageStatusFlag.TEMP}`
+      );
+
+      // Then
+      expect(body.meta.totalItems).toBe(0);
+      expect(body).toHaveProperty("items");
+      expect(body).toHaveProperty("meta");
+    });
+
+    it("[조회] other 상태인 이미지만 => statusFlag = 3", async () => {
+      // Given
+
+      // When
+      const { body } = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&statusFlag=${ImageStatusFlag.OTHER}`
+      );
+
+      // Then
+      expect(body.meta.totalItems).toBe(0);
+      expect(body).toHaveProperty("items");
+      expect(body).toHaveProperty("meta");
+    });
   });
 
   describe("Update Status Flag", () => {
     it("flag가 빈 값일 때 400", async () => {
       // Given
+      const mgObject = getRandomMgObject();
       const dto = new UpdateMgoImageStatusDto();
-      const mgObject = mgObjects[getRandomInt(100)];
       dto.imageIds = mgObject.mgoImages.map((image) => image.imgId);
-      dto.isComplete = null;
+      dto.statusFlag = null;
 
       // When
       const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
@@ -138,7 +168,7 @@ describe("MgObject Image 테스트", () => {
       // Given
       const dto = new UpdateMgoImageStatusDto();
       dto.imageIds = [];
-      dto.isComplete = true;
+      dto.statusFlag = ImageStatusFlag.COMPLETED;
 
       // When
       const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
@@ -147,13 +177,13 @@ describe("MgObject Image 테스트", () => {
       expect(response.status).toBe(400);
     });
 
-    it("mgo images list들 검수 완료로 일괄 처리하기", async () => {
+    it("검수 완료로 일괄 처리하기", async () => {
       // Given
-      const mgObject = mgObjects[getRandomInt(100)];
+      const mgObject = getRandomMgObject();
       const imageIds = mgObject.mgoImages.map((image) => image.imgId);
       const dto = new UpdateMgoImageStatusDto();
       dto.imageIds = imageIds;
-      dto.isComplete = true;
+      dto.statusFlag = ImageStatusFlag.COMPLETED;
 
       // When
       const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
@@ -162,22 +192,22 @@ describe("MgObject Image 테스트", () => {
       expect(response.status).toBe(200);
 
       const { body } = await requestHelper.get(
-        `${DOMAIN}?mgObjectId=${mgObject.mgId}&page=1&limit=10&statusFlag=1`
+        `${DOMAIN}?mgObjectId=${mgObject.mgId}&page=1&limit=10&statusFlag=${ImageStatusFlag.COMPLETED}`
       );
 
       expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
-        expect(item.statusFlag).toBe(1);
+        expect(item.statusFlag).toBe(ImageStatusFlag.COMPLETED);
       }
     });
 
-    it("mgo image list들 temp일괄 처리하기", async () => {
+    it("temp일괄 처리하기", async () => {
       // Given
-      const mgObject = mgObjects[getRandomInt(100)];
+      const mgObject = getRandomMgObject();
       const imageIds = mgObject.mgoImages.map((image) => image.imgId);
       const dto = new UpdateMgoImageStatusDto();
       dto.imageIds = imageIds;
-      dto.isComplete = false;
+      dto.statusFlag = ImageStatusFlag.TEMP;
 
       // When
       const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
@@ -186,12 +216,12 @@ describe("MgObject Image 테스트", () => {
       expect(response.status).toBe(200);
 
       const { body } = await requestHelper.get(
-        `${DOMAIN}?mgObjectId=${mgObject.mgId}&page=1&limit=10&statusFlag=2`
+        `${DOMAIN}?mgObjectId=${mgObject.mgId}&page=1&limit=10&statusFlag=${ImageStatusFlag.TEMP}`
       );
 
       expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
-        expect(item.statusFlag).toBe(2);
+        expect(item.statusFlag).toBe(ImageStatusFlag.TEMP);
       }
       const afterTransferTemp = await mgObjectService.findOneOrFail(
         mgObject.mgId
@@ -200,12 +230,36 @@ describe("MgObject Image 테스트", () => {
       // temp 이동 했으므로 lastTransferToTempAt 값이 있어야 한다.
       expect(afterTransferTemp.lastTransferToTempAt).not.toBe(null);
     });
+
+    it("other 일괄 처리하기", async () => {
+      // Given
+      const mgObject = getRandomMgObject();
+      const imageIds = mgObject.mgoImages.map((image) => image.imgId);
+      const dto = new UpdateMgoImageStatusDto();
+      dto.imageIds = imageIds;
+      dto.statusFlag = ImageStatusFlag.OTHER;
+
+      // When
+      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
+
+      // Then
+      expect(response.status).toBe(200);
+
+      const { body } = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&statusFlag=${ImageStatusFlag.OTHER}`
+      );
+
+      expect(body.meta.itemCount).toBe(3);
+      for (const item of body.items) {
+        expect(item.statusFlag).toBe(ImageStatusFlag.OTHER);
+      }
+    });
   });
 
   describe("IMAGE에 새로운  MG ID를 부여 ", () => {
     it("성공", async () => {
       // Given
-      const mgObject = mgObjects[getRandomInt(100)];
+      const mgObject = getRandomMgObject();
       let targetObject = mgObjects[getRandomInt(100)];
       while (mgObject.mgId == targetObject.mgId) {
         targetObject = mgObjects[getRandomInt(100)];
@@ -229,7 +283,7 @@ describe("MgObject Image 테스트", () => {
 
     it("이미지를 찾을 수 없음", async () => {
       // Given
-      const mgObject = mgObjects[getRandomInt(100)];
+      const mgObject = getRandomMgObject();
       let targetObject = mgObjects[getRandomInt(100)];
       while (mgObject.mgId == targetObject.mgId) {
         targetObject = mgObjects[getRandomInt(100)];
@@ -254,7 +308,7 @@ describe("MgObject Image 테스트", () => {
 
     it("MG ID를 찾을 수 없음", async () => {
       // Given
-      const mgObject = mgObjects[getRandomInt(100)];
+      const mgObject = getRandomMgObject();
 
       const mgoImageId = mgObject.mgoImages.map((image) => image.imgId)[
         getRandomInt(3)
@@ -293,11 +347,11 @@ describe("MgObject Image 테스트", () => {
 
   describe("TEMP IMAGE LIST", () => {
     it("성공", async () => {
-      const mgObject = mgObjects[getRandomInt(100)];
+      const mgObject = getRandomMgObject();
       const imageIds = mgObject.mgoImages.map((image) => image.imgId);
       const dto = new UpdateMgoImageStatusDto();
       dto.imageIds = imageIds;
-      dto.isComplete = false;
+      dto.statusFlag = ImageStatusFlag.TEMP;
 
       // When
       const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
@@ -312,10 +366,14 @@ describe("MgObject Image 테스트", () => {
       expect(body.length).toBe(3);
 
       for (const item of body) {
-        expect(item.statusFlag).toBe(2);
+        expect(item.statusFlag).toBe(ImageStatusFlag.TEMP);
       }
     });
   });
+
+  function getRandomMgObject() {
+    return mgObjects[getRandomInt(100)];
+  }
 
   const createBaseMgObject = async () => {
     const promises = [];

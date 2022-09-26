@@ -41,13 +41,15 @@ export class MgoImageService {
   }
 
   async paginate(
-    mgoObjectId: string,
     options: MyPaginationQuery,
+    mgoObjectId?: string,
     statusFlag?: ImageStatusFlag
   ): Promise<Pagination<MgoImage>> {
-    const queryBuilder = this.repository
-      .createQueryBuilder("mgoImage")
-      .where("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
+    const queryBuilder = this.repository.createQueryBuilder("mgoImage");
+
+    if (mgoObjectId) {
+      queryBuilder.where("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
+    }
 
     if (statusFlag) {
       queryBuilder.andWhere("mgoImage.statusFlag = :statusFlag", {
@@ -58,11 +60,7 @@ export class MgoImageService {
     return paginate<MgoImage>(queryBuilder, options);
   }
 
-  async updateImageStatus(ids: string[], isComplete: boolean) {
-    const statusFlag = isComplete
-      ? ImageStatusFlag.COMPLETED
-      : ImageStatusFlag.TEMP;
-
+  async updateImageStatus(ids: string[], statusFlag: ImageStatusFlag) {
     await this.dataSource.transaction(async () => {
       await this.repository.update(ids, { statusFlag });
       if (statusFlag === ImageStatusFlag.TEMP) {
@@ -70,6 +68,8 @@ export class MgoImageService {
         const mgoObject = mgoImage.mgObject;
         mgoObject.setTransferToTempAtToCurrentDate();
         await this.mgoRepository.save(mgoObject);
+      } else if (statusFlag === ImageStatusFlag.OTHER) {
+        await this.repository.update(ids, { mgObject: null });
       }
     });
   }
@@ -84,6 +84,12 @@ export class MgoImageService {
   async tempList(mgobjectId: string): Promise<MgoImage[]> {
     return this.repository.find({
       where: { mgId: mgobjectId, statusFlag: ImageStatusFlag.TEMP },
+    });
+  }
+
+  async otherList(mgobjectId: string) {
+    return this.repository.find({
+      where: { mgId: mgobjectId, mgObject: null },
     });
   }
 }
