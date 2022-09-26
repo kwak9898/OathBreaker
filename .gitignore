@@ -36,4 +36,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # 환경변수
-.env
+.env.development
+.env.production
+.env.test
