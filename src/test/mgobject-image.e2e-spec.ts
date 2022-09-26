@@ -13,6 +13,13 @@ import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { UserRepository } from "../domains/users/user.repository";
 import { UpdateMgoImageStatusDto } from "../domains/mgo-image/dto/UpdateMgoImageStatusDto";
 import { MgObjectService } from "../domains/mg-object/mg-object.service";
+import { UpdateMgoImageObjectDto } from "../domains/mgo-image/dto/UpdateMgoImageObjectDto";
+import { faker } from "@faker-js/faker";
+import {
+  MGOBJECT_EXCEPTION,
+  MGOIMAGE_EXCEPTION,
+} from "../exception/error-code";
+import { ImageStatusFlag } from "../domains/mgo-image/entities/mgoImage.entity";
 
 describe("MgObject Image 테스트", () => {
   let app: INestApplication;
@@ -121,7 +128,7 @@ describe("MgObject Image 테스트", () => {
       dto.isComplete = null;
 
       // When
-      const response = await requestHelper.post(`${DOMAIN}/status`, dto);
+      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
 
       // Then
       expect(response.status).toBe(400);
@@ -134,7 +141,7 @@ describe("MgObject Image 테스트", () => {
       dto.isComplete = true;
 
       // When
-      const response = await requestHelper.post(`${DOMAIN}/status`, dto);
+      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
 
       // Then
       expect(response.status).toBe(400);
@@ -149,7 +156,7 @@ describe("MgObject Image 테스트", () => {
       dto.isComplete = true;
 
       // When
-      const response = await requestHelper.post(`${DOMAIN}/status`, dto);
+      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
 
       // Then
       expect(response.status).toBe(200);
@@ -173,7 +180,7 @@ describe("MgObject Image 테스트", () => {
       dto.isComplete = false;
 
       // When
-      const response = await requestHelper.post(`${DOMAIN}/status`, dto);
+      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
 
       // Then
       expect(response.status).toBe(200);
@@ -192,6 +199,95 @@ describe("MgObject Image 테스트", () => {
       expect(mgObject.lastTransferToTempAt).toBe(null);
       // temp 이동 했으므로 lastTransferToTempAt 값이 있어야 한다.
       expect(afterTransferTemp.lastTransferToTempAt).not.toBe(null);
+    });
+  });
+
+  describe("IMAGE에 새로운  MG ID를 부여 ", () => {
+    it("성공", async () => {
+      // Given
+      const mgObject = mgObjects[getRandomInt(100)];
+      let targetObject = mgObjects[getRandomInt(100)];
+      while (mgObject.mgId == targetObject.mgId) {
+        targetObject = mgObjects[getRandomInt(100)];
+      }
+
+      const mgoImage = mgObject.mgoImages.map((image) => image.imgId)[
+        getRandomInt(3)
+      ];
+
+      const dto = new UpdateMgoImageObjectDto();
+      dto.imageId = mgoImage;
+      dto.mgObjectId = targetObject.mgId;
+
+      // when
+      const { body } = await requestHelper.patch(`${DOMAIN}/mgobject`, dto);
+
+      // then
+      expect(body.mgObject.mgId).toBe(dto.mgObjectId);
+      expect(body.statusFlag).toBe(ImageStatusFlag.COMPLETED);
+    });
+
+    it("이미지를 찾을 수 없음", async () => {
+      // Given
+      const mgObject = mgObjects[getRandomInt(100)];
+      let targetObject = mgObjects[getRandomInt(100)];
+      while (mgObject.mgId == targetObject.mgId) {
+        targetObject = mgObjects[getRandomInt(100)];
+      }
+
+      const dto = new UpdateMgoImageObjectDto();
+      dto.imageId = faker.random.word();
+      dto.mgObjectId = targetObject.mgId;
+
+      // when
+      const response = await requestHelper.patch(`${DOMAIN}/mgobject`, dto);
+
+      // then
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe(
+        MGOIMAGE_EXCEPTION.MGOIMAGE_NOT_FOUND.code
+      );
+      expect(response.body.message).toBe(
+        MGOIMAGE_EXCEPTION.MGOIMAGE_NOT_FOUND.message
+      );
+    });
+
+    it("MG ID를 찾을 수 없음", async () => {
+      // Given
+      const mgObject = mgObjects[getRandomInt(100)];
+
+      const mgoImageId = mgObject.mgoImages.map((image) => image.imgId)[
+        getRandomInt(3)
+      ];
+
+      const dto = new UpdateMgoImageObjectDto();
+      dto.imageId = mgoImageId;
+      dto.mgObjectId = faker.random.word();
+
+      // when
+      const response = await requestHelper.patch(`${DOMAIN}/mgobject`, dto);
+
+      // then
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe(
+        MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND.code
+      );
+      expect(response.body.message).toBe(
+        MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND.message
+      );
+    });
+
+    it("MG ID, IMAGE ID EMTPY", async () => {
+      // Given
+      const dto = new UpdateMgoImageObjectDto();
+      dto.imageId = null;
+      dto.mgObjectId = null;
+
+      // when
+      const response = await requestHelper.patch(`${DOMAIN}/mgobject`, dto);
+
+      // then
+      expect(response.statusCode).toBe(400);
     });
   });
 

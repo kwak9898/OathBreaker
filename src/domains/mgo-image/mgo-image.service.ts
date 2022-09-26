@@ -7,6 +7,7 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { MgObjectRepository } from "../mg-object/mg-object.repository";
 import { MGOIMAGE_EXCEPTION } from "../../exception/error-code";
 import { DataSource } from "typeorm";
+import { MgObject } from "../mg-object/entities/mg-object.entity";
 
 @Injectable()
 export class MgoImageService {
@@ -71,5 +72,12 @@ export class MgoImageService {
         await this.mgoRepository.save(mgoObject);
       }
     });
+  }
+
+  async updateMgObject(imageId: string, mgObject: MgObject): Promise<MgoImage> {
+    const imageObject = await this.findOneOrFail(imageId);
+    imageObject.mgObject = mgObject;
+    imageObject.statusFlag = ImageStatusFlag.COMPLETED;
+    return await this.repository.save(imageObject);
   }
 }
