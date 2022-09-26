@@ -1,14 +1,22 @@
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 import { ImageStatusFlag, MgoImage } from "./entities/mgoImage.entity";
 import { MgoImageRepository } from "./mgo-image.repository";
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { MyPaginationQuery } from "../base/pagination-query";
+import { MgObjectRepository } from "../mg-object/mg-object.repository";
+import { MGOIMAGE_EXCEPTION } from "../../exception/error-code";
+import { DataSource } from "typeorm";
 
 @Injectable()
 export class MgoImageService {
   constructor(
-    @InjectRepository(MgoImageRepository) private repository: MgoImageRepository
+    @InjectDataSource()
+    private dataSource: DataSource,
+    @InjectRepository(MgoImageRepository)
+    private repository: MgoImageRepository,
+    @InjectRepository(MgObjectRepository)
+    private mgoRepository: MgObjectRepository
   ) {}
 
   async cntForDashboard(): Promise<{ imageTotalCnt: number; tmpCnt: number }> {
@@ -17,6 +25,18 @@ export class MgoImageService {
       where: { statusFlag: ImageStatusFlag.TEMP },
     });
     return { imageTotalCnt, tmpCnt };
+  }
+
+  async findOneOrFail(id: string, join?: string[]): Promise<MgoImage> {
+    const mgoImage = await this.repository.findOne({
+      where: { imgId: id },
+      relations: join,
+    });
+    if (!mgoImage) {
+      throw new NotFoundException(MGOIMAGE_EXCEPTION.MGOIMAGE_NOT_FOUND);
+    }
+
+    return mgoImage;
   }
 
   async paginate(
@@ -35,5 +55,21 @@ export class MgoImageService {
     }
 
     return paginate<MgoImage>(queryBuilder, options);
+  }
+
+  async updateImageStatus(ids: string[], isComplete: boolean) {
+    const statusFlag = isComplete
+      ? ImageStatusFlag.COMPLETED
+      : ImageStatusFlag.TEMP;
+
+    await this.dataSource.transaction(async () => {
+      await this.repository.update(ids, { statusFlag });
+      if (statusFlag === ImageStatusFlag.TEMP) {
+        const mgoImage = await this.findOneOrFail(ids[0], ["mgObject"]);
+        const mgoObject = mgoImage.mgObject;
+        mgoObject.setTransferToTempAtToCurrentDate();
+        await this.mgoRepository.save(mgoObject);
+      }
+    });
   }
 }

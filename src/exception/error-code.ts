@@ -17,3 +17,10 @@ export const MGOBJECT_EXCEPTION = {
     message: "mgobject를 찾을 수 없습니다.",
   },
 };
+
+export const MGOIMAGE_EXCEPTION = {
+  MGOIMAGE_NOT_FOUND: {
+    code: "MGOIMAGE_NOT_FOUND",
+    message: "MGOIMAGE를 찾을 수 없습니다.",
+  },
+};

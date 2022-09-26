@@ -5,7 +5,6 @@ import { AuthService } from "../domains/auth/auth.service";
 import { RequestHelper } from "../utils/test.utils";
 import { MgObjectRepository } from "../domains/mg-object/mg-object.repository";
 import { DatabaseModule } from "../database/database.module";
-import { DataSource } from "typeorm";
 import { MgObjectUpdateDto } from "../domains/mg-object/dto/request/MgObjectUpdateDto";
 import { MGOBJECT_EXCEPTION } from "../exception/error-code";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
@@ -13,6 +12,7 @@ import { MgObjectFactory } from "./factory/mgobject-factory";
 import { UserFactory } from "./factory/user-factory";
 import { UserRepository } from "../domains/users/user.repository";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
+import { faker } from "@faker-js/faker";
 
 describe("MgObject 테스트", () => {
   let app: INestApplication;
@@ -22,7 +22,6 @@ describe("MgObject 테스트", () => {
   let requestHelper: RequestHelper;
   let mgObjectFactory: MgObjectFactory;
   let userFactory: UserFactory;
-  let datasource: DataSource;
   let mgObjects: MgObject[];
 
   beforeAll(async () => {
@@ -42,7 +41,6 @@ describe("MgObject 테스트", () => {
     authService = moduleFixture.get(AuthService);
     mgObjectFactory = moduleFixture.get(MgObjectFactory);
     userFactory = moduleFixture.get(UserFactory);
-    datasource = moduleFixture.get(DataSource);
     // await datasource.synchronize(true);
 
     token = authService.getCookieWithJwtAccessToken(
@@ -114,10 +112,10 @@ describe("MgObject 테스트", () => {
       // Given
       const mgObject = mgObjects[1];
       const mgoUpdateDto = new MgObjectUpdateDto();
-      mgoUpdateDto.mainMgCategory = "main";
-      mgoUpdateDto.mediumMgCategory = "medium";
-      mgoUpdateDto.subMgCategory = "sub";
-      mgoUpdateDto.mgName = "newMgName";
+      mgoUpdateDto.mainMgCategory = faker.name.jobTitle();
+      mgoUpdateDto.mediumMgCategory = faker.name.fullName();
+      mgoUpdateDto.subMgCategory = faker.name.lastName();
+      mgoUpdateDto.mgName = faker.name.lastName();
 
       // When
       const response = await requestHelper.patch(

@@ -21,7 +21,7 @@ export class MgObjectFactory {
 
     const savedMgObject = await this.repository.save(mgObject);
     for (let i = 0; i < 3; i++) {
-      await this.createBaseMgoImage(savedMgObject);
+      mgObject.mgoImages.push(await this.createBaseMgoImage(savedMgObject));
     }
     return savedMgObject;
   }

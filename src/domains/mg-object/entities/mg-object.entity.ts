@@ -81,9 +81,13 @@ export class MgObject extends BaseEntity {
   })
   rankChange?: number;
 
-  @Column({ nullable: true })
-  lastTransferTmp?: Date;
+  @Column({ nullable: true, name: "last_transfer_to_temp_at" })
+  lastTransferToTempAt?: Date;
 
   @OneToMany(() => MgoImage, (mgoImage) => mgoImage.mgObject)
   mgoImages: MgoImage[];
+
+  setTransferToTempAtToCurrentDate() {
+    this.lastTransferToTempAt = new Date();
+  }
 }
