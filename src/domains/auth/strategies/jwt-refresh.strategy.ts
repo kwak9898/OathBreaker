@@ -22,12 +22,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate(req, payload: any) {
-    console.log("여기얌");
+    console.log("여기");
     const refreshToken = req.token;
     const token = await this.usersService.getUserIfRefreshTokenMatches(
       refreshToken,
       payload.userId
     );
+    console.log("토큰", token);
 
     return token;
   }

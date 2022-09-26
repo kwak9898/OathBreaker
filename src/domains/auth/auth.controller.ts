@@ -56,15 +56,14 @@ export class AuthController {
   // 로그아웃
   @UseGuards(JwtRefreshGuard)
   @Post("logout")
-  async logOut(
-    @Req() req,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<Response> {
-    let refreshToken = req.headers.authorization;
-    refreshToken = refreshToken.replace("Bearer", "");
+  async logOut(@Req() req, @Res({ passthrough: true }) res: Response) {
+    const { accessOption, refreshOption } =
+      this.authService.getCookiesForLogOut();
 
-    await this.authService.logout(refreshToken);
-    return res.status(HttpStatus.OK).json();
+    await this.usersService.removeRefreshToken(req.user.id);
+
+    res.cookie("Authentication", "", accessOption);
+    res.cookie("Refresh", "", refreshOption);
   }
 
   @Public()
