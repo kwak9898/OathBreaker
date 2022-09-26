@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Query,
+} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { RolesService } from "./roles.service";
 import { User } from "../users/entities/user.entity";
@@ -33,7 +41,7 @@ export class RolesController {
   @Delete("/delete/:userId")
   deleteRoleByUser(
     @Param("userId") userId: string,
-    roleName: RolesDto
+    @Query("role") roleName: RolesDto
   ): Promise<void> {
     return this.rolesService.deleteRoleByUser(userId, roleName.roleName);
   }
