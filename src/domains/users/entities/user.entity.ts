@@ -63,8 +63,8 @@ export class User extends BaseEntity {
   LastAccessAt?: Date;
 
   @BeforeInsert()
-  async hashPassword(): Promise<void> {
-    this.password = await bcrypt.hash(this.password, 12);
+  async hashPassword(password: string): Promise<void> {
+    this.password = await bcrypt.hash(password || this.password, 12);
   }
 
   @BeforeUpdate()

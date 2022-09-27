@@ -107,7 +107,7 @@ export class AuthService {
         user = await this.usersService.getUserById(userId);
       }
 
-      await user.setEncryptPassword(password);
+      await user.hashPassword(password);
       await this.usersService.updateUser(userId, user);
 
       return user;

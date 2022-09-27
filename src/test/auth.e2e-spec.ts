@@ -150,10 +150,10 @@ describe("회원 인증 관련 테스트", () => {
       // When
       const response = await request(app.getHttpServer())
         .patch(`${AuthDomain}/change-password`)
-        .auth(refreshToken, { type: "bearer" })
+        .auth(token, { type: "bearer" })
         .send({ userId, password });
 
-      console.log("비밀번호 변경 성공 테스트 : ", response.error);
+      console.log("비밀번호 변경 성공 테스트 : ", response.body);
 
       // Then
       expect(response.status).toEqual(HttpStatus.OK);
