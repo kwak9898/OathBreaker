@@ -39,7 +39,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res: Response) {
-    // 쿠키 저장을 위한 res 생성
     const user = req.user;
     const { accessToken, ...accessOption } =
       this.authService.getCookieWithJwtAccessToken(user.userId);
@@ -55,10 +54,12 @@ export class AuthController {
 
   // 로그아웃
   @UseGuards(JwtRefreshGuard)
-  @Post("logout")
-  async logOut(@Req() req, @Res({ passthrough: true }) res: Response) {
+  @Post("signout")
+  async signOut(@Req() req, @Res({ passthrough: true }) res: Response) {
     const { accessOption, refreshOption } =
       this.authService.getCookiesForLogOut();
+
+    console.log("지나가라");
 
     await this.usersService.removeRefreshToken(req.user.id);
 
