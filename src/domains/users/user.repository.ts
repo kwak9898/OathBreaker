@@ -83,23 +83,17 @@ export class UserRepository extends Repository<User> {
 
   // DB에 발급받은 Refresh Token 암호화 저장
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
-    const jwtToken = await bcrypt.hash(refreshToken, 12); // refreshToken
-    await this.update(userId, { jwtToken });
+    await this.update(userId, { jwtToken: refreshToken });
   }
 
   // Id 값을 이용한 Refresh Token 유효한지 확인
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
     const user = await this.getUserById(userId);
 
-    const isRefreshTokenMatching = await bcrypt.compare(
-      refreshToken,
-      user.jwtToken
-    );
-
-    if (isRefreshTokenMatching) {
+    if (refreshToken == user.jwtToken) {
       return user;
     } else {
-      throw new BadRequestException("토큰이 유효하지 않습니다.");
+      throw new BadRequestException("유효하지 않는 토큰입니다.");
     }
   }
 

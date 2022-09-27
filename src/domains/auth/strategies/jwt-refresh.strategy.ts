@@ -27,7 +27,6 @@ export class JwtRefreshStrategy extends PassportStrategy(
       refreshToken,
       payload.userId
     );
-    console.log("토큰", token);
 
     return token;
   }
