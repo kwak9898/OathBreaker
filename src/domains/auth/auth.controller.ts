@@ -78,7 +78,6 @@ export class AuthController {
     return user;
   }
 
-  @Public()
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.getUserById(req.user.userId);
