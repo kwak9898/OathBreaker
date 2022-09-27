@@ -8,10 +8,10 @@ export class UserFactory {
 
   createBaseUser() {
     const user = new User();
-    user.userId = "userId";
-    user.password = "password";
+    user.userId = "user12345";
+    user.password = "password123@";
     user.isActive = true;
-    user.roleName = "admin";
+    user.roleName = "관리자";
     return this.repository.save(user);
   }
 }

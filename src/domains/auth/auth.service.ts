@@ -1,9 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { User } from "../users/entities/user.entity";
+import { CreateUserDto } from "../users/dto/create-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -15,39 +22,16 @@ export class AuthService {
 
   // 비밀번호 유효성 검사
   async validateUser(userId: string, plainTextPassword: string): Promise<any> {
-    try {
-      const user = await this.usersService.getByUserId(userId);
-      console.log(user);
-      await this.verifyPassword(plainTextPassword, user.password);
-      const { password, ...result } = user;
-      console.log("비밀번호 유효성 검사", user.password, password, result);
-
-      return result;
-    } catch (err) {
-      throw new HttpException("잘못된 인증입니다.", HttpStatus.BAD_REQUEST);
-    }
+    const user = await this.usersService.getUserById(userId);
+    await this.verifyPassword(plainTextPassword, user.password);
+    const { password, ...result } = user;
+    return result;
   }
 
-  // 회원가입
-  // async register(user: User) {
-  //   const hashedPassword = await hash(user.password, 12);
-  //   try {
-  //     user.password = hashedPassword;
-  //
-  //     const { password, ...returnUser } = await this.usersService.createUser(
-  //       user
-  //     );
-  //
-  //     return returnUser;
-  //   } catch (err) {
-  //     if (err?.code === "ER_DUP_ENTRY") {
-  //       throw new HttpException(
-  //         "이미 존재하는 아이디입니다..",
-  //         HttpStatus.BAD_REQUEST
-  //       );
-  //     }
-  //   }
-  // }
+  // 유저 생성
+  async signUp(createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
+  }
 
   // Access Token 발급
   getCookieWithJwtAccessToken(userId: string) {
@@ -64,9 +48,7 @@ export class AuthService {
       domain: "localhost",
       path: "/",
       httpOnly: true,
-      maxAge:
-        Number(this.configService.get("JWT_ACCESS_TOKEN_EXPIRATION_TIME")) *
-        1000,
+      maxAge: 3600,
     };
   }
 
@@ -85,9 +67,7 @@ export class AuthService {
       domain: "localhost",
       path: "/",
       httpOnly: true,
-      maxAge:
-        Number(this.configService.get("JWT_REFRESH_TOKEN_EXPIRATION_TIME")) *
-        1000,
+      maxAge: 108000,
     };
   }
 
@@ -109,30 +89,39 @@ export class AuthService {
     };
   }
 
-  async changePassword(userId: string, password: string, user?: User) {
+  async logout(refreshToken: string): Promise<void> {
+    const user = await this.usersService.findRefreshToken(refreshToken);
+
+    if (!user) {
+      throw new NotFoundException("토근이 유효하지 않습니다.");
+    }
+
+    user.jwtToken = "";
+
+    await this.usersService.updateUser(user.userId, user);
+    return;
+  }
+
+  async changePassword(userId: string, plainPassword: string, user?: User) {
     try {
       if (!user) {
-        user = await this.usersService.findOne(userId);
+        user = await this.usersService.getUserById(userId);
       }
 
-      await user.setEncryptPassword(password);
-      await this.usersService.updateByUser(user);
+      await user.hashPassword(plainPassword);
+      await this.usersService.updateUser(userId, user);
 
       return user;
     } catch (err) {
       if (err) {
-        throw new HttpException("잘못된 경로입니다.", HttpStatus.BAD_REQUEST);
+        throw new BadRequestException("다시 시도해주세요.");
       }
       return err;
     }
   }
 
-  private async verifyPassword(
-    plainTextPassword: string,
-    hashedPassword: string
-  ) {
-    const isPasswordMatch = await compare(plainTextPassword, hashedPassword);
-    console.log("verifyPassword", isPasswordMatch);
+  private async verifyPassword(password: string, hashedPassword: string) {
+    const isPasswordMatch = await compare(password, hashedPassword);
     if (!isPasswordMatch) {
       throw new HttpException(
         "비밀번호가 일치하지 않습니다.",

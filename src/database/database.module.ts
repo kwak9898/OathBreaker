@@ -10,19 +10,6 @@ import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      // useFactory: (configService: ConfigService) => ({
-      //   type: "postgres",
-      //   host: "127.0.0.1",
-      //   port: 5432,
-      //   username: "postgres",
-      //   password: "dbMerge135!#%",
-      //   database: "merge_main_db",
-      //   entities: [User, MgObject, MgoImage],
-      //   synchronize: true,
-      //   retryAttempts: 2,
-      //   logging: true,
-      //   dropSchema:true
-      // }),
       useFactory: (configService: ConfigService) => ({
         type: "postgres",
         host: configService.get("DB_HOST"),

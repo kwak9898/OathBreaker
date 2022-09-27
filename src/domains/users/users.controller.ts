@@ -1,46 +1,35 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { Public } from "../../dacorators/skip-auth.decorator";
+import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
 import { User } from "./entities/user.entity";
 
 @Controller("users")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Public()
-  @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  // 유저 전체 조회
+  @Get("")
+  async getAllUsers(): Promise<User[]> {
+    return this.usersService.getAllUsers();
   }
 
+  // 특정 유저 조회
   @Get(":userId")
-  findOne(@Param() userId: string): Promise<User> {
-    return this.usersService.findOne(userId);
+  async getUserById(@Param("userId") userId: string): Promise<User> {
+    return this.usersService.getUserById(userId);
   }
 
-  @Delete(":userId")
-  async remove(@Param() userId: string): Promise<void> {
-    return this.usersService.remove(userId);
+  // 특정 유저 수정
+  @Patch(":userId/update")
+  async updateUser(
+    @Param("userId") userId: string,
+    @Body() user: User
+  ): Promise<User> {
+    return this.usersService.updateUser(userId, user);
   }
 
-  @Public()
-  @Post()
-  async createUser(@Body() user: User): Promise<User> {
-    await this.usersService.createUser(user);
-    return user;
-  }
-
-  @Public()
-  @Patch("delete-user")
-  async deleteByUser(@Body() userId: string) {
-    return await this.usersService.deleteByUser(userId);
+  // 특정 유저 삭제
+  @Delete(":userId/delete")
+  async deleteUser(@Param("userId") userId: string): Promise<void> {
+    return this.usersService.deleteUser(userId);
   }
 }

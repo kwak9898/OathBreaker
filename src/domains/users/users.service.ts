@@ -1,94 +1,65 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { compare, hash } from "bcrypt";
+import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>
+    @InjectRepository(UserRepository)
+    private userRepository: UserRepository
   ) {}
 
-  // 모든 유저 찾기
-  findAll(): Promise<User[]> {
-    return this.userRepository.find();
-  }
-
-  // 특정 유저 찾기
-  findOne(userId: string): Promise<User> {
-    return this.userRepository.findOne({ where: { userId: userId } });
-  }
-
-  // 유저 삭제
-  async remove(userId: string): Promise<void> {
-    await this.userRepository.delete(userId);
-  }
-
   // 유저 생성
-  async createUser(user: User): Promise<User> {
-    const createUser: User = this.userRepository.create(user);
-    await this.userRepository.save(createUser);
-    return createUser;
+  createUser(createUserDto: CreateUserDto): Promise<User> {
+    return this.userRepository.createUser(createUserDto);
   }
 
-  // 특정 사용자 이름 찾기
-  async findByUserName(
-    userId: string,
-    username: string
-  ): Promise<User | undefined> {
-    return this.userRepository.findOne({
-      where: { userId: userId, username: username },
-    });
+  // 유저 전체 조회
+  getAllUsers(): Promise<User[]> {
+    return this.userRepository.getAllUsers();
   }
 
-  // UserId 값을 이용한 User 정보 가져오기
-  async getByUserId(userId: string) {
-    const user = await this.userRepository.findOne({ where: { userId } });
+  // 특정 유저 조회
+  getUserById(userId: string): Promise<User> {
+    return this.userRepository.getUserById(userId);
+  }
 
-    if (user) {
-      return user;
-    } else {
-      throw new HttpException(
-        "존재하지 않은 유저입니다.",
-        HttpStatus.NOT_FOUND
-      );
-    }
+  // 특정 유저 수정
+  updateUser(userId: string, user: User): Promise<User> {
+    return this.userRepository.updateUser(userId, user);
+  }
+
+  // 특정 유저 삭제
+  deleteUser(userId: string): Promise<void> {
+    return this.userRepository.deleteUser(userId);
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장
-  async setCurrentRefreshToken(refreshToken: string, userId: string) {
-    const jwtToken = await hash(refreshToken, 10); // refreshToken
-    await this.userRepository.update(userId, { jwtToken });
+  setCurrentRefreshToken(refreshToken: string, userId: string) {
+    return this.userRepository.setCurrentRefreshToken(refreshToken, userId);
   }
 
-  // Id 값을 이용한 Refresh Token 유효한지 확인
-  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
-    const user = await this.getByUserId(userId);
-
-    const isRefreshTokenMatching = await compare(refreshToken, user.jwtToken);
-
-    if (isRefreshTokenMatching) {
-      return user;
-    }
+  getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    return this.userRepository.getUserIfRefreshTokenMatches(
+      refreshToken,
+      userId
+    );
   }
 
   // Refresh Token 초기화
-  async removeRefreshToken(id: number) {
-    return this.userRepository.update(id, {
-      jwtToken: null,
-    });
+  removeRefreshToken(userId: string) {
+    return this.userRepository.removeRefreshToken(userId);
   }
 
-  // 유저 없데이트
-  async updateByUser(user: User): Promise<User> {
-    user.updatedAt = new Date();
-    return await this.userRepository.save(user);
+  // 로그인
+  login(createUserDto: CreateUserDto) {
+    return this.userRepository.login(createUserDto);
   }
 
-  // 유저 삭제
-  async deleteByUser(userId: string) {
-    return await this.userRepository.delete(userId);
+  // 유저의 refreshToken 조회
+  findRefreshToken(jwtToken: string): Promise<User> {
+    return this.userRepository.findRefreshToken(jwtToken);
   }
 }
