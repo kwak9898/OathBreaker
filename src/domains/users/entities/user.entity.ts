@@ -56,18 +56,13 @@ export class User extends BaseEntity {
   })
   LastAccessAt?: Date;
 
-  // @BeforeInsert()
   async hashPassword(password: string): Promise<void> {
-    this.password = await bcrypt.hash(password, 10);
+    this.password = await bcrypt.hash(password, 12);
   }
 
   @BeforeUpdate()
   async updateDate(): Promise<void> {
     this.updatedAt = await new Date();
-  }
-
-  async setEncryptPassword(password: string): Promise<void> {
-    this.password = await bcrypt.hash(password, 12);
   }
 
   async comparePw(attempt: string): Promise<boolean> {
