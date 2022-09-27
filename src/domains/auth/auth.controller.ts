@@ -86,7 +86,10 @@ export class AuthController {
       throw new NotFoundException("존재하지 않는 유저입니다.");
     }
 
-    await this.authService.changePassword(user.userId, user.password);
-    return res.status(HttpStatus.OK).json(user);
+    const changedPasswordUser = await this.authService.changePassword(
+      user.userId,
+      req.body.password
+    );
+    return res.status(HttpStatus.OK).json(changedPasswordUser);
   }
 }

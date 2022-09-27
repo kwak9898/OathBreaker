@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -101,19 +102,19 @@ export class AuthService {
     return;
   }
 
-  async changePassword(userId: string, password: string, user?: User) {
+  async changePassword(userId: string, plainPassword: string, user?: User) {
     try {
       if (!user) {
         user = await this.usersService.getUserById(userId);
       }
 
-      await user.hashPassword(password);
+      await user.hashPassword(plainPassword);
       await this.usersService.updateUser(userId, user);
 
       return user;
     } catch (err) {
       if (err) {
-        throw new HttpException("잘못된 경로입니다.", HttpStatus.BAD_REQUEST);
+        throw new BadRequestException("다시 시도해주세요.");
       }
       return err;
     }
@@ -121,7 +122,6 @@ export class AuthService {
 
   private async verifyPassword(password: string, hashedPassword: string) {
     const isPasswordMatch = await compare(password, hashedPassword);
-
     if (!isPasswordMatch) {
       throw new HttpException(
         "비밀번호가 일치하지 않습니다.",

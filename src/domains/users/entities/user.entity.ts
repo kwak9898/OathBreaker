@@ -1,10 +1,4 @@
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  PrimaryColumn,
-} from "typeorm";
+import { BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
@@ -62,9 +56,9 @@ export class User extends BaseEntity {
   })
   LastAccessAt?: Date;
 
-  @BeforeInsert()
+  // @BeforeInsert()
   async hashPassword(password: string): Promise<void> {
-    this.password = await bcrypt.hash(password || this.password, 12);
+    this.password = await bcrypt.hash(password, 10);
   }
 
   @BeforeUpdate()
