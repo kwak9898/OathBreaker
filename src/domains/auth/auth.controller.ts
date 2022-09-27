@@ -90,6 +90,7 @@ export class AuthController {
       user.userId,
       req.body.password
     );
+    console.log(user)
     return res.status(HttpStatus.OK).json(changedPasswordUser);
   }
 }
