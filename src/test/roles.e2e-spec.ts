@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataSource } from "typeorm";
 import { INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
+import * as request from "supertest";
 import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
 import { UserFactory } from "./factory/user-factory";
@@ -38,13 +39,19 @@ describe("역할 관련 테스트", () => {
     await app.init();
   });
 
-  describe("역할 생성/조회/수정/삭제", () => {
-    it("역할 생성 성공", async () => {
-      // TODO 구현 예정
-    });
-
+  describe("역할 조회/수정/삭제", () => {
     it("역할 조회 성공", async () => {
-      // TODO 구현 예정
+      // Given
+      const user = await userFactory.createBaseUser();
+      userId = user.userId;
+      roleName = "선택";
+
+      // When
+      const response = await request(app.getHttpServer()).get(
+        `create/${userId}/${roleName}`
+      );
+
+      // Then
     });
 
     it("역할 수정 성공", async () => {
