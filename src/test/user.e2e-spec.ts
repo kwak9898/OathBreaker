@@ -102,5 +102,19 @@ describe("계정 관련 테스트", () => {
       expect(response.statusCode).toBe(HttpStatus.OK);
       done();
     });
+
+    it("특정 계정 삭제 성공", async (done) => {
+      // Given
+      userId = "test000";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .delete(`${UserDomain}/${userId}/delete`)
+        .auth(token, { type: "bearer" });
+
+      // Then
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      done();
+    });
   });
 });
