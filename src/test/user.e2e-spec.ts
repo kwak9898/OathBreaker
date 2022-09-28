@@ -6,13 +6,14 @@ import * as request from "supertest";
 import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
 
-describe("유저 테스트", () => {
+describe("계정 관련 테스트", () => {
   let app: INestApplication;
   let usersService: UsersService;
   let authService: AuthService;
   let userId: string | undefined;
   let username: string | undefined;
   let password: string | undefined;
+  let roleName: string | undefined;
   let token;
   const UserDomain = "/users";
   const AuthDomain = "/auth";
@@ -37,66 +38,69 @@ describe("유저 테스트", () => {
   describe("계정 생성/조회/수정/삭제 테스트", () => {
     it("계정 생성 성공", async (done) => {
       // Given
-
       userId = "test000";
-      username = "Tester";
-      password = "test1234@";
+      username = "tester000";
+      password = "passwordpw1@";
 
       // When
       const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/register`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, password, username });
+        .post(`${AuthDomain}/signup`)
+        .send({
+          userId,
+          username,
+          password,
+        });
 
       // Then
-      expect(response.status).toEqual(HttpStatus.CREATED);
-      expect(response.body["userId"]).toEqual(userId);
-      expect(response.body["username"]).toEqual(username);
+      expect(response.statusCode).toBe(HttpStatus.CREATED);
+      expect(response.body.userId).toBe(userId);
+      expect(response.body.username).toBe(username);
       done();
     });
 
-    it("계정 전체 조회 테스트", async (done) => {
+    it("전체 계정 조회 성공", async (done) => {
       // Given
 
       // When
       const response = await request(app.getHttpServer())
-        .get(`${UserDomain}/`)
+        .get(`${UserDomain}`)
         .auth(token, { type: "bearer" });
 
       // Then
-      expect(response.status).toEqual(HttpStatus.OK);
+      expect(response.statusCode).toBe(HttpStatus.OK);
       done();
     });
 
-    it("특정 계정 조회 테스트", async (done) => {
+    it("특정 계정 조회 성공", async (done) => {
       // Given
       userId = "test000";
 
       // When
       const response = await request(app.getHttpServer())
         .get(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" })
-        .set({ userId });
+        .auth(token, { type: "bearer" });
 
       // Then
-      expect(response.body["userId"]).toEqual(userId);
-      expect(response.status).toEqual(HttpStatus.OK);
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(response.body.userId).toBe(userId);
       done();
     });
 
-    // it("특정 계정 삭제 테스트", async (done) => {
-    //   // Given
-    //   userId = "test000";
-    //
-    //   // When
-    //   const response = await request(app.getHttpServer())
-    //     .delete(`${UserDomain}/${userId}`)
-    //     .auth(token, { type: "bearer" })
-    //     .set({ userId });
-    //
-    //   // Then
-    //   expect(response.status).toEqual(HttpStatus.OK);
-    //   done();
-    // });
+    it("특정 계정 수정 성공", async (done) => {
+      // Given
+      userId = "test000";
+      username = "update-user1";
+      roleName = "등록자";
+
+      // When
+      const response = await request(app.getHttpServer())
+        .patch(`${UserDomain}/${userId}/update`)
+        .auth(token, { type: "bearer" })
+        .send({ userId, username, roleName });
+
+      // Then
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      done();
+    });
   });
 });
