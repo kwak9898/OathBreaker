@@ -11,9 +11,9 @@ import { MgObjectFactory } from "./factory/mgobject-factory";
 import { UserFactory } from "./factory/user-factory";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { UserRepository } from "../domains/users/user.repository";
-import { UpdateMgoImageStatusDto } from "../domains/mgo-image/dto/UpdateMgoImageStatusDto";
+import { UpdateMgoImageStatusDto } from "../domains/mgo-image/dto/request/update-mgo-image-status.dto";
 import { MgObjectService } from "../domains/mg-object/mg-object.service";
-import { UpdateMgoImageObjectDto } from "../domains/mgo-image/dto/UpdateMgoImageObjectDto";
+import { UpdateMgoImageMgObjectDto } from "../domains/mgo-image/dto/request/update-mgo-image-mg-object.dto";
 import { faker } from "@faker-js/faker";
 import {
   MGOBJECT_EXCEPTION,
@@ -86,7 +86,7 @@ describe("MgObject Image 테스트", () => {
       expect(body).toHaveProperty("meta");
     });
 
-    it("[조회] 미완료인 상태인 이미지만 => statusFlag = 0", async () => {
+    it("[조회] 미완료인 상태 => statusFlag = 0", async () => {
       // Given
 
       // When
@@ -102,7 +102,7 @@ describe("MgObject Image 테스트", () => {
       expect(body).toHaveProperty("meta");
     });
 
-    it("[조회] 완료된 상태인 이미지만 => statusFlag = 1", async () => {
+    it("[조회] 완료된 상태 => statusFlag = 1", async () => {
       // Given
 
       // When
@@ -118,7 +118,7 @@ describe("MgObject Image 테스트", () => {
       expect(body).toHaveProperty("meta");
     });
 
-    it("[조회] temp 상태인 이미지만 => statusFlag = 2", async () => {
+    it("[조회] temp 상태 => statusFlag = 2", async () => {
       // Given
 
       // When
@@ -177,7 +177,7 @@ describe("MgObject Image 테스트", () => {
       expect(response.status).toBe(400);
     });
 
-    it("검수 완료로 일괄 처리하기", async () => {
+    it("검수 완료로 상태 변경하기", async () => {
       // Given
       const mgObject = getRandomMgObject();
       const imageIds = mgObject.mgoImages.map((image) => image.imgId);
@@ -201,7 +201,7 @@ describe("MgObject Image 테스트", () => {
       }
     });
 
-    it("temp일괄 처리하기", async () => {
+    it("temp로 상태 변경하기", async () => {
       // Given
       const mgObject = getRandomMgObject();
       const imageIds = mgObject.mgoImages.map((image) => image.imgId);
@@ -231,7 +231,7 @@ describe("MgObject Image 테스트", () => {
       expect(afterTransferTemp.lastTransferToTempAt).not.toBe(null);
     });
 
-    it("other 일괄 처리하기", async () => {
+    it("other로 상태 변경하기", async () => {
       // Given
       const mgObject = getRandomMgObject();
       const imageIds = mgObject.mgoImages.map((image) => image.imgId);
@@ -269,7 +269,7 @@ describe("MgObject Image 테스트", () => {
         getRandomInt(3)
       ];
 
-      const dto = new UpdateMgoImageObjectDto();
+      const dto = new UpdateMgoImageMgObjectDto();
       dto.imageId = mgoImage;
       dto.mgObjectId = targetObject.mgId;
 
@@ -289,7 +289,7 @@ describe("MgObject Image 테스트", () => {
         targetObject = mgObjects[getRandomInt(100)];
       }
 
-      const dto = new UpdateMgoImageObjectDto();
+      const dto = new UpdateMgoImageMgObjectDto();
       dto.imageId = faker.random.word();
       dto.mgObjectId = targetObject.mgId;
 
@@ -314,7 +314,7 @@ describe("MgObject Image 테스트", () => {
         getRandomInt(3)
       ];
 
-      const dto = new UpdateMgoImageObjectDto();
+      const dto = new UpdateMgoImageMgObjectDto();
       dto.imageId = mgoImageId;
       dto.mgObjectId = faker.random.word();
 
@@ -333,7 +333,7 @@ describe("MgObject Image 테스트", () => {
 
     it("MG ID, IMAGE ID EMTPY", async () => {
       // Given
-      const dto = new UpdateMgoImageObjectDto();
+      const dto = new UpdateMgoImageMgObjectDto();
       dto.imageId = null;
       dto.mgObjectId = null;
 
@@ -342,32 +342,6 @@ describe("MgObject Image 테스트", () => {
 
       // then
       expect(response.statusCode).toBe(400);
-    });
-  });
-
-  describe("TEMP IMAGE LIST", () => {
-    it("성공", async () => {
-      const mgObject = getRandomMgObject();
-      const imageIds = mgObject.mgoImages.map((image) => image.imgId);
-      const dto = new UpdateMgoImageStatusDto();
-      dto.imageIds = imageIds;
-      dto.statusFlag = ImageStatusFlag.TEMP;
-
-      // When
-      const response = await requestHelper.patch(`${DOMAIN}/status`, dto);
-
-      // Then
-      expect(response.status).toBe(200);
-
-      const { body } = await requestHelper.get(
-        `${DOMAIN}/${mgObject.mgId}/temp`
-      );
-
-      expect(body.length).toBe(3);
-
-      for (const item of body) {
-        expect(item.statusFlag).toBe(ImageStatusFlag.TEMP);
-      }
     });
   });
 

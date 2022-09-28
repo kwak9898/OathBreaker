@@ -8,6 +8,8 @@ import { MgObjectRepository } from "../mg-object/mg-object.repository";
 import { MGOIMAGE_EXCEPTION } from "../../exception/error-code";
 import { DataSource } from "typeorm";
 import { MgObject } from "../mg-object/entities/mg-object.entity";
+import { MyPagination } from "../base/pagination-response";
+import { MgoImageListResponseDto } from "./dto/response/mgo-image-list-response.dto";
 
 @Injectable()
 export class MgoImageService {
@@ -44,7 +46,7 @@ export class MgoImageService {
     options: MyPaginationQuery,
     mgoObjectId?: string,
     statusFlag?: ImageStatusFlag
-  ): Promise<Pagination<MgoImage>> {
+  ): Promise<Pagination<MgoImageListResponseDto>> {
     const queryBuilder = this.repository.createQueryBuilder("mgoImage");
 
     if (mgoObjectId) {
@@ -57,7 +59,9 @@ export class MgoImageService {
       });
     }
 
-    return paginate<MgoImage>(queryBuilder, options);
+    const { items, meta } = await paginate<MgoImage>(queryBuilder, options);
+    const newItems = items.map((r) => new MgoImageListResponseDto(r));
+    return new MyPagination(newItems, meta);
   }
 
   async updateImageStatus(ids: string[], statusFlag: ImageStatusFlag) {
@@ -79,17 +83,5 @@ export class MgoImageService {
     imageObject.mgObject = mgObject;
     imageObject.statusFlag = ImageStatusFlag.COMPLETED;
     return await this.repository.save(imageObject);
-  }
-
-  async tempList(mgobjectId: string): Promise<MgoImage[]> {
-    return this.repository.find({
-      where: { mgId: mgobjectId, statusFlag: ImageStatusFlag.TEMP },
-    });
-  }
-
-  async otherList(mgobjectId: string) {
-    return this.repository.find({
-      where: { mgId: mgobjectId, mgObject: null },
-    });
   }
 }

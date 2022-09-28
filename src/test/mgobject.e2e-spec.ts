@@ -5,7 +5,7 @@ import { AuthService } from "../domains/auth/auth.service";
 import { RequestHelper } from "../utils/test.utils";
 import { MgObjectRepository } from "../domains/mg-object/mg-object.repository";
 import { DatabaseModule } from "../database/database.module";
-import { MgObjectUpdateDto } from "../domains/mg-object/dto/request/MgObjectUpdateDto";
+import { MgobjectUpdateRequestDto } from "../domains/mg-object/dto/request/mgobject-update-request.dto";
 import { MGOBJECT_EXCEPTION } from "../exception/error-code";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgObjectFactory } from "./factory/mgobject-factory";
@@ -111,7 +111,7 @@ describe("MgObject 테스트", () => {
     it("성공", async () => {
       // Given
       const mgObject = mgObjects[1];
-      const mgoUpdateDto = new MgObjectUpdateDto();
+      const mgoUpdateDto = new MgobjectUpdateRequestDto();
       mgoUpdateDto.mainMgCategory = faker.name.jobTitle();
       mgoUpdateDto.mediumMgCategory = faker.name.fullName();
       mgoUpdateDto.subMgCategory = faker.name.lastName();
@@ -135,7 +135,7 @@ describe("MgObject 테스트", () => {
 
     it("찾을 수 없음", async () => {
       // Given
-      const mgoUpdateDto = new MgObjectUpdateDto();
+      const mgoUpdateDto = new MgobjectUpdateRequestDto();
 
       // When
       const response = await requestHelper.patch(
