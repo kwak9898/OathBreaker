@@ -5,12 +5,15 @@ import { MgoImageService } from "../mgo-image/mgo-image.service";
 import { CountForDashboardResponseDto } from "./dto/response/count-for-dashboard-response.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { MgobjectUpdateRequestDto } from "./dto/request/mgobject-update-request.dto";
-import { MgobjectDetailResponseDto } from "./dto/response/mgobject-detail-response-dto";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { MgObjectDetailResponseDto } from "./dto/response/mgobject-detail-response-dto";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
+  ApiPaginatedResponse,
   ApiPaginateQuery,
   ApiPaginateQueryInterface,
 } from "../../dacorators/paginate.decorator";
+import { Pagination } from "nestjs-typeorm-paginate";
+import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response";
 
 const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
   searchColumns: ["ID", "MG_NAME"],
@@ -26,6 +29,8 @@ export class MgObjectController {
   ) {}
 
   @Get("/counts")
+  @ApiOperation({ summary: "COUNTS FOR DASHBOARD" })
+  @ApiOkResponse({ type: CountForDashboardResponseDto })
   async cntForDashboard(): Promise<CountForDashboardResponseDto> {
     const mgObjectCnt = await this.mgObjectService.totalCount();
     const { imageTotalCnt, tmpCnt } =
@@ -36,27 +41,34 @@ export class MgObjectController {
   @Get("")
   @ApiPaginateQuery(MgoImagePaginationQueryData)
   @ApiOperation({ summary: "PAGING" })
-  async paginate(@Query() query: MyPaginationQuery) {
+  @ApiPaginatedResponse(MgObjectListResponseDto)
+  async paginate(
+    @Query() query: MyPaginationQuery
+  ): Promise<Pagination<MgObjectListResponseDto>> {
     return await this.mgObjectService.paginate(query);
   }
 
   @Get("/:id")
-  async findOne(@Param("id") id: string): Promise<MgobjectDetailResponseDto> {
+  @ApiOperation({ summary: "DETAIL" })
+  @ApiOkResponse({ type: MgobjectUpdateRequestDto })
+  async findOne(@Param("id") id: string): Promise<MgObjectDetailResponseDto> {
     const mgObject = await this.mgObjectService.findOneOrFail(id);
     const { imageTotalCount, imageTempCount } =
       await this.mgObjectService.imageCounts(id);
-    const dto = new MgobjectDetailResponseDto(mgObject);
+    const dto = new MgObjectDetailResponseDto(mgObject);
     dto.imageTotalCnt = imageTotalCount;
     dto.imageTempCnt = imageTempCount;
     return dto;
   }
 
   @Patch("/:id")
+  @ApiOperation({ summary: "UPDATE" })
+  @ApiOkResponse({ type: MgobjectUpdateRequestDto })
   async update(
     @Param("id") id: string,
     @Body() updateDto: MgobjectUpdateRequestDto
-  ): Promise<MgobjectDetailResponseDto> {
-    return new MgobjectDetailResponseDto(
+  ): Promise<MgObjectDetailResponseDto> {
+    return new MgObjectDetailResponseDto(
       await this.mgObjectService.update(id, updateDto)
     );
   }

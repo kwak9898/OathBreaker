@@ -48,13 +48,11 @@ export class MgoImageController {
     @Query() query: MyPaginationQuery,
     @Query() queryParams?: MgoImagePaginationQueryRequestDto
   ): Promise<MyPagination<MgoImageListResponseDto>> {
-    const { items, meta } = await this.mgoImageService.paginate(
+    return this.mgoImageService.paginate(
       query,
       queryParams.mgObjectId,
       queryParams.statusFlag
     );
-    const newItems = this.listMap(items);
-    return new MyPagination(newItems, meta);
   }
 
   /**
@@ -82,9 +80,5 @@ export class MgoImageController {
   ): Promise<MgoImage> {
     const mgObject = await this.mgObjectService.findOneOrFail(dto.mgObjectId);
     return await this.mgoImageService.updateMgObject(dto.imageId, mgObject);
-  }
-
-  private listMap(items: MgoImage[]) {
-    return items.map((r) => new MgoImageListResponseDto(r));
   }
 }
