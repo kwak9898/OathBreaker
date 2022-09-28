@@ -19,8 +19,10 @@ import { Public } from "../../dacorators/skip-auth.decorator";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("auth")
+@ApiTags("AUTH")
 export class AuthController {
   constructor(
     private authService: AuthService,

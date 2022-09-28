@@ -1,17 +1,14 @@
-import {
-  IPaginationMeta,
-  ObjectLiteral,
-} from "nestjs-typeorm-paginate/dist/interfaces";
+import { IPaginationMeta } from "nestjs-typeorm-paginate/dist/interfaces";
+import { ApiProperty } from "@nestjs/swagger";
 
-export class MyPagination<
-  PaginationObject,
-  T extends ObjectLiteral = IPaginationMeta
-> {
+export class MyPagination<PaginationObject> {
+  @ApiProperty({ isArray: true })
   items: PaginationObject[];
 
-  readonly meta: T;
+  @ApiProperty()
+  readonly meta: IPaginationMeta;
 
-  constructor(items: PaginationObject[], meta: T) {
+  constructor(items: PaginationObject[], meta: IPaginationMeta) {
     this.items = items;
     this.meta = meta;
   }
