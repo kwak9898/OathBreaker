@@ -20,6 +20,8 @@ import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
 import { ApiTags } from "@nestjs/swagger";
+import { Role } from "../../dacorators/role.decorator";
+import { Roles } from "../../enum/roles.enum";
 
 @Controller("auth")
 @ApiTags("AUTH")
@@ -31,6 +33,7 @@ export class AuthController {
 
   // 유저 생성
   @Public()
+  @Role(Roles.admin)
   @Post("/signup")
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<User> {
     return this.authService.signUp(createUserDto);
@@ -80,6 +83,7 @@ export class AuthController {
     return user;
   }
 
+  @Role(Roles.admin)
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.getUserById(req.user.userId);
