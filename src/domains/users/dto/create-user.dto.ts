@@ -1,5 +1,5 @@
 import { IsString, Matches, MaxLength, MinLength } from "class-validator";
-import { Roles } from "../../../enum/roles.enum";
+import { Role } from "../../../enum/role.enum";
 
 export class CreateUserDto {
   @IsString()
@@ -21,5 +21,5 @@ export class CreateUserDto {
   @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
   password: string;
 
-  roleName: Roles;
+  roleName: Role[];
 }

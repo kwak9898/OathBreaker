@@ -19,11 +19,12 @@ import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { Role } from "../../dacorators/role.decorator";
-import { Roles } from "../../enum/roles.enum";
+import { Roles } from "../../dacorators/role.decorator";
+import { Role } from "../../enum/role.enum";
 
 @Controller("auth")
 @ApiTags("AUTH")
+@Roles(Role.admin)
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -31,7 +32,7 @@ export class AuthController {
   ) {}
 
   // 유저 생성
-  @Role(Roles.admin)
+  @Roles(Role.admin)
   @Post("/signup")
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<User> {
     return this.authService.signUp(createUserDto);
@@ -76,14 +77,13 @@ export class AuthController {
   @Post("refresh")
   refresh(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = req.user;
-    const { accessToken, ...accessOption } =
-      this.authService.getCookieWithJwtAccessToken(user.userId);
+    const { refreshToken, ...refreshOption } =
+      this.authService.getCookieWithJwtRefreshToken(user.userId);
 
-    res.cookie("Authentication", accessToken, accessOption);
+    res.cookie("Authentication", refreshToken, refreshOption);
     return user;
   }
 
-  @Role(Roles.admin)
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.getUserById(req.user.userId);

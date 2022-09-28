@@ -2,13 +2,17 @@ import { UsersService } from "./users.service";
 import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
 import { User } from "./entities/user.entity";
 import { ApiTags } from "@nestjs/swagger";
+import { Roles } from "../../dacorators/role.decorator";
+import { Role } from "../../enum/role.enum";
 
 @Controller("users")
+@Roles(Role.admin)
 @ApiTags("USERS")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   // 유저 전체 조회
+  @Roles(Role.admin)
   @Get("")
   async getAllUsers(): Promise<User[]> {
     return this.usersService.getAllUsers();
