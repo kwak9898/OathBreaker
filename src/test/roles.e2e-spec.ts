@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DataSource } from "typeorm";
-import { INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
 import * as request from "supertest";
 import { UsersService } from "../domains/users/users.service";
@@ -19,6 +19,7 @@ describe("역할 관련 테스트", () => {
   let authService: AuthService;
   let userFactory: UserFactory;
   let databaseSource: DataSource;
+  let user;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,30 +37,43 @@ describe("역할 관련 테스트", () => {
       (await userFactory.createBaseUser()).userId
     ).accessToken;
 
+    user = await userFactory.createBaseUser();
+
     await app.init();
   });
 
   describe("역할 조회/수정/삭제", () => {
     it("역할 조회 성공", async () => {
       // Given
-      const user = await userFactory.createBaseUser();
       userId = user.userId;
       roleName = "선택";
 
       // When
       const response = await request(app.getHttpServer()).get(
-        `create/${userId}/${roleName}`
+        `${rolesDomain}/${userId}/${roleName}`
       );
 
       // Then
+      expect(response.statusCode).toBe(HttpStatus.OK);
     });
 
     it("역할 수정 성공", async () => {
-      // TODO 구현 예정
+      // Given
+      userId = user.userId;
+      roleName = "등록자";
+
+      // WHen
+      const response = await request(app.getHttpServer())
+        .patch(`${rolesDomain}/update/${userId}`)
+        .send({ roleName });
+      console.log(response.body);
+
+      // Then
+      expect(response.statusCode).toBe(HttpStatus.OK);
     });
 
     it("역할 삭제 성공", async () => {
-      // TODO 구현 예정
+      // Given
     });
   });
 });

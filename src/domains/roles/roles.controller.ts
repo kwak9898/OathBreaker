@@ -20,7 +20,7 @@ export class RolesController {
   ) {}
 
   // 유저 역할 조회
-  @Get("/create/:userId/:roleName")
+  @Get("/:userId/:roleName")
   getRoleByUser(
     @Param("userId") userId: string,
     @Param("roleName") roleName: string
