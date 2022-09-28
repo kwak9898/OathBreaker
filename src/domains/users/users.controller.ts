@@ -10,8 +10,10 @@ import {
 import { UsersService } from "./users.service";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { User } from "./entities/user.entity";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("users")
+@ApiTags("USERS")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

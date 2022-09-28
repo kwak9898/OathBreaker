@@ -16,8 +16,10 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("auth")
+@ApiTags("AUTH")
 export class AuthController {
   constructor(
     private authService: AuthService,

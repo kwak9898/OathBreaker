@@ -4,11 +4,21 @@ import { Public } from "../../dacorators/skip-auth.decorator";
 import { MgoImageService } from "../mgo-image/mgo-image.service";
 import { CountForDashboardResponseDto } from "./dto/response/count-for-dashboard-response.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { MgObjectUpdateDto } from "./dto/request/MgObjectUpdateDto";
+import { MgobjectUpdateRequestDto } from "./dto/request/mgobject-update-request.dto";
 import { MgobjectDetailResponseDto } from "./dto/response/mgobject-detail-response-dto";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiPaginateQuery,
+  ApiPaginateQueryInterface,
+} from "../../dacorators/paginate.decorator";
+
+const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
+  searchColumns: ["ID", "MG_NAME"],
+};
 
 @Controller("/mg-objects")
 @Public()
+@ApiTags("MG-OBJECT")
 export class MgObjectController {
   constructor(
     private readonly mgObjectService: MgObjectService,
@@ -24,6 +34,8 @@ export class MgObjectController {
   }
 
   @Get("")
+  @ApiPaginateQuery(MgoImagePaginationQueryData)
+  @ApiOperation({ summary: "PAGING" })
   async paginate(@Query() query: MyPaginationQuery) {
     return await this.mgObjectService.paginate(query);
   }
@@ -42,7 +54,7 @@ export class MgObjectController {
   @Patch("/:id")
   async update(
     @Param("id") id: string,
-    @Body() updateDto: MgObjectUpdateDto
+    @Body() updateDto: MgobjectUpdateRequestDto
   ): Promise<MgobjectDetailResponseDto> {
     return new MgobjectDetailResponseDto(
       await this.mgObjectService.update(id, updateDto)

@@ -4,6 +4,9 @@ import { BaseEntity } from "../../base/base.entity";
 
 @Entity("mgo_image", { schema: "public" })
 export class MgoImage extends BaseEntity {
+  /**
+   * 이미지 고유값
+   */
   @PrimaryColumn("character varying", {
     comment: "이미지 고유값",
     nullable: false,
@@ -11,6 +14,9 @@ export class MgoImage extends BaseEntity {
   })
   imgId: string;
 
+  /**
+   * 사물 고유값
+   */
   @Column("character varying", {
     comment: "사물 고유값",
     nullable: true,
@@ -18,6 +24,9 @@ export class MgoImage extends BaseEntity {
   })
   mgId?: string;
 
+  /**
+   * 이미지 파일명
+   */
   @Column("character varying", {
     comment: "이미지 파일명",
     nullable: true,
@@ -25,6 +34,9 @@ export class MgoImage extends BaseEntity {
   })
   imgName?: string;
 
+  /**
+   * 이미지 url
+   */
   @Column("character varying", {
     comment: "이미지 url",
     nullable: true,
@@ -32,6 +44,9 @@ export class MgoImage extends BaseEntity {
   })
   imgUrl?: string;
 
+  /**
+   * 이미지 s3 key
+   */
   @Column("character varying", {
     comment: "이미지 s3 key",
     nullable: true,
@@ -39,6 +54,9 @@ export class MgoImage extends BaseEntity {
   })
   s3Key?: string;
 
+  /**
+   * 사물 이미지 상태값
+   */
   @Column({
     type: "smallint",
     comment: "사물 이미지 상태값",
@@ -48,6 +66,9 @@ export class MgoImage extends BaseEntity {
   })
   statusFlag?: ImageStatusFlag;
 
+  /**
+   * 등록자 타입: MANAGER_USER, MERGE_USER
+   */
   @Column("character varying", {
     comment: "등록자 타입: MANAGER_USER, MERGE_USER",
     default: "MERGE_USER",
@@ -56,6 +77,9 @@ export class MgoImage extends BaseEntity {
   })
   userType?: string;
 
+  /**
+   * 위도(37.56667)
+   */
   @Column("double precision", {
     comment: "위도(37.56667)",
     default: 0.0,
@@ -64,6 +88,9 @@ export class MgoImage extends BaseEntity {
   })
   latitude?: number;
 
+  /**
+   * 경도(126.97806)
+   */
   @Column("double precision", {
     comment: "경도(126.97806)",
     default: 0.0,
@@ -72,6 +99,9 @@ export class MgoImage extends BaseEntity {
   })
   longitude?: number;
 
+  /**
+   * mask origin name
+   */
   @Column("character varying", {
     comment: "mask origin name",
     nullable: true,
@@ -79,6 +109,9 @@ export class MgoImage extends BaseEntity {
   })
   maskName?: string;
 
+  /**
+   * mask s3 키
+   */
   @Column("character varying", {
     comment: "mask s3 키",
     nullable: true,
@@ -86,6 +119,9 @@ export class MgoImage extends BaseEntity {
   })
   s3KeyMask?: string;
 
+  /**
+   * sallency origin name
+   */
   @Column("character varying", {
     comment: "sallency origin name",
     nullable: true,
@@ -93,6 +129,9 @@ export class MgoImage extends BaseEntity {
   })
   sailencyName?: string;
 
+  /**
+   * sallency s3 키
+   */
   @Column("character varying", {
     comment: "sallency s3 키",
     nullable: true,
@@ -100,6 +139,9 @@ export class MgoImage extends BaseEntity {
   })
   s3KeySailency?: string;
 
+  /**
+   * depth_camera(Lidar) 사용 여부 미사용: 0iOS Lidar 사용: 1
+   */
   @Column({
     type: "smallint",
     comment: "depth_camera(Lidar) 사용 여부 미사용: 0iOS Lidar 사용: 1",
@@ -175,8 +217,8 @@ export class MgoImage extends BaseEntity {
 }
 
 export enum ImageStatusFlag {
-  INCOMPLETED,
-  COMPLETED,
-  TEMP,
+  INCOMPLETED = 0,
+  COMPLETED = 1,
+  TEMP = 2,
   OTHER = 3,
 }

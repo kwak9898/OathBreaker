@@ -5,7 +5,7 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response";
 import { MyPagination } from "../base/pagination-response";
 import { MgObject } from "./entities/mg-object.entity";
-import { MgObjectUpdateDto } from "./dto/request/MgObjectUpdateDto";
+import { MgobjectUpdateRequestDto } from "./dto/request/mgobject-update-request.dto";
 import { NotFoundException } from "@nestjs/common";
 import { MGOBJECT_EXCEPTION } from "../../exception/error-code";
 import { MgoImageRepository } from "../mgo-image/mgo-image.repository";
@@ -65,7 +65,10 @@ export class MgObjectService {
     return mgObject;
   }
 
-  async update(id: string, updateDto: MgObjectUpdateDto): Promise<MgObject> {
+  async update(
+    id: string,
+    updateDto: MgobjectUpdateRequestDto
+  ): Promise<MgObject> {
     const mgObject = await this.findOneOrFail(id);
     if (updateDto.mainMgCategory) {
       mgObject.mainMgCategory = updateDto.mainMgCategory;
