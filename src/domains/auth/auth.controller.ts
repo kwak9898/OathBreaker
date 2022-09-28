@@ -2,7 +2,6 @@ import { AuthService } from "./auth.service";
 import {
   Body,
   Controller,
-  Get,
   HttpStatus,
   NotFoundException,
   Patch,
@@ -32,12 +31,13 @@ export class AuthController {
   ) {}
 
   // 유저 생성
-  @Public()
   @Role(Roles.admin)
   @Post("/signup")
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<User> {
     return this.authService.signUp(createUserDto);
   }
+
+  // role decorator를 최상단으로 올리고 public을 각 API에 넣어줘서 등록자도 할 수 있게 ㄱ
 
   // 로그인
   @Public()
@@ -73,7 +73,7 @@ export class AuthController {
 
   @Public()
   @UseGuards(JwtRefreshGuard)
-  @Get("refresh")
+  @Post("refresh")
   refresh(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = req.user;
     const { accessToken, ...accessOption } =

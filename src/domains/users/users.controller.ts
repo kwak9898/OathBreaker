@@ -21,7 +21,7 @@ export class UsersController {
   }
 
   // 특정 유저 수정
-  @Patch(":userId/update")
+  @Patch(":userId")
   async updateUser(
     @Param("userId") userId: string,
     @Body() user: User
@@ -30,7 +30,7 @@ export class UsersController {
   }
 
   // 특정 유저 삭제
-  @Delete(":userId/delete")
+  @Delete(":userId")
   async deleteUser(@Param("userId") userId: string): Promise<void> {
     return this.usersService.deleteUser(userId);
   }
