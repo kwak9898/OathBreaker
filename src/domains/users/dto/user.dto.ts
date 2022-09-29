@@ -3,4 +3,5 @@ export class UserDto {
   username: string;
   password: string;
   roleName: string;
+  updatedAt: Date;
 }
