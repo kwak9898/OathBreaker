@@ -14,6 +14,7 @@ import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../roles/guards/roles.guard";
 import { Public } from "../../dacorators/skip-auth.decorator";
+import { CurrentUser } from "../../dacorators/current-user.decorators";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -81,10 +82,10 @@ export class UsersController {
   @Public()
   @Patch("/last-access-at/:userId")
   async updateLastAccessAt(
-    @Param("userId") userId: string,
-    @Body() lastAccessAt: Date
+    @CurrentUser() user: User,
+    @Param("userId") userId: string
   ) {
-    lastAccessAt = new Date();
-    return this.usersService.updateLastAccessAt(userId, lastAccessAt);
+    await this.usersService.updateLastAccessAt(userId);
+    return user;
   }
 }

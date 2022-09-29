@@ -64,7 +64,7 @@ export class UsersService {
   }
 
   // 유저의 최종 접속일 업데이트
-  async updateLastAccessAt(userId: string, lastAccessAt: Date) {
-    return this.userRepository.updateLastAccessAt(userId, lastAccessAt);
+  async updateLastAccessAt(userId: string) {
+    return this.userRepository.updateLastAccessAt(userId);
   }
 }

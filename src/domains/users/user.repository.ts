@@ -131,9 +131,8 @@ export class UserRepository extends Repository<User> {
   }
 
   // 유저의 최종 접속일 업데이트
-  async updateLastAccessAt(userId: string, lastAccessAt: Date) {
-    return this.update(userId, {
-      LastAccessAt: lastAccessAt,
-    });
+  async updateLastAccessAt(userId: string) {
+    const updateDate = new Date();
+    return this.update(userId, { LastAccessAt: updateDate });
   }
 }
