@@ -13,7 +13,7 @@ import { RolesService } from "./roles.service";
 import { User } from "../users/entities/user.entity";
 import { RolesDto } from "./dto/roles.dto";
 import { UserDto } from "../users/dto/user.dto";
-import { RolesGuard } from "../auth/guards/roles.guard";
+import { RolesGuard } from "./guards/roles.guard";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "./enum/role.enum";
 import { GetUser } from "../../dacorators/get-user.decorator";

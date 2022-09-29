@@ -21,5 +21,8 @@ export class CreateUserDto {
   @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
   password: string;
 
+  @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
+  confirmPassword: string;
+
   roleName: Role[];
 }
