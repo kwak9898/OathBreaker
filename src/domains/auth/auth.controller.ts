@@ -21,10 +21,11 @@ import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../../enum/role.enum";
+import { RolesGuard } from "./guards/roles.guard";
 
 @Controller("auth")
 @ApiTags("AUTH")
-@Roles(Role.admin)
+@UseGuards(RolesGuard)
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -85,6 +86,7 @@ export class AuthController {
     return user;
   }
 
+  @Roles(Role.admin)
   @Patch("change-password")
   async changePassword(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = await this.usersService.getUserById(req.user.userId);
