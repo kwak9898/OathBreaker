@@ -64,6 +64,7 @@ function useSwagger(app: INestApplication): void {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup("swagger", app, document);
+  console.log("APP START IN " + process.env.NODE_ENV);
 }
 
 bootstrap();
