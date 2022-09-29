@@ -2,7 +2,7 @@ import { MgObject } from "../../entities/mg-object.entity";
 import { omit } from "../../../../utils/dto.utils";
 import { OmitType } from "@nestjs/swagger";
 
-export class MgObjectDetailResponseDto extends OmitType(MgObject, [
+export class MgobjectDetailResponseDto extends OmitType(MgObject, [
   "likeRank",
   "likeCnt",
   "rankChange",

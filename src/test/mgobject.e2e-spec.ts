@@ -13,6 +13,7 @@ import { UserFactory } from "./factory/user-factory";
 import { UserRepository } from "../domains/users/user.repository";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { faker } from "@faker-js/faker";
+import { JwtService } from "@nestjs/jwt";
 
 describe("MgObject 테스트", () => {
   let app: INestApplication;
@@ -34,6 +35,7 @@ describe("MgObject 테스트", () => {
         UserFactory,
         UserRepository,
         DatabaseModule,
+        JwtService,
       ],
     }).compile();
 
@@ -131,6 +133,42 @@ describe("MgObject 테스트", () => {
       expect(body.mediumMgCategory).toBe(mgoUpdateDto.mediumMgCategory);
       expect(body.subMgCategory).toBe(mgoUpdateDto.subMgCategory);
       expect(body.mgName).toBe(mgoUpdateDto.mgName);
+    });
+
+    it("찾을 수 없음", async () => {
+      // Given
+      const mgoUpdateDto = new MgobjectUpdateRequestDto();
+
+      // When
+      const response = await requestHelper.patch(
+        `${DOMAIN}/notfound_mg_id`,
+        mgoUpdateDto
+      );
+      expect(response.statusCode).toBe(404);
+      expect(response.body.message).toBe(
+        MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND.message
+      );
+    });
+  });
+
+  describe("mg-object 추천", () => {
+    it("성공", async () => {
+      // Given
+      const imageId = mgObjects[0].mgoImages[0].imgId;
+
+      // When
+      const response = await requestHelper.get(
+        `${DOMAIN}/recommend/${imageId}`
+      );
+
+      // Then
+      const body = response.body;
+      expect(response.statusCode).toBe(200);
+      for (const bodyElement of body) {
+        expect(bodyElement).toHaveProperty("mgId");
+        expect(bodyElement).toHaveProperty("mgName");
+        expect(bodyElement).toHaveProperty("imageUrl");
+      }
     });
 
     it("찾을 수 없음", async () => {

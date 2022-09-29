@@ -2,13 +2,14 @@ import { MgObjectRepository } from "./mg-object.repository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { paginateRawAndEntities, Pagination } from "nestjs-typeorm-paginate";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response";
+import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
 import { MgObject } from "./entities/mg-object.entity";
 import { MgobjectUpdateRequestDto } from "./dto/request/mgobject-update-request.dto";
 import { NotFoundException } from "@nestjs/common";
 import { MGOBJECT_EXCEPTION } from "../../exception/error-code";
 import { MgoImageRepository } from "../mgo-image/mgo-image.repository";
+import { MgObjectRecommendListResponseDto } from "./dto/response/mgobject-recommend-list-response.dto";
 
 export class MgObjectService {
   constructor(
@@ -131,5 +132,13 @@ export class MgObjectService {
       });
 
     return new MyPagination<MgObjectListResponseDto>(data, entities.meta);
+  }
+
+  async recommendMgObjectFromImage(
+    imageId: string
+  ): Promise<MgObjectRecommendListResponseDto[]> {
+    const mgObjectList = await this.repository.find({});
+    const sliceList = mgObjectList.slice(0, 8);
+    return sliceList.map((item) => new MgObjectRecommendListResponseDto(item));
   }
 }
