@@ -58,9 +58,9 @@ describe("MgObject Image 테스트", () => {
     datasource = moduleFixture.get(DataSource);
     await datasource.synchronize(true);
 
-    token = authService.getCookieWithJwtAccessToken(
+    token = authService.createAccessToken(
       (await userFactory.createBaseUser()).userId
-    ).accessToken;
+    );
 
     requestHelper = new RequestHelper(app, token);
 

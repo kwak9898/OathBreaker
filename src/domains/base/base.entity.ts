@@ -29,7 +29,7 @@ export abstract class UpdateDeleteBaseEntity extends CreateOnlyEntity {
 
 export abstract class BaseEntity {
   @Index()
-  @Column({ default: true })
+  @Column({ default: true, name: "is_active" })
   isActive: boolean;
 
   @CreateDateColumn()

@@ -33,7 +33,7 @@ describe("역할 관련 테스트", () => {
     databaseSource = moduleFixture.get(DataSource);
     await databaseSource.synchronize(true);
 
-    token = authService.getCookieWithJwtAccessToken(
+    token = authService.createAccessToken(
       (await userFactory.createBaseUser()).userId
     ).accessToken;
 

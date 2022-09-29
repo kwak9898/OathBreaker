@@ -1,6 +1,13 @@
 import { MgObjectService } from "./mg-object.service";
-import { Body, Controller, Get, Param, Patch, Query } from "@nestjs/common";
-import { Public } from "../../dacorators/skip-auth.decorator";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { MgoImageService } from "../mgo-image/mgo-image.service";
 import { CountForDashboardResponseDto } from "./dto/response/count-for-dashboard-response.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
@@ -21,14 +28,17 @@ import { Pagination } from "nestjs-typeorm-paginate";
 import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response.dto";
 import { MgObjectRecommendListResponseDto } from "./dto/response/mgobject-recommend-list-response.dto";
 import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { Roles } from "../../dacorators/role.decorator";
+import { Role } from "../roles/enum/role.enum";
 
 const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
   searchColumns: ["ID", "MG_NAME"],
 };
 
 @Controller("/mg-objects")
-@Public()
 @ApiTags("MG-OBJECT")
+@UseGuards(RolesGuard)
 export class MgObjectController {
   constructor(
     private readonly mgObjectService: MgObjectService,
@@ -38,6 +48,7 @@ export class MgObjectController {
   @Get("/counts")
   @ApiOperation({ summary: "COUNTS FOR DASHBOARD" })
   @ApiOkResponse({ type: CountForDashboardResponseDto })
+  @Roles(Role.admin)
   async cntForDashboard(): Promise<CountForDashboardResponseDto> {
     const mgObjectCnt = await this.mgObjectService.totalCount();
     const { imageTotalCnt, tmpCnt } =
@@ -49,6 +60,7 @@ export class MgObjectController {
   @ApiPaginateQuery(MgoImagePaginationQueryData)
   @ApiOperation({ summary: "PAGING" })
   @ApiPaginatedResponse(MgObjectListResponseDto)
+  @Roles(Role.admin)
   async paginate(
     @Query() query: MyPaginationQuery
   ): Promise<Pagination<MgObjectListResponseDto>> {
@@ -61,6 +73,7 @@ export class MgObjectController {
   @Get("/ai/search")
   @ApiOperation({ summary: "AI SEARCH MG-OBJECT" })
   @ApiParam({ name: "query", type: "string" })
+  @Roles(Role.admin)
   async search(
     @Param("query") searchQuery: string
   ): Promise<MgobjectAiSearchListResponseDto[]> {
@@ -70,6 +83,7 @@ export class MgObjectController {
   @Get("/:id")
   @ApiOperation({ summary: "DETAIL" })
   @ApiOkResponse({ type: MgobjectUpdateRequestDto })
+  @Roles(Role.admin)
   async findOne(@Param("id") id: string): Promise<MgobjectDetailResponseDto> {
     const mgObject = await this.mgObjectService.findOneOrFail(id);
     const { imageTotalCount, imageTempCount } =
@@ -83,6 +97,7 @@ export class MgObjectController {
   @Patch("/:id")
   @ApiOperation({ summary: "UPDATE" })
   @ApiOkResponse({ type: MgobjectUpdateRequestDto })
+  @Roles(Role.admin)
   async update(
     @Param("id") id: string,
     @Body() updateDto: MgobjectUpdateRequestDto
@@ -98,6 +113,7 @@ export class MgObjectController {
   @Get("/ai/recommend/:imageId")
   @ApiOperation({ summary: "추천 MG-OBJECT" })
   @ApiParam({ name: "imageId", type: "string" })
+  @Roles(Role.admin)
   async recommend(
     @Param("imageId") imageId: string
   ): Promise<MgObjectRecommendListResponseDto[]> {

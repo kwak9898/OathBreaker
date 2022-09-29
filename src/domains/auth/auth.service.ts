@@ -34,41 +34,25 @@ export class AuthService {
   }
 
   // Access Token 발급
-  getCookieWithJwtAccessToken(userId: string) {
+  createAccessToken(userId: string) {
     const payload = { userId };
-    const token = this.jwtService.sign(payload, {
+    return this.jwtService.sign(payload, {
       secret: this.configService.get("JWT_ACCESS_TOKEN_SECRET"),
       expiresIn: `${this.configService.get(
         "JWT_ACCESS_TOKEN_EXPIRATION_TIME"
       )}`,
     });
-
-    return {
-      accessToken: token,
-      domain: "localhost",
-      path: "/",
-      httpOnly: true,
-      maxAge: 3600,
-    };
   }
 
   // Refresh Token 발급
-  getCookieWithJwtRefreshToken(userId: string) {
+  createRefreshToken(userId: string) {
     const payload = { userId };
-    const token = this.jwtService.sign(payload, {
+    return this.jwtService.sign(payload, {
       secret: this.configService.get("JWT_REFRESH_TOKEN_SECRET"),
       expiresIn: `${this.configService.get(
         "JWT_REFRESH_TOKEN_EXPIRATION_TIME"
       )}`,
     });
-
-    return {
-      refreshToken: token,
-      domain: "localhost",
-      path: "/",
-      httpOnly: true,
-      maxAge: 108000,
-    };
   }
 
   // 로그아웃

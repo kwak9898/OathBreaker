@@ -30,10 +30,9 @@ describe("회원 인증 관련 테스트", () => {
     databaseSource = moduleFixture.get(DataSource);
     await databaseSource.synchronize(false);
 
-    token = authService.getCookieWithJwtAccessToken(userId).accessToken;
+    token = authService.createAccessToken(userId).accessToken;
 
-    refreshToken =
-      authService.getCookieWithJwtRefreshToken(userId).refreshToken;
+    refreshToken = authService.createRefreshToken(userId).refreshToken;
 
     await app.init();
   });
