@@ -15,7 +15,7 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       context.getHandler()
     );
-    console.log(requireRole);
+
     if (!requireRole) {
       return true;
     }
@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       return false;
     }
-    if (requireRole.includes("등록자")) {
+    if (requireRole.includes(Role.manager)) {
       return false;
     }
 

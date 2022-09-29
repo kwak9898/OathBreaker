@@ -13,7 +13,6 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../auth/guards/roles.guard";
-import { UserDto } from "./dto/user.dto";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -58,7 +57,7 @@ export class UsersController {
   })
   async updateUser(
     @Param("userId") userId: string,
-    @Body() user: UserDto
+    @Body() user: User
   ): Promise<User> {
     return this.usersService.updateUser(userId, user);
   }

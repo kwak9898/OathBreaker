@@ -14,14 +14,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     private configService: ConfigService
   ) {
     super({
-      secretOrKey: configService.get("JWT_ACCESS_TOKEN_SECRET"),
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       // secretOrKey: configService.get("JWT_ACCESS_TOKEN_SECRET"),
-      // jwtFromRequest: ExtractJwt.fromExtractors([
-      //   (request) => {
-      //     return request?.cookies?.Authentication;
-      //   },
-      // ]),
+      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: configService.get("JWT_ACCESS_TOKEN_SECRET"),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request) => {
+          return request?.cookies?.Authentication;
+        },
+      ]),
     });
   }
 

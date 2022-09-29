@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UsersService {
@@ -28,7 +27,7 @@ export class UsersService {
   }
 
   // 특정 유저 수정
-  updateUser(userId: string, user: UserDto): Promise<User> {
+  updateUser(userId: string, user: User): Promise<User> {
     return this.userRepository.updateUser(userId, user);
   }
 

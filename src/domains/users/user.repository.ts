@@ -10,7 +10,6 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../roles/enum/role.enum";
-import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -66,7 +65,7 @@ export class UserRepository extends Repository<User> {
   }
 
   // 특정 유저 수정
-  async updateUser(userId: string, user: UserDto): Promise<User> {
+  async updateUser(userId: string, user: User): Promise<User> {
     user.updatedAt = new Date();
     const existUser = this.getUserById(userId);
 
