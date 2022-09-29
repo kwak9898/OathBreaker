@@ -62,4 +62,9 @@ export class UsersService {
   findRefreshToken(jwtToken: string): Promise<User> {
     return this.userRepository.findRefreshToken(jwtToken);
   }
+
+  // 유저의 최종 접속일 업데이트
+  async updateLastAccessAt(userId: string, lastAccessAt: Date) {
+    return this.userRepository.updateLastAccessAt(userId, lastAccessAt);
+  }
 }

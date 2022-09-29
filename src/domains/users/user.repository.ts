@@ -129,4 +129,11 @@ export class UserRepository extends Repository<User> {
   async findRefreshToken(jwtToken: string): Promise<User> {
     return await this.findOne({ where: { jwtToken } });
   }
+
+  // 유저의 최종 접속일 업데이트
+  async updateLastAccessAt(userId: string, lastAccessAt: Date) {
+    return this.update(userId, {
+      LastAccessAt: lastAccessAt,
+    });
+  }
 }

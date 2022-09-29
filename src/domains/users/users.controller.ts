@@ -13,6 +13,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../roles/guards/roles.guard";
+import { Public } from "../../dacorators/skip-auth.decorator";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -72,5 +73,18 @@ export class UsersController {
   @Delete(":userId")
   async deleteUser(@Param("userId") userId: string): Promise<void> {
     return this.usersService.deleteUser(userId);
+  }
+
+  /**
+   * 유저 최종 접속일 업데이트
+   */
+  @Public()
+  @Patch("/last-access-at/:userId")
+  async updateLastAccessAt(
+    @Param("userId") userId: string,
+    @Body() lastAccessAt: Date
+  ) {
+    lastAccessAt = new Date();
+    return this.usersService.updateLastAccessAt(userId, lastAccessAt);
   }
 }
