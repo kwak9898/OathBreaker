@@ -12,7 +12,7 @@ import { User } from "./entities/user.entity";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
-import { RolesGuard } from "../roles/guards/roles.guard";
+import { RolesGuard } from "../../guards/roles.guard";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 
 @Controller("users")

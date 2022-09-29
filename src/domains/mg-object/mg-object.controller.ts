@@ -28,7 +28,7 @@ import { Pagination } from "nestjs-typeorm-paginate";
 import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response.dto";
 import { MgObjectRecommendListResponseDto } from "./dto/response/mgobject-recommend-list-response.dto";
 import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
-import { RolesGuard } from "../roles/guards/roles.guard";
+import { RolesGuard } from "../../guards/roles.guard";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 
