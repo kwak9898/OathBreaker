@@ -12,9 +12,9 @@ export class RolesService {
     private roleRepository: RoleRepository
   ) {}
 
-  // 유저 역할 생성
-  getRoleByUser(userId: string, roleName: string): Promise<User> {
-    return this.roleRepository.getRoleByUser(userId, roleName);
+  // 유저 역할 전체 조회
+  getAllByRole(roleName: boolean): Promise<User[]> {
+    return this.roleRepository.getAllByRole(roleName);
   }
 
   // 유저 역할 수정

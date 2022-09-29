@@ -20,12 +20,9 @@ export class RolesController {
   ) {}
 
   // 유저 역할 조회
-  @Get("/:userId/:roleName")
-  getRoleByUser(
-    @Param("userId") userId: string,
-    @Param("roleName") roleName: string
-  ): Promise<User> {
-    return this.rolesService.getRoleByUser(userId, roleName);
+  @Get("/:roleName")
+  getRoleByUser(@Param("roleName") roleName: boolean): Promise<User[]> {
+    return this.rolesService.getAllByRole(roleName);
   }
 
   // 유저 역할 수정

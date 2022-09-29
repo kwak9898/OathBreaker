@@ -12,15 +12,19 @@ export class RoleRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  // 유저 역할 조회
-  async getRoleByUser(userId: string, roleName: string): Promise<User> {
-    const user = await this.findOne({ where: { userId, roleName } });
+  // 유저 역할 전체 조회
+  async getAllByRole(roleName: boolean): Promise<User[]> {
+    // const user = await this.find({ select: { roleName: roleName } });
+    const query = this.createQueryBuilder("oath-user");
 
-    if (!user.userId) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
+    query.where("oath-user.role-name", { roleName: roleName });
+    const roles = query.getMany();
 
-    return user;
+    // if (!user) {
+    //   throw new NotFoundException("존재하지 않는 유저입니다.");
+    // }
+
+    return roles;
   }
 
   // 유저 역할 수정
