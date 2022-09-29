@@ -30,7 +30,7 @@ describe("계정 관련 테스트", () => {
     databaseSource = moduleFixture.get(DataSource);
     await databaseSource.synchronize(true);
 
-    token = authService.getCookieWithJwtAccessToken(userId).accessToken;
+    token = authService.createAccessToken(userId);
 
     await app.init();
   });

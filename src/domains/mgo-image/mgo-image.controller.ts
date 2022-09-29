@@ -1,5 +1,4 @@
-import { Body, Controller, Get, Patch, Query } from "@nestjs/common";
-import { Public } from "../../dacorators/skip-auth.decorator";
+import { Body, Controller, Get, Patch, Query, UseGuards } from "@nestjs/common";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { MgoImageService } from "./mgo-image.service";
 import { ImageStatusFlag, MgoImage } from "./entities/mgoImage.entity";
@@ -14,10 +13,13 @@ import {
 import { MgoImagePaginationQueryRequestDto } from "./dto/request/mgo-image-pagination-query-request.dto";
 import { MyPagination } from "../base/pagination-response";
 import { MgoImageListResponseDto } from "./dto/response/mgo-image-list-response.dto";
+import { Roles } from "../../dacorators/role.decorator";
+import { Role } from "../roles/enum/role.enum";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller("/mgo-images")
-@Public()
 @ApiTags("MG-OBJECT-IMAGE")
+@UseGuards(RolesGuard)
 export class MgoImageController {
   constructor(
     private readonly mgoImageService: MgoImageService,
@@ -49,6 +51,7 @@ export class MgoImageController {
     description: "MG-OBJECT ID",
   })
   @ApiPaginatedResponse(MgoImageListResponseDto)
+  @Roles(Role.admin)
   async paginate(
     @Query() query: MyPaginationQuery,
     @Query() queryParams?: MgoImagePaginationQueryRequestDto
@@ -68,6 +71,7 @@ export class MgoImageController {
   @ApiOperation({
     summary: "UPDATE STATUS",
   })
+  @Roles(Role.admin)
   async updateStatus(@Body() dto: UpdateMgoImageStatusDto): Promise<void> {
     await this.mgoImageService.updateImageStatus(dto.imageIds, dto.statusFlag);
   }
@@ -80,6 +84,7 @@ export class MgoImageController {
     summary: "UPDATE MGOBJECT",
   })
   @ApiResponse({ type: MgoImage })
+  @Roles(Role.admin)
   async updateMgObject(
     @Body() dto: UpdateMgoImageMgObjectDto
   ): Promise<MgoImage> {

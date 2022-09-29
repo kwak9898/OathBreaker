@@ -2,18 +2,15 @@ import { AuthService } from "./auth.service";
 import {
   Body,
   Controller,
-  Get,
-  HttpStatus,
+  HttpCode,
   NotFoundException,
   Patch,
   Post,
-  Res,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { User } from "../users/entities/user.entity";
-import { Response } from "express";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { UsersService } from "../users/users.service";
@@ -24,7 +21,6 @@ import { RolesGuard } from "./guards/roles.guard";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { ChangePasswordDto } from "./dto/change-password.dto";
-import { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @Controller("auth")
 @ApiTags("AUTH")
@@ -57,20 +53,15 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post("signin")
-  async signIn(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const { accessToken, ...accessOption } =
-      this.authService.getCookieWithJwtAccessToken(user.userId);
+  @HttpCode(200)
+  async signIn(@CurrentUser() user: User) {
+    const accessToken = this.authService.createAccessToken(user.userId);
 
-    const { refreshToken, ...refreshOption } =
-      this.authService.getCookieWithJwtRefreshToken(user.userId);
+    const refreshToken = this.authService.createRefreshToken(user.userId);
 
     await this.usersService.setCurrentRefreshToken(refreshToken, user.userId);
 
-    res.cookie("Authentication", accessToken, accessOption);
-    res.cookie("Refresh", refreshToken, refreshOption);
+    return { accessToken, refreshToken };
   }
 
   /**
@@ -82,17 +73,8 @@ export class AuthController {
   @Public()
   @UseGuards(JwtRefreshGuard)
   @Post("signout")
-  async signOut(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const { accessOption, refreshOption } =
-      this.authService.getCookiesForLogOut();
-
+  async signOut(@CurrentUser() user: User) {
     await this.usersService.removeRefreshToken(user.userId);
-
-    res.cookie("Authentication", "", accessOption);
-    res.cookie("Refresh", "", refreshOption);
   }
 
   /**
@@ -100,20 +82,13 @@ export class AuthController {
    */
   @Public()
   @UseGuards(JwtRefreshGuard)
-  @Get("refresh")
+  @Post("/refresh-token")
   @ApiOperation({
     summary: "토큰 리프레시",
   })
-  refresh(
-    @CurrentUser() user: User,
-    @Body() dto: RefreshTokenDto,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const { refreshToken, ...refreshOption } =
-      this.authService.getCookieWithJwtRefreshToken(user.userId);
-
-    res.cookie("Authentication", refreshToken, refreshOption);
-    return user;
+  @HttpCode(200)
+  async refresh(@CurrentUser() user: User) {
+    return { accessToken: this.authService.createAccessToken(user.userId) };
   }
 
   /**
@@ -126,17 +101,12 @@ export class AuthController {
   })
   async changePassword(
     @CurrentUser() user: User,
-    @Body() dto: ChangePasswordDto,
-    @Res({ passthrough: true }) res: Response
+    @Body() dto: ChangePasswordDto
   ) {
     if (!user) {
       throw new NotFoundException("존재하지 않는 유저입니다.");
     }
 
-    const changedPasswordUser = await this.authService.changePassword(
-      user.userId,
-      dto.password
-    );
-    return res.status(HttpStatus.OK).json(changedPasswordUser);
+    await this.authService.changePassword(user.userId, dto.password);
   }
 }
