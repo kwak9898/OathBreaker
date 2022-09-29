@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
+import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class RoleRepository extends Repository<User> {
@@ -12,15 +13,18 @@ export class RoleRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  // 유저 역할 조회
-  async getRoleByUser(userId: string, roleName: string): Promise<User> {
-    const user = await this.findOne({ where: { userId, roleName } });
+  // 유저 역할 전체 조회
+  async getAllByRole(user: UserDto): Promise<User[]> {
+    const roles = await this.find({
+      select: ["roleName"],
+      where: { roleName: user.roleName },
+    });
 
-    if (!user.userId) {
+    if (!roles) {
       throw new NotFoundException("존재하지 않는 유저입니다.");
     }
 
-    return user;
+    return roles;
   }
 
   // 유저 역할 수정

@@ -18,6 +18,9 @@ import { Public } from "../../dacorators/skip-auth.decorator";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
+import { Roles } from "../../dacorators/role.decorator";
+import { Role } from "../roles/enum/role.enum";
+import { RolesGuard } from "./guards/roles.guard";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { ChangePasswordDto } from "./dto/change-password.dto";
@@ -25,19 +28,21 @@ import { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @Controller("auth")
 @ApiTags("AUTH")
+@UseGuards(RolesGuard)
 export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService
   ) {}
 
+  // 유저 생성
+  @Roles(Role.admin)
   /**
    * 유저 생성
    */
   @ApiOperation({
     summary: "유저 생성",
   })
-  @Public()
   @Post("/signup")
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<User> {
     return this.authService.signUp(createUserDto);
@@ -104,16 +109,17 @@ export class AuthController {
     @Body() dto: RefreshTokenDto,
     @Res({ passthrough: true }) res: Response
   ) {
-    const { accessToken, ...accessOption } =
-      this.authService.getCookieWithJwtAccessToken(user.userId);
+    const { refreshToken, ...refreshOption } =
+      this.authService.getCookieWithJwtRefreshToken(user.userId);
 
-    res.cookie("Authentication", accessToken, accessOption);
+    res.cookie("Authentication", refreshToken, refreshOption);
     return user;
   }
 
   /**
    * 비밀번호 변경
    */
+  @Roles(Role.admin)
   @Patch("change-password")
   @ApiOperation({
     summary: "비밀번호 변경",

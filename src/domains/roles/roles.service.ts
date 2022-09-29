@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "../users/users.service";
 import { User } from "../users/entities/user.entity";
 import { RoleRepository } from "./role.repository";
+import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class RolesService {
@@ -12,9 +13,9 @@ export class RolesService {
     private roleRepository: RoleRepository
   ) {}
 
-  // 유저 역할 생성
-  getRoleByUser(userId: string, roleName: string): Promise<User> {
-    return this.roleRepository.getRoleByUser(userId, roleName);
+  // 유저 역할 전체 조회
+  getAllByRole(user: UserDto): Promise<User[]> {
+    return this.roleRepository.getAllByRole(user);
   }
 
   // 유저 역할 수정

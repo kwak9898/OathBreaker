@@ -124,7 +124,7 @@ export class AuthService {
     const isPasswordMatch = await compare(password, hashedPassword);
     if (!isPasswordMatch) {
       throw new HttpException(
-        "비밀번호가 일치하지 않습니다.",
+        "'아이디/패스워드’ 다시 확인하여 주세요",
         HttpStatus.BAD_REQUEST
       );
     }

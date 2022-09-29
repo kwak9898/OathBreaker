@@ -1,16 +1,29 @@
 import { UsersService } from "./users.service";
-import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from "@nestjs/common";
 import { User } from "./entities/user.entity";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Roles } from "../../dacorators/role.decorator";
+import { Role } from "../roles/enum/role.enum";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller("users")
 @ApiTags("USERS")
+@UseGuards(RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   /**
    * 유저 전체 조회
    */
+  @Roles(Role.admin)
   @Get("")
   @ApiOkResponse({ type: User, isArray: true })
   @ApiOperation({
@@ -23,6 +36,7 @@ export class UsersController {
   /**
    * 특정 유저 조회
    */
+  @Roles(Role.admin)
   @Get(":userId")
   @ApiOkResponse({ type: User })
   @ApiOperation({
@@ -35,6 +49,7 @@ export class UsersController {
   /**
    * 유저 수정
    */
+  @Roles(Role.admin)
   @Patch(":userId")
   @ApiOkResponse({ type: User })
   @ApiOperation({
@@ -50,6 +65,7 @@ export class UsersController {
   /**
    * 유저 삭제
    */
+  @Roles(Role.admin)
   @ApiOperation({
     summary: "유저 삭제",
   })

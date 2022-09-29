@@ -2,7 +2,7 @@ import { BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
-import { Roles } from "../../../enum/roles.enum";
+import { Role } from "../../roles/enum/role.enum";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {
@@ -42,7 +42,7 @@ export class User extends BaseEntity {
   team?: string;
   @Column({
     type: "enum",
-    enum: Roles,
+    enum: Role,
     name: "role_name",
     comment: "역할",
     nullable: false,
