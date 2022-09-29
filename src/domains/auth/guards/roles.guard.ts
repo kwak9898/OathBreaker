@@ -27,7 +27,7 @@ export class RolesGuard implements CanActivate {
       return false;
     }
     if (requireRole.includes("등록자")) {
-      return true;
+      return false;
     }
 
     return requireRole.includes(user.roleName);
