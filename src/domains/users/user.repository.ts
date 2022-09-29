@@ -21,12 +21,13 @@ export class UserRepository extends Repository<User> {
 
   // 유저 생성
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { userId, username, password, confirmPassword, roleName } =
+    const { userId, username, password, confirmPassword, team, roleName } =
       createUserDto;
     const user = this.create({
       userId,
       username,
       password,
+      team,
       roleName,
     });
     const existUser = await this.findOne({ where: { userId } });

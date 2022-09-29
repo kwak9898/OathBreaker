@@ -33,5 +33,8 @@ export class CreateUserDto {
   @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
   confirmPassword: string;
 
+  @IsNotEmpty()
+  team: string;
+
   roleName: string;
 }
