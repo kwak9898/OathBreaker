@@ -15,7 +15,7 @@ import { RolesDto } from "./dto/roles.dto";
 import { UserDto } from "../users/dto/user.dto";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../../dacorators/role.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role } from "./enum/role.enum";
 import { GetUser } from "../../dacorators/get-user.decorator";
 
 @Controller("roles")

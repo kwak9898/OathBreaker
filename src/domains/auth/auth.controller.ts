@@ -20,7 +20,7 @@ import { UsersService } from "../users/users.service";
 import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "./guards/roles.guard";
 
 @Controller("auth")

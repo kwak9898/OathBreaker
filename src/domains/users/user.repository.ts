@@ -9,7 +9,7 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { Role } from "../../enum/role.enum";
+import { Role } from "../roles/enum/role.enum";
 
 @Injectable()
 export class UserRepository extends Repository<User> {

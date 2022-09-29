@@ -15,16 +15,11 @@ export class RoleRepository extends Repository<User> {
 
   // 유저 역할 전체 조회
   async getAllByRole(user: UserDto): Promise<User[]> {
-    const query = this.createQueryBuilder("user");
+    const roles = await this.find({ where: { roleName: user.roleName } });
 
-    query.where("user.roleName = :roleName", { roleName: user.roleName });
-    const roles = query.getMany();
-
-    // const user = await this.find({ select: { roleName: roleName } });
-
-    // if (!user) {
-    //   throw new NotFoundException("존재하지 않는 유저입니다.");
-    // }
+    if (!roles) {
+      throw new NotFoundException("존재하지 않는 유저입니다.");
+    }
 
     return roles;
   }

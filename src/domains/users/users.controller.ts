@@ -11,7 +11,7 @@ import {
 import { User } from "./entities/user.entity";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller("users")
