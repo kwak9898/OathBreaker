@@ -21,16 +21,22 @@ export class UserRepository extends Repository<User> {
 
   // 유저 생성
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { userId, username, password } = createUserDto;
+    const { userId, username, password, confirmPassword, roleName } =
+      createUserDto;
     const user = this.create({
       userId,
       username,
       password,
+      roleName,
     });
     const existUser = await this.findOne({ where: { userId } });
 
     if (existUser !== null) {
       throw new BadRequestException("이미 존재하는 아이디입니다.");
+    }
+
+    if (password !== confirmPassword) {
+      throw new BadRequestException("비밀번호가 일치하지 않습니다.");
     }
 
     await user.hashPassword(password);
