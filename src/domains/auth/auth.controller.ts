@@ -46,6 +46,7 @@ export class AuthController {
   @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res: Response) {
     const user = req.user;
+
     const { accessToken, ...accessOption } =
       this.authService.getCookieWithJwtAccessToken(user.userId);
 
