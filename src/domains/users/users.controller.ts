@@ -13,7 +13,6 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../roles/guards/roles.guard";
-import { Public } from "../../dacorators/skip-auth.decorator";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 
 @Controller("users")
@@ -79,13 +78,8 @@ export class UsersController {
   /**
    * 유저 최종 접속일 업데이트
    */
-  @Public()
-  @Patch("/last-access-at/:userId")
-  async updateLastAccessAt(
-    @CurrentUser() user: User,
-    @Param("userId") userId: string
-  ) {
-    await this.usersService.updateLastAccessAt(userId);
-    return user;
+  @Patch("/access/last-user")
+  async updateLastAccessAt(@CurrentUser() user: User) {
+    await this.usersService.updateLastAccessAt(user.userId);
   }
 }

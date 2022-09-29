@@ -58,7 +58,14 @@ export class UserRepository extends Repository<User> {
   // 특정 유저 조회
   async getUserById(userId: string): Promise<User> {
     const findUser = await this.findOne({
-      select: ["userId", "password", "username", "roleName", "team"],
+      select: [
+        "userId",
+        "password",
+        "username",
+        "roleName",
+        "team",
+        "LastAccessAt",
+      ],
       where: { userId },
     });
 
