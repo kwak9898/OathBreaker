@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
+import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class RoleRepository extends Repository<User> {
@@ -13,12 +14,13 @@ export class RoleRepository extends Repository<User> {
   }
 
   // 유저 역할 전체 조회
-  async getAllByRole(roleName: boolean): Promise<User[]> {
-    // const user = await this.find({ select: { roleName: roleName } });
-    const query = this.createQueryBuilder("oath-user");
+  async getAllByRole(user: UserDto): Promise<User[]> {
+    const query = this.createQueryBuilder("user");
 
-    query.where("oath-user.role-name", { roleName: roleName });
+    query.where("user.roleName = :roleName", { roleName: user.roleName });
     const roles = query.getMany();
+
+    // const user = await this.find({ select: { roleName: roleName } });
 
     // if (!user) {
     //   throw new NotFoundException("존재하지 않는 유저입니다.");

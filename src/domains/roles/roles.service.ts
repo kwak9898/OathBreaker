@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "../users/users.service";
 import { User } from "../users/entities/user.entity";
 import { RoleRepository } from "./role.repository";
+import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class RolesService {
@@ -13,8 +14,8 @@ export class RolesService {
   ) {}
 
   // 유저 역할 전체 조회
-  getAllByRole(roleName: boolean): Promise<User[]> {
-    return this.roleRepository.getAllByRole(roleName);
+  getAllByRole(user: UserDto): Promise<User[]> {
+    return this.roleRepository.getAllByRole(user);
   }
 
   // 유저 역할 수정
