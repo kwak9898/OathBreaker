@@ -20,6 +20,7 @@ import {
   MGOIMAGE_EXCEPTION,
 } from "../exception/error-code";
 import { ImageStatusFlag } from "../domains/mgo-image/entities/mgoImage.entity";
+import { JwtService } from "@nestjs/jwt";
 
 describe("MgObject Image 테스트", () => {
   let app: INestApplication;
@@ -44,6 +45,7 @@ describe("MgObject Image 테스트", () => {
         UserFactory,
         UserRepository,
         DatabaseModule,
+        JwtService,
       ],
     }).compile();
 
@@ -83,6 +85,9 @@ describe("MgObject Image 테스트", () => {
       // Then
       expect(body.meta.totalItems).toBe(3);
       expect(body).toHaveProperty("items");
+      for (const item of body.items) {
+        expect(item).toHaveProperty("isErrorImage");
+      }
       expect(body).toHaveProperty("meta");
     });
 
@@ -222,6 +227,7 @@ describe("MgObject Image 테스트", () => {
       expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
         expect(item.statusFlag).toBe(ImageStatusFlag.TEMP);
+        expect(item).toHaveProperty("isErrorImage");
       }
       const afterTransferTemp = await mgObjectService.findOneOrFail(
         mgObject.mgId
@@ -251,6 +257,7 @@ describe("MgObject Image 테스트", () => {
 
       expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
+        expect(item).toHaveProperty("isErrorImage");
         expect(item.statusFlag).toBe(ImageStatusFlag.OTHER);
       }
     });

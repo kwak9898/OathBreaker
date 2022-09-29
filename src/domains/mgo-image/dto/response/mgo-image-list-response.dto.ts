@@ -7,9 +7,18 @@ export class MgoImageListResponseDto extends PickType(MgoImage, [
   "statusFlag",
   "imgUrl",
   "cropImgUrl",
+  "isErrorImage",
 ]) {
   constructor(partial: Partial<MgoImage>) {
     super();
-    return pick(partial, ["imgId", "statusFlag", "imgUrl", "cropImgUrl"]);
+    return pick(partial, [
+      "imgId",
+      "statusFlag",
+      "imgUrl",
+      "cropImgUrl",
+      "isErrorImage",
+    ]);
   }
+
+  isErrorImage = false;
 }
