@@ -46,6 +46,7 @@ export class User extends BaseEntity {
     name: "role_name",
     comment: "역할",
     nullable: false,
+    default: Role.choose,
   })
   roleName?: string;
 
