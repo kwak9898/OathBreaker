@@ -3,6 +3,7 @@ import { omit } from "../../../../utils/dto.utils";
 import { OmitType } from "@nestjs/swagger";
 
 export class MgObjectListResponseDto extends OmitType(MgObject, [
+  "statusFlag",
   "likeRank",
   "likeCnt",
   "rankChange",
@@ -14,6 +15,7 @@ export class MgObjectListResponseDto extends OmitType(MgObject, [
   constructor(partial?: Partial<MgObject>) {
     super();
     return omit(partial, [
+      "statusFlag",
       "likeRank",
       "likeCnt",
       "rankChange",

@@ -13,6 +13,7 @@ import { UserFactory } from "./factory/user-factory";
 import { UserRepository } from "../domains/users/user.repository";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { faker } from "@faker-js/faker";
+import { JwtService } from "@nestjs/jwt";
 
 describe("MgObject 테스트", () => {
   let app: INestApplication;
@@ -34,6 +35,7 @@ describe("MgObject 테스트", () => {
         UserFactory,
         UserRepository,
         DatabaseModule,
+        JwtService,
       ],
     }).compile();
 
@@ -146,6 +148,51 @@ describe("MgObject 테스트", () => {
       expect(response.body.message).toBe(
         MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND.message
       );
+    });
+  });
+
+  describe("mg-object 추천", () => {
+    it("성공", async () => {
+      // Given
+      const imageId = mgObjects[0].mgoImages[0].imgId;
+
+      // When
+      const response = await requestHelper.get(
+        `${DOMAIN}/ai/recommend/${imageId}`
+      );
+
+      // Then
+      const body = response.body;
+      expect(response.statusCode).toBe(200);
+      for (const bodyElement of body) {
+        expect(bodyElement).toHaveProperty("mgId");
+        expect(bodyElement).toHaveProperty("mgName");
+        expect(bodyElement).toHaveProperty("imageUrl");
+      }
+    });
+  });
+
+  describe("mg-object 검색", () => {
+    it("성공", async () => {
+      // Given
+      const searchQueryString = "test";
+
+      // When
+      const response = await requestHelper.get(
+        `${DOMAIN}/ai/search?query=${searchQueryString}`
+      );
+
+      // Then
+      const body = response.body;
+      expect(response.statusCode).toBe(200);
+      for (const bodyElement of body) {
+        expect(bodyElement).toHaveProperty("mgId");
+        expect(bodyElement).toHaveProperty("mgName");
+        expect(bodyElement).toHaveProperty("imageUrl");
+        expect(bodyElement).toHaveProperty("mainMgCategory");
+        expect(bodyElement).toHaveProperty("mediumMgCategory");
+        expect(bodyElement).toHaveProperty("subMgCategory");
+      }
     });
   });
 

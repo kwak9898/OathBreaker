@@ -214,6 +214,8 @@ export class MgoImage extends BaseEntity {
   })
   @JoinColumn([{ name: "mg_id", referencedColumnName: "mgId" }])
   mgObject?: MgObject;
+
+  isErrorImage: boolean;
 }
 
 export enum ImageStatusFlag {

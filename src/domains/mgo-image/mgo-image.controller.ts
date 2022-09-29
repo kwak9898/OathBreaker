@@ -24,6 +24,11 @@ export class MgoImageController {
     private readonly mgObjectService: MgObjectService
   ) {}
 
+  /**
+   * Paging
+   * @param query
+   * @param queryParams
+   */
   @Get("/")
   @ApiPaginateQuery()
   @ApiOperation({ summary: "PAGING" })

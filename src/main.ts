@@ -14,7 +14,7 @@ async function bootstrap() {
   useGlobalHttpExceptionFilter(app);
   useCors(app);
   useSwagger(app);
-  await app.listen(3000);
+  await app.listen(process.env.NODE_ENV === "production" ? 8090 : 3000);
 }
 
 function useCookieParser(app: INestApplication): void {
@@ -64,6 +64,7 @@ function useSwagger(app: INestApplication): void {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup("swagger", app, document);
+  console.log("APP START IN " + process.env.NODE_ENV);
 }
 
 bootstrap();

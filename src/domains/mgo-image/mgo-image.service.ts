@@ -10,6 +10,7 @@ import { DataSource } from "typeorm";
 import { MgObject } from "../mg-object/entities/mg-object.entity";
 import { MyPagination } from "../base/pagination-response";
 import { MgoImageListResponseDto } from "./dto/response/mgo-image-list-response.dto";
+import { getRandomInt } from "../../utils/test.utils";
 
 @Injectable()
 export class MgoImageService {
@@ -60,8 +61,23 @@ export class MgoImageService {
     }
 
     const { items, meta } = await paginate<MgoImage>(queryBuilder, options);
-    const newItems = items.map((r) => new MgoImageListResponseDto(r));
-    return new MyPagination(newItems, meta);
+    const imageListResponseDto = items.map(
+      (image) => new MgoImageListResponseDto(image)
+    );
+    // CALL AI API SERVER
+    const imageIds = imageListResponseDto.map((r) => r.imgId);
+    // const errorImageResponse = await this.aiApiService.getErrorImageList(imageIds)
+    const errorImageIds = new Set();
+    errorImageIds.add(imageIds[getRandomInt(imageListResponseDto.length)]);
+    errorImageIds.add(imageIds[getRandomInt(imageListResponseDto.length)]);
+
+    const imageListResponseDtoWithIsErrorImage = imageListResponseDto.map(
+      (r) => {
+        r.isErrorImage = errorImageIds.has(r.imgId);
+        return r;
+      }
+    );
+    return new MyPagination(imageListResponseDtoWithIsErrorImage, meta);
   }
 
   async updateImageStatus(ids: string[], statusFlag: ImageStatusFlag) {
