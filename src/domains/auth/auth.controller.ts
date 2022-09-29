@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   NotFoundException,
+  Param,
   Patch,
   Post,
   Res,
@@ -120,12 +121,13 @@ export class AuthController {
    * 비밀번호 변경
    */
   @Roles(Role.admin)
-  @Patch("change-password")
+  @Patch("change-password/:userId")
   @ApiOperation({
     summary: "비밀번호 변경",
   })
   async changePassword(
     @CurrentUser() user: User,
+    @Param("userId") userId: string,
     @Body() dto: ChangePasswordDto,
     @Res({ passthrough: true }) res: Response
   ) {
@@ -134,7 +136,7 @@ export class AuthController {
     }
 
     const changedPasswordUser = await this.authService.changePassword(
-      user.userId,
+      userId,
       dto.password
     );
     return res.status(HttpStatus.OK).json(changedPasswordUser);
