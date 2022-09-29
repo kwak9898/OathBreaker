@@ -20,6 +20,7 @@ import {
 import { Pagination } from "nestjs-typeorm-paginate";
 import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response.dto";
 import { MgObjectRecommendListResponseDto } from "./dto/response/mgobject-recommend-list-response.dto";
+import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
 
 const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
   searchColumns: ["ID", "MG_NAME"],
@@ -54,6 +55,18 @@ export class MgObjectController {
     return await this.mgObjectService.paginate(query);
   }
 
+  /**
+   * MG-OBJECT-ID 리스트를 검색 합니다
+   */
+  @Get("/ai/search")
+  @ApiOperation({ summary: "AI SEARCH MG-OBJECT" })
+  @ApiParam({ name: "query", type: "string" })
+  async search(
+    @Param("query") searchQuery: string
+  ): Promise<MgobjectAiSearchListResponseDto[]> {
+    return this.mgObjectService.aiSearch(searchQuery);
+  }
+
   @Get("/:id")
   @ApiOperation({ summary: "DETAIL" })
   @ApiOkResponse({ type: MgobjectUpdateRequestDto })
@@ -80,9 +93,9 @@ export class MgObjectController {
   }
 
   /**
-   * TEMP IMAGE ID에 맞는 추천 MG-OBJECT-ID 리스트를 조회 합니다
+   * TEMP IMAGE에 맞는 추천 MG-OBJECT-ID 리스트를 조회 합니다
    */
-  @Get("/recommend/:imageId")
+  @Get("/ai/recommend/:imageId")
   @ApiOperation({ summary: "추천 MG-OBJECT" })
   @ApiParam({ name: "imageId", type: "string" })
   async recommend(

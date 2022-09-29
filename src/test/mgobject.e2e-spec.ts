@@ -158,7 +158,7 @@ describe("MgObject 테스트", () => {
 
       // When
       const response = await requestHelper.get(
-        `${DOMAIN}/recommend/${imageId}`
+        `${DOMAIN}/ai/recommend/${imageId}`
       );
 
       // Then
@@ -170,20 +170,29 @@ describe("MgObject 테스트", () => {
         expect(bodyElement).toHaveProperty("imageUrl");
       }
     });
+  });
 
-    it("찾을 수 없음", async () => {
+  describe("mg-object 검색", () => {
+    it("성공", async () => {
       // Given
-      const mgoUpdateDto = new MgobjectUpdateRequestDto();
+      const searchQueryString = "test";
 
       // When
-      const response = await requestHelper.patch(
-        `${DOMAIN}/notfound_mg_id`,
-        mgoUpdateDto
+      const response = await requestHelper.get(
+        `${DOMAIN}/ai/search?query=${searchQueryString}`
       );
-      expect(response.statusCode).toBe(404);
-      expect(response.body.message).toBe(
-        MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND.message
-      );
+
+      // Then
+      const body = response.body;
+      expect(response.statusCode).toBe(200);
+      for (const bodyElement of body) {
+        expect(bodyElement).toHaveProperty("mgId");
+        expect(bodyElement).toHaveProperty("mgName");
+        expect(bodyElement).toHaveProperty("imageUrl");
+        expect(bodyElement).toHaveProperty("mainMgCategory");
+        expect(bodyElement).toHaveProperty("mediumMgCategory");
+        expect(bodyElement).toHaveProperty("subMgCategory");
+      }
     });
   });
 

@@ -10,6 +10,7 @@ import { NotFoundException } from "@nestjs/common";
 import { MGOBJECT_EXCEPTION } from "../../exception/error-code";
 import { MgoImageRepository } from "../mgo-image/mgo-image.repository";
 import { MgObjectRecommendListResponseDto } from "./dto/response/mgobject-recommend-list-response.dto";
+import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
 
 export class MgObjectService {
   constructor(
@@ -140,5 +141,13 @@ export class MgObjectService {
     const mgObjectList = await this.repository.find({});
     const sliceList = mgObjectList.slice(0, 8);
     return sliceList.map((item) => new MgObjectRecommendListResponseDto(item));
+  }
+
+  async aiSearch(
+    searchQuery: string
+  ): Promise<MgobjectAiSearchListResponseDto[]> {
+    const mgObjectList = await this.repository.find({});
+    const sliceList = mgObjectList.slice(0, 8);
+    return sliceList.map((item) => new MgobjectAiSearchListResponseDto(item));
   }
 }
