@@ -11,6 +11,7 @@ import { AuthModule } from "./domains/auth/auth.module";
 import { RolesModule } from "./domains/roles/roles.module";
 import { MgObjectModule } from "./domains/mg-object/mg-object.module";
 import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
+import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
     DatabaseModule,
     MgObjectModule,
     MgoImageModule,
+    AssignMgObjectModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

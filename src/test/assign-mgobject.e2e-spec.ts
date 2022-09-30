@@ -1,0 +1,107 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import { AppModule } from "../app.module";
+import { AuthService } from "../domains/auth/auth.service";
+import { RequestHelper } from "../utils/test.utils";
+import { MgObjectRepository } from "../domains/mg-object/mg-object.repository";
+import { DatabaseModule } from "../database/database.module";
+import { MgObjectFactory } from "./factory/mgobject-factory";
+import { UserFactory } from "./factory/user-factory";
+import { UserRepository } from "../domains/users/user.repository";
+import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
+import { JwtService } from "@nestjs/jwt";
+import { AssignMgService } from "../domains/assign-mg-object/assign-mg-service";
+import { AssignMgRepository } from "../domains/assign-mg-object/assign-mg-repository";
+import { User } from "../domains/users/entities/user.entity";
+import { AssignMgobjectFactory } from "./factory/assign-mgobject-factory";
+import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
+
+describe("AssignMgObject 테스트", () => {
+  let app: INestApplication;
+  let token;
+  const DOMAIN = "/assign-mgo";
+  let authService: AuthService;
+  let requestHelper: RequestHelper;
+  let mgObjectFactory: MgObjectFactory;
+  let assignMgObjectFactory: AssignMgobjectFactory;
+  let userFactory: UserFactory;
+  let user: User;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+      providers: [
+        MgObjectFactory,
+        MgObjectRepository,
+        MgoImageRepository,
+        AssignMgService,
+        AssignMgRepository,
+        AssignMgobjectFactory,
+        UserFactory,
+        UserRepository,
+        DatabaseModule,
+        JwtService,
+      ],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    authService = moduleFixture.get(AuthService);
+    mgObjectFactory = moduleFixture.get(MgObjectFactory);
+    userFactory = moduleFixture.get(UserFactory);
+    assignMgObjectFactory = moduleFixture.get(AssignMgobjectFactory);
+    user = await userFactory.createBaseUser();
+    token = authService.createAccessToken(user.userId);
+
+    requestHelper = new RequestHelper(app, token);
+
+    await app.init();
+    await createBaseAssignMgObject();
+  });
+
+  describe("COUNTS", () => {
+    it("전체 개수 조회", async () => {
+      const response = await requestHelper.get(
+        `${DOMAIN}/counts?userId=${user.userId}`
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("mgObjectCnt");
+      expect(response.body).toHaveProperty("inCompleteCnt");
+      expect(response.body).toHaveProperty("completeCnt");
+      expect(response.body).toHaveProperty("tmpCnt");
+    });
+  });
+
+  describe("Pagination", () => {
+    it("조회 성공", async () => {
+      // Given
+
+      // When
+      const { body } = await requestHelper.get(
+        DOMAIN + `?userId=${user.userId}&page=1&limit=10`
+      );
+
+      // Then
+      expect(body).toHaveProperty("items");
+      expect(body).toHaveProperty("meta");
+      expect(body.meta.totalItems).toBe(100);
+      expect(body.meta.itemCount).toBe(10);
+      expect(body.meta.currentPage).toBe(1);
+    });
+  });
+
+  const createBaseAssignMgObject = async () => {
+    const promises = [];
+    for (let i = 0; i < 100; i++) {
+      promises.push(mgObjectFactory.createBaseMgObject());
+    }
+    const promises2 = [];
+
+    const results = await Promise.all(promises);
+    for (const result of results) {
+      promises2.push(
+        assignMgObjectFactory.createBaseAssignMgObject(result as MgObject, user)
+      );
+    }
+    await Promise.all(promises2);
+  };
+});

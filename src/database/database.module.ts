@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { User } from "../domains/users/entities/user.entity";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
+import { AssignMgObject } from "../domains/assign-mg-object/entities/assign-mg-object";
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
         username: configService.get("DB_USERNAME"),
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_NAME"),
-        entities: [User, MgObject, MgoImage],
+        entities: [User, MgObject, MgoImage, AssignMgObject],
         synchronize: configService.get("NODE_ENV") !== "production",
         dropSchema: configService.get("NODE_ENV") === "test",
       }),
