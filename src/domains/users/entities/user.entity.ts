@@ -69,14 +69,14 @@ export class User extends BaseEntity {
     comment: "접근 페이지",
     nullable: true,
   })
-  url: string;
+  url?: string;
 
   @Column("character varying", {
     name: "ip",
     comment: "ip 주소",
     nullable: true,
   })
-  ip: string;
+  ip?: string;
 
   async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 12);

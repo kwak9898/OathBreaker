@@ -67,4 +67,19 @@ export class UsersService {
   async updateLastAccessAt(userId: string) {
     return this.userRepository.updateLastAccessAt(userId);
   }
+
+  // 모든 유저의 접속 로그 전체 조회
+  async getConnectLog(): Promise<User[]> {
+    return this.userRepository.getConnectLog();
+  }
+
+  // 유저의 최초 접속일 업데이트
+  async updateFirstAccessAt(userId: string) {
+    return this.userRepository.updateFirstAccessAt(userId);
+  }
+
+  // 유저의 IP주소 저장
+  async createIpByUser(userId: string, ip: string): Promise<User> {
+    return this.userRepository.createIpByUser(userId, ip);
+  }
 }

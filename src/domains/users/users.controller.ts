@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   Patch,
   UseGuards,
@@ -78,8 +79,34 @@ export class UsersController {
   /**
    * 유저 최종 접속일 업데이트
    */
-  @Patch("/access/last-user")
+  @Patch("/access/last-date")
   async updateLastAccessAt(@CurrentUser() user: User) {
     await this.usersService.updateLastAccessAt(user.userId);
+  }
+
+  /**
+   * 모든 유저의 접속 로그 전체 조회
+   */
+  @Roles(Role.admin)
+  @Get("/connect/log")
+  async getConnectLog(): Promise<User[]> {
+    return await this.usersService.getConnectLog();
+  }
+
+  /**
+   * 유저의 최초 접속일 업데이트
+   */
+  @Patch("/access/first-date")
+  async updateFirstAccessAt(@CurrentUser() user: User) {
+    return await this.usersService.updateFirstAccessAt(user.userId);
+  }
+
+  /**
+   * 유저의 IP주소 저장
+   */
+  @Patch("/create/ip")
+  async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
+    ip = user.ip;
+    return await this.usersService.createIpByUser(user.userId, ip);
   }
 }

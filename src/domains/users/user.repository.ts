@@ -9,7 +9,6 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -144,9 +143,8 @@ export class UserRepository extends Repository<User> {
     return this.update(userId, { lastAccessAt: updateDate });
   }
 
-  // 유저의 접속 로그 전체
-  async connectLog(user: UserDto): Promise<User[]> {
-    // TODO 접속 로그 조회 관련 API 구현하기
+  // 모든 유저의 접속 로그 전체 조회
+  async getConnectLog(): Promise<User[]> {
     const userLog = this.find({
       select: ["userId", "username", "url", "ip", "firstAccessAt"],
     });
@@ -155,6 +153,24 @@ export class UserRepository extends Repository<User> {
       throw new NotFoundException("모든 유저의 접속 로그가 존재하지 않습니다.");
     }
 
-    return;
+    return userLog;
+  }
+
+  // 유저의 최초 접속일 업데이트
+  async updateFirstAccessAt(userId: string) {
+    const updateDate = new Date();
+    return this.update(userId, { firstAccessAt: updateDate });
+  }
+
+  // 유저의 IP주소 저장
+  async createIpByUser(userId: string, ip: string): Promise<User> {
+    const user = this.findOne({ where: { userId } });
+
+    if (!user) {
+      throw new NotFoundException("존재하지 않는 유저입니다.");
+    }
+
+    await this.update(userId, { ip });
+    return user;
   }
 }
