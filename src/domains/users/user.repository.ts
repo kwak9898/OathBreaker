@@ -151,6 +151,10 @@ export class UserRepository extends Repository<User> {
       select: ["userId", "username", "url", "ip", "firstAccessAt"],
     });
 
+    if (!userLog) {
+      throw new NotFoundException("모든 유저의 접속 로그가 존재하지 않습니다.");
+    }
+
     return;
   }
 }
