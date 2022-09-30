@@ -15,7 +15,7 @@ import { MyPagination } from "../base/pagination-response";
 import { MgoImageListResponseDto } from "./dto/response/mgo-image-list-response.dto";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
-import { RolesGuard } from "../auth/guards/roles.guard";
+import { RolesGuard } from "../../guards/roles.guard";
 
 @Controller("/mgo-images")
 @ApiTags("MG-OBJECT-IMAGE")

@@ -12,12 +12,12 @@ import {
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { User } from "../users/entities/user.entity";
 import { Public } from "../../dacorators/skip-auth.decorator";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { LocalAuthGuard } from "../../guards/local-auth.guard";
 import { UsersService } from "../users/users.service";
-import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
+import { JwtRefreshGuard } from "../../guards/jwt-refresh.guard";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
-import { RolesGuard } from "./guards/roles.guard";
+import { RolesGuard } from "../../guards/roles.guard";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { ChangePasswordDto } from "./dto/change-password.dto";

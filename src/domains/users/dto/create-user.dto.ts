@@ -1,8 +1,14 @@
-import { IsString, Matches, MaxLength, MinLength } from "class-validator";
-import { Role } from "../../roles/enum/role.enum";
+import {
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 export class CreateUserDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(4)
   @MaxLength(20)
   // 영문 + 숫자 유효성 체크
@@ -11,15 +17,24 @@ export class CreateUserDto {
   })
   userId: string;
 
+  @IsNotEmpty()
   @MinLength(4)
   @MaxLength(20)
   username: string;
 
+  @IsNotEmpty()
   @MinLength(10)
   @MaxLength(20)
   // 영문 + 숫자 + 특수문자 유효성 체크
   @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
   password: string;
 
-  roleName: Role[];
+  @IsNotEmpty()
+  @Matches(/^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/)
+  confirmPassword: string;
+
+  @IsNotEmpty()
+  team: string;
+
+  roleName: string;
 }

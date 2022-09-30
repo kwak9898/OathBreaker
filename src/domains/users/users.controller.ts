@@ -4,15 +4,21 @@ import {
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   Patch,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { User } from "./entities/user.entity";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
-import { RolesGuard } from "../auth/guards/roles.guard";
+import { RolesGuard } from "../../guards/roles.guard";
+import { CurrentUser } from "../../dacorators/current-user.decorators";
+import { Pagination } from "nestjs-typeorm-paginate";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { UrlDto } from "./dto/url.dto";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -72,5 +78,49 @@ export class UsersController {
   @Delete(":userId")
   async deleteUser(@Param("userId") userId: string): Promise<void> {
     return this.usersService.deleteUser(userId);
+  }
+
+  /**
+   * 유저 최종 접속일 업데이트
+   */
+  @Patch("/access/last-date")
+  async updateLastAccessAt(@CurrentUser() user: User) {
+    await this.usersService.updateLastAccessAt(user.userId);
+  }
+
+  /**
+   * 모든 유저의 접속 로그 전체 조회
+   */
+  @Roles(Role.admin)
+  @Get("/connect/log")
+  async getConnectLog(
+    @Query() options: MyPaginationQuery
+  ): Promise<Pagination<User>> {
+    return await this.usersService.getConnectLog(options);
+  }
+
+  /**
+   * 유저의 최초 접속일 업데이트
+   */
+  @Patch("/access/first-date")
+  async updateFirstAccessAt(@CurrentUser() user: User) {
+    return await this.usersService.updateFirstAccessAt(user.userId);
+  }
+
+  /**
+   * 유저의 IP주소 저장
+   */
+  @Patch("/create/ip")
+  async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
+    user.ip = ip;
+    return await this.usersService.createIpByUser(user.userId, (user.ip = ip));
+  }
+
+  /**
+   * 유저의 URL 저장
+   */
+  @Patch("/create/url")
+  async createUrlByUser(@CurrentUser() user: User, @Body() url: UrlDto) {
+    return await this.usersService.createUrlByUser(user.userId, url.url);
   }
 }
