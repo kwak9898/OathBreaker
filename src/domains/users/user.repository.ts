@@ -9,6 +9,7 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -64,7 +65,7 @@ export class UserRepository extends Repository<User> {
         "username",
         "roleName",
         "team",
-        "LastAccessAt",
+        "lastAccessAt",
       ],
       where: { userId },
     });
@@ -140,6 +141,16 @@ export class UserRepository extends Repository<User> {
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
     const updateDate = new Date();
-    return this.update(userId, { LastAccessAt: updateDate });
+    return this.update(userId, { lastAccessAt: updateDate });
+  }
+
+  // 유저의 접속 로그 전체
+  async connectLog(user: UserDto): Promise<User[]> {
+    // TODO 접속 로그 조회 관련 API 구현하기
+    const userLog = this.find({
+      select: ["userId", "username", "url", "ip", "firstAccessAt"],
+    });
+
+    return;
   }
 }
