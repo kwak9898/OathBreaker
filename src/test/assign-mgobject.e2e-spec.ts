@@ -15,6 +15,7 @@ import { AssignMgRepository } from "../domains/assign-mg-object/assign-mg-reposi
 import { User } from "../domains/users/entities/user.entity";
 import { AssignMgobjectFactory } from "./factory/assign-mgobject-factory";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
+import { MgObjectService } from "../domains/mg-object/mg-object.service";
 
 describe("AssignMgObject 테스트", () => {
   let app: INestApplication;
@@ -37,6 +38,7 @@ describe("AssignMgObject 테스트", () => {
         AssignMgService,
         AssignMgRepository,
         AssignMgobjectFactory,
+        MgObjectService,
         UserFactory,
         UserRepository,
         DatabaseModule,
@@ -86,6 +88,23 @@ describe("AssignMgObject 테스트", () => {
       expect(body.meta.totalItems).toBe(100);
       expect(body.meta.itemCount).toBe(10);
       expect(body.meta.currentPage).toBe(1);
+    });
+  });
+
+  describe("할당하기", () => {
+    it("성공", async () => {
+      // Given
+      const mgObject = await mgObjectFactory.createBaseMgObject();
+
+      // When
+      const response = await requestHelper.post(
+        `${DOMAIN}/assign?mgObjectId=${mgObject.mgId}`
+      );
+
+      // Then
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("mgObject");
+      expect(response.body).toHaveProperty("user");
     });
   });
 

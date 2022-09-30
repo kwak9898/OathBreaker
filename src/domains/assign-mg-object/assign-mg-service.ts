@@ -6,11 +6,19 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { paginateRawAndEntities } from "nestjs-typeorm-paginate";
 import { MgObjectListResponseDto } from "../mg-object/dto/response/mgobject-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
+import { AssignMgObject } from "./entities/assign-mg-object";
+import { MgObjectService } from "../mg-object/mg-object.service";
+import { UserRepository } from "../users/user.repository";
+import { Role } from "../roles/enum/role.enum";
+import { getRandomInt } from "../../utils/test.utils";
 
 export class AssignMgService {
   constructor(
     @InjectRepository(AssignMgRepository)
-    private assignMgRepository: AssignMgRepository
+    private assignMgRepository: AssignMgRepository,
+    private readonly mgObjectService: MgObjectService,
+    @InjectRepository(UserRepository)
+    private userRepository: UserRepository
   ) {}
 
   async pagination(options: MyPaginationQuery, user: User) {
@@ -97,5 +105,15 @@ export class AssignMgService {
       completeCnt: completeCount,
       tmpCnt: tempCount,
     };
+  }
+
+  async assignMgObjectToAdmin(mgObjectId: string) {
+    const assign = new AssignMgObject();
+    const adminUserList = await this.userRepository.find({
+      where: { roleName: Role.admin },
+    });
+    assign.user = adminUserList[getRandomInt(adminUserList.length - 1)];
+    assign.mgObject = await this.mgObjectService.findOneOrFail(mgObjectId);
+    return this.assignMgRepository.save(assign);
   }
 }
