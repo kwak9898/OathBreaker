@@ -35,8 +35,10 @@ export class UsersController {
   @ApiOperation({
     summary: "유저 전체 조회",
   })
-  async getAllUsers(): Promise<User[]> {
-    return this.usersService.getAllUsers();
+  async getAllUsers(
+    @Query() query: MyPaginationQuery
+  ): Promise<Pagination<User>> {
+    return this.usersService.getAllUsers(query);
   }
 
   /**

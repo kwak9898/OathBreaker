@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
-import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class RoleRepository extends Repository<User> {
@@ -14,10 +13,9 @@ export class RoleRepository extends Repository<User> {
   }
 
   // 유저 역할 전체 조회
-  async getAllByRole(user: UserDto): Promise<User[]> {
+  async getAllByRole(): Promise<User[]> {
     const roles = await this.find({
-      select: ["roleName"],
-      where: { roleName: user.roleName },
+      select: ["roleName", "createdAt", "updatedAt"],
     });
 
     if (!roles) {
