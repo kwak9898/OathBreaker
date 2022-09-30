@@ -173,4 +173,16 @@ export class UserRepository extends Repository<User> {
     await this.update(userId, { ip });
     return user;
   }
+
+  // 유저의 URL 저장
+  async createUrlByUser(userId: string, url: string): Promise<User> {
+    const user = this.findOne({ where: { userId } });
+
+    if (!user) {
+      throw new NotFoundException("존재하지 않는 유저입니다.");
+    }
+
+    await this.update(userId, { url });
+    return user;
+  }
 }

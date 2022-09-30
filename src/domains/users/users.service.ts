@@ -3,6 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
 @Injectable()
 export class UsersService {
@@ -69,8 +71,9 @@ export class UsersService {
   }
 
   // 모든 유저의 접속 로그 전체 조회
-  async getConnectLog(): Promise<User[]> {
-    return this.userRepository.getConnectLog();
+  async getConnectLog(options: MyPaginationQuery): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder("user");
+    return paginate(queryBuilder, options);
   }
 
   // 유저의 최초 접속일 업데이트
@@ -81,5 +84,10 @@ export class UsersService {
   // 유저의 IP주소 저장
   async createIpByUser(userId: string, ip: string): Promise<User> {
     return this.userRepository.createIpByUser(userId, ip);
+  }
+
+  // 유저의 URL 저장
+  async createUrlByUser(userId: string, url: string): Promise<User> {
+    return this.userRepository.createUrlByUser(userId, url);
   }
 }

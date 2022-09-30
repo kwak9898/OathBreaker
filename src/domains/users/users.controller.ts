@@ -7,6 +7,7 @@ import {
   Ip,
   Param,
   Patch,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { User } from "./entities/user.entity";
@@ -15,6 +16,9 @@ import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../../guards/roles.guard";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
+import { Pagination } from "nestjs-typeorm-paginate";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { UrlDto } from "./dto/url.dto";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -89,8 +93,10 @@ export class UsersController {
    */
   @Roles(Role.admin)
   @Get("/connect/log")
-  async getConnectLog(): Promise<User[]> {
-    return await this.usersService.getConnectLog();
+  async getConnectLog(
+    @Query() options: MyPaginationQuery
+  ): Promise<Pagination<User>> {
+    return await this.usersService.getConnectLog(options);
   }
 
   /**
@@ -108,5 +114,13 @@ export class UsersController {
   async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
     user.ip = ip;
     return await this.usersService.createIpByUser(user.userId, (user.ip = ip));
+  }
+
+  /**
+   * 유저의 URL 저장
+   */
+  @Patch("/create/url")
+  async createUrlByUser(@CurrentUser() user: User, @Body() url: UrlDto) {
+    return await this.usersService.createUrlByUser(user.userId, url.url);
   }
 }
