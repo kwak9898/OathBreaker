@@ -106,7 +106,7 @@ export class UsersController {
    */
   @Patch("/create/ip")
   async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
-    ip = user.ip;
-    return await this.usersService.createIpByUser(user.userId, ip);
+    user.ip = ip;
+    return await this.usersService.createIpByUser(user.userId, (user.ip = ip));
   }
 }
