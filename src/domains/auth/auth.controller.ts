@@ -3,7 +3,7 @@ import {
   Body,
   Controller,
   HttpCode,
-  NotFoundException,
+  Param,
   Patch,
   Post,
   UseGuards,
@@ -95,18 +95,14 @@ export class AuthController {
    * 비밀번호 변경
    */
   @Roles(Role.admin)
-  @Patch("change-password")
+  @Patch("change-password/:userId")
   @ApiOperation({
     summary: "비밀번호 변경",
   })
   async changePassword(
-    @CurrentUser() user: User,
+    @Param("userId") userId: string,
     @Body() dto: ChangePasswordDto
   ) {
-    if (!user) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
-
-    await this.authService.changePassword(user.userId, dto.password);
+    await this.authService.changePassword(userId, dto.password);
   }
 }

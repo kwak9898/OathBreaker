@@ -19,8 +19,8 @@ export class UsersService {
   }
 
   // 유저 전체 조회
-  getAllUsers(): Promise<User[]> {
-    return this.userRepository.getAllUsers();
+  getAllUsers(options: MyPaginationQuery): Promise<Pagination<User>> {
+    return paginate(this.userRepository, options);
   }
 
   // 특정 유저 조회
