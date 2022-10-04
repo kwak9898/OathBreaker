@@ -27,10 +27,10 @@ import {
 import { Pagination } from "nestjs-typeorm-paginate";
 import { MgObjectListResponseDto } from "./dto/response/mgobject-list-response.dto";
 import { MgObjectRecommendListResponseDto } from "./dto/response/mgobject-recommend-list-response.dto";
-import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
 import { RolesGuard } from "../../guards/roles.guard";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
+import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
 
 const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
   searchColumns: ["ID", "MG_NAME"],
@@ -67,19 +67,6 @@ export class MgObjectController {
     return await this.mgObjectService.paginate(query);
   }
 
-  /**
-   * MG-OBJECT-ID 리스트를 검색 합니다
-   */
-  @Get("/ai/search")
-  @ApiOperation({ summary: "AI SEARCH MG-OBJECT" })
-  @ApiParam({ name: "query", type: "string" })
-  @Roles(Role.admin)
-  async search(
-    @Param("query") searchQuery: string
-  ): Promise<MgobjectAiSearchListResponseDto[]> {
-    return this.mgObjectService.aiSearch(searchQuery);
-  }
-
   @Get("/:id")
   @ApiOperation({ summary: "DETAIL" })
   @ApiOkResponse({ type: MgobjectUpdateRequestDto })
@@ -105,6 +92,19 @@ export class MgObjectController {
     return new MgobjectDetailResponseDto(
       await this.mgObjectService.update(id, updateDto)
     );
+  }
+
+  /**
+   * MG-OBJECT-ID 리스트를 검색 합니다
+   */
+  @Get("/ai/search")
+  @ApiOperation({ summary: "AI SEARCH MG-OBJECT" })
+  @ApiParam({ name: "query", type: "string" })
+  @Roles(Role.admin)
+  async search(
+    @Param("query") searchQuery: string
+  ): Promise<MgobjectAiSearchListResponseDto[]> {
+    return this.mgObjectService.aiSearch(searchQuery);
   }
 
   /**

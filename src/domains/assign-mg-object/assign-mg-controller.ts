@@ -10,8 +10,10 @@ import { AssignMgCountsResponseDto } from "./dto/response/assign-mg-counts-respo
 import { MyPaginationQuery } from "../base/pagination-query";
 import { UsersService } from "../users/users.service";
 import { Public } from "../../dacorators/skip-auth.decorator";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("/assign-mgo")
+@ApiTags("assign-mgo")
 export class AssignMgController {
   constructor(
     private readonly assignMgService: AssignMgService,

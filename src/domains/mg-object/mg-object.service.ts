@@ -112,7 +112,16 @@ export class MgObjectService {
     if (options.search) {
       queryBuilder
         .where("mgo.mgName = :mgName", { mgName: options?.search ?? "" })
-        .orWhere("mgo.mgId = :mgId", { mgId: options?.search ?? "" });
+        .orWhere("mgo.mgId = :mgId", { mgId: options?.search ?? "" })
+        .orWhere("mgo.mainMgCategory = :mainMgCategory", {
+          mainMgCategory: options?.search ?? "",
+        })
+        .orWhere("mgo.mediumMgCategory = :mediumMgCategory", {
+          mediumMgCategory: options?.search ?? "",
+        })
+        .orWhere("mgo.subMgCategory = :subMgCategory", {
+          subMgCategory: options?.search ?? "",
+        });
     }
 
     const results = await paginateRawAndEntities(queryBuilder, options);
