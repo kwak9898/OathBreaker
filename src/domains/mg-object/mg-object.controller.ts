@@ -33,7 +33,13 @@ import { Role } from "../roles/enum/role.enum";
 import { MgobjectAiSearchListResponseDto } from "./dto/response/mgobject-ai-search-list-response.dto";
 
 const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
-  searchColumns: ["ID", "MG_NAME"],
+  searchColumns: [
+    "ID",
+    "MG_NAME",
+    "대분류(main_mg_category)",
+    "중분류(medium_mg_category)",
+    "소분류(sub_mg_category)",
+  ],
 };
 
 @Controller("/mg-objects")
