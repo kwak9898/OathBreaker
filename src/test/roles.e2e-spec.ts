@@ -6,6 +6,9 @@ import * as request from "supertest";
 import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
 import { UserFactory } from "./factory/user-factory";
+import { UserRepository } from "../domains/users/user.repository";
+import { DatabaseModule } from "../database/database.module";
+import { JwtService } from "@nestjs/jwt";
 
 describe("역할 관련 테스트", () => {
   let app: INestApplication;
@@ -20,10 +23,12 @@ describe("역할 관련 테스트", () => {
   let userFactory: UserFactory;
   let databaseSource: DataSource;
   let user;
+  let managerUser;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
+      providers: [UserRepository, UserFactory, DatabaseModule, JwtService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -35,45 +40,47 @@ describe("역할 관련 테스트", () => {
 
     token = authService.createAccessToken(
       (await userFactory.createBaseUser()).userId
-    ).accessToken;
+    );
 
+    // 관리자 유저 생성
     user = await userFactory.createBaseUser();
+
+    // 유저 생성
+    managerUser = await userFactory.createManagerUser();
 
     await app.init();
   });
 
   describe("역할 조회/수정/삭제", () => {
-    it("역할 조회 성공", async () => {
+    it("역할 조회 성공", async (done) => {
       // Given
-      userId = user.userId;
-      roleName = "선택";
 
       // When
-      const response = await request(app.getHttpServer()).get(
-        `${rolesDomain}/${userId}/${roleName}`
-      );
+      const response = await request(app.getHttpServer())
+        .get(`${rolesDomain}`)
+        .auth(token, { type: "bearer" });
 
       // Then
       expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(response.body).toStrictEqual({ roles: ["관리자", "등록자"] });
+      done();
     });
 
-    it("역할 수정 성공", async () => {
+    it("역할 수정 성공", async (done) => {
       // Given
-      userId = user.userId;
+      userId = managerUser.userId;
       roleName = "등록자";
 
       // WHen
       const response = await request(app.getHttpServer())
-        .patch(`${rolesDomain}/update/${userId}`)
+        .patch(`${rolesDomain}/${userId}`)
+        .auth(token, { type: "bearer" })
         .send({ roleName });
-      console.log(response.body);
 
       // Then
       expect(response.statusCode).toBe(HttpStatus.OK);
-    });
-
-    it("역할 삭제 성공", async () => {
-      // Given
+      expect(response.body.roleName).toBe(roleName);
+      done();
     });
   });
 });

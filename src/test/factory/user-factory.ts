@@ -10,9 +10,22 @@ export class UserFactory {
   createBaseUser() {
     const user = new User();
     user.userId = "user12345";
+    user.username = "testerAdmin";
     user.password = "password123@";
     user.isActive = true;
+    user.team = "운영";
     user.roleName = Role.admin;
+    return this.repository.save(user);
+  }
+
+  createManagerUser() {
+    const user = new User();
+    user.userId = "manager1";
+    user.username = "testManager";
+    user.password = "password123@";
+    user.isActive = true;
+    user.team = "운영";
+    user.roleName = Role.choose;
     return this.repository.save(user);
   }
 }
