@@ -12,8 +12,9 @@ export class CreateUserDto {
   @MinLength(4)
   @MaxLength(20)
   // 영문 + 숫자 유효성 체크
-  @Matches(/^[a-zA-Z0-9]*$/, {
-    message: "영어와 숫자의 조합으로 다시 시도해 주세요.",
+  @Matches(/^[a-zA-Z0-9~!@#$%^&*]*$/, {
+    message:
+      "10자 이상 20자 이하로 영어, 숫자, 특수문자의 조합으로 다시 시도해주세요",
   })
   userId: string;
 

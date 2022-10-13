@@ -36,15 +36,4 @@ export class RoleRepository extends Repository<User> {
       console.log(err);
     }
   }
-
-  // 유저 역할 삭제
-  async deleteRoleByUser(userId: string, roleName: string): Promise<void> {
-    const user = await this.userService.getUserById(userId);
-
-    if (user) {
-      await this.delete(roleName);
-    } else {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
-  }
 }

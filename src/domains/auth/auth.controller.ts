@@ -31,11 +31,10 @@ export class AuthController {
     private usersService: UsersService
   ) {}
 
-  // 유저 생성
-  @Roles(Role.admin)
   /**
    * 유저 생성
    */
+  @Roles(Role.admin)
   @ApiOperation({
     summary: "유저 생성",
   })
