@@ -5,7 +5,13 @@ import { ImageStatusFlag, MgoImage } from "./entities/mgoImage.entity";
 import { UpdateMgoImageStatusDto } from "./dto/request/update-mgo-image-status.dto";
 import { UpdateMgoImageMgObjectDto } from "./dto/request/update-mgo-image-mg-object.dto";
 import { MgObjectService } from "../mg-object/mg-object.service";
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import {
   ApiPaginatedResponse,
   ApiPaginateQuery,
@@ -20,6 +26,7 @@ import { RolesGuard } from "../../guards/roles.guard";
 @Controller("/mgo-images")
 @ApiTags("MG-OBJECT-IMAGE")
 @UseGuards(RolesGuard)
+@ApiBearerAuth("access-token")
 export class MgoImageController {
   constructor(
     private readonly mgoImageService: MgoImageService,

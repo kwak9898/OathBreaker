@@ -57,7 +57,7 @@ function useSwagger(app: INestApplication): void {
     .setVersion("1.0")
     .addBearerAuth(
       { type: "http", scheme: "Bearer", bearerFormat: "JWT" },
-      "JWT-token"
+      "access-token"
     )
     .build();
 

@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
+import * as bcrypt from "bcrypt";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
@@ -12,6 +13,21 @@ export class UsersService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository
   ) {}
+
+  async initializeSuperUser() {
+    const admin = await this.userRepository.findOne({
+      where: { userId: "super" },
+    });
+    if (!admin) {
+      await this.userRepository.save({
+        userId: "super",
+        password: await bcrypt.hash("super", 12),
+        username: "admin",
+        roleName: "등록자",
+        team: "super",
+      });
+    }
+  }
 
   // 유저 생성
   createUser(createUserDto: CreateUserDto): Promise<User> {

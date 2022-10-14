@@ -18,9 +18,13 @@ import { JwtRefreshGuard } from "../../guards/jwt-refresh.guard";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../../guards/roles.guard";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-body.decorator";
+import { ImplicitLoginDto } from "./dto/implicit-login.dto";
+import { LoginResponseDto } from "./dto/login-response.dto";
+import { RefreshResponseDto } from "./dto/refresh-response.dto";
 
 @Controller("auth")
 @ApiTags("AUTH")
@@ -31,15 +35,15 @@ export class AuthController {
     private usersService: UsersService
   ) {}
 
-  // 유저 생성
-  @Roles(Role.admin)
   /**
    * 유저 생성
    */
+  @Roles(Role.admin)
   @ApiOperation({
     summary: "유저 생성",
   })
   @Post("/signup")
+  @ApiBearerAuth("access-token")
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<User> {
     return this.authService.signUp(createUserDto);
   }
@@ -53,8 +57,13 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post("signin")
+  @ApiImplicitBody({
+    name: "",
+    type: ImplicitLoginDto,
+    content: undefined,
+  })
   @HttpCode(200)
-  async signIn(@CurrentUser() user: User) {
+  async signIn(@CurrentUser() user: User): Promise<LoginResponseDto> {
     const accessToken = this.authService.createAccessToken(user.userId);
 
     const refreshToken = this.authService.createRefreshToken(user.userId);
@@ -73,6 +82,7 @@ export class AuthController {
   @Public()
   @UseGuards(JwtRefreshGuard)
   @Post("signout")
+  @ApiBearerAuth("access-token")
   async signOut(@CurrentUser() user: User) {
     await this.usersService.removeRefreshToken(user.userId);
   }
@@ -87,7 +97,12 @@ export class AuthController {
     summary: "토큰 리프레시",
   })
   @HttpCode(200)
-  async refresh(@CurrentUser() user: User) {
+  @ApiImplicitBody({
+    name: "",
+    type: ImplicitLoginDto,
+    content: undefined,
+  })
+  async refresh(@CurrentUser() user: User): Promise<RefreshResponseDto> {
     return { accessToken: this.authService.createAccessToken(user.userId) };
   }
 
@@ -99,6 +114,7 @@ export class AuthController {
   @ApiOperation({
     summary: "비밀번호 변경",
   })
+  @ApiBearerAuth("access-token")
   async changePassword(
     @Param("userId") userId: string,
     @Body() dto: ChangePasswordDto

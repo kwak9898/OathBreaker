@@ -3,7 +3,6 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
-  Index,
   UpdateDateColumn,
 } from "typeorm";
 
@@ -28,10 +27,6 @@ export abstract class UpdateDeleteBaseEntity extends CreateOnlyEntity {
 }
 
 export abstract class BaseEntity {
-  @Index()
-  @Column({ default: true, name: "is_active" })
-  isActive: boolean;
-
   @CreateDateColumn()
   @Column("timestamp without time zone", {
     name: "created_at",
