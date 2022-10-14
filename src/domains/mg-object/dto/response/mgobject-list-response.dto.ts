@@ -10,7 +10,6 @@ export class MgObjectListResponseDto extends OmitType(MgObject, [
   "mgoImages",
   "updatedAt",
   "deletedAt",
-  "isActive",
 ]) {
   constructor(partial?: Partial<MgObject>) {
     super();
@@ -22,7 +21,6 @@ export class MgObjectListResponseDto extends OmitType(MgObject, [
       "mgoImages",
       "updatedAt",
       "deletedAt",
-      "isActive",
     ]);
   }
 

@@ -12,7 +12,6 @@ export class UserFactory {
     user.userId = "user12345";
     user.username = "testerAdmin";
     user.password = "password123@";
-    user.isActive = true;
     user.team = "운영";
     user.roleName = Role.admin;
     return this.repository.save(user);
@@ -23,7 +22,6 @@ export class UserFactory {
     user.userId = "manager1";
     user.username = "testManager";
     user.password = "password123@";
-    user.isActive = true;
     user.team = "운영";
     user.roleName = Role.choose;
     return this.repository.save(user);

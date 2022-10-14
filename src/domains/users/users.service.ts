@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
+import * as bcrypt from "bcrypt";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
@@ -20,7 +21,7 @@ export class UsersService {
     if (!admin) {
       await this.userRepository.save({
         userId: "super",
-        password: "super",
+        password: await bcrypt.hash("super", 12),
         username: "admin",
         roleName: "등록자",
         team: "super",

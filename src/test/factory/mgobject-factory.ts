@@ -16,7 +16,6 @@ export class MgObjectFactory {
     const mgObject = new MgObject();
     mgObject.mgId = faker.name.fullName();
     mgObject.mgName = faker.music.songName();
-    mgObject.isActive = true;
     mgObject.mgoImages = [];
 
     const savedMgObject = await this.repository.save(mgObject);
@@ -31,7 +30,6 @@ export class MgObjectFactory {
     mgoImage.imgId = faker.name.fullName();
     mgoImage.imgUrl = faker.internet.url();
     mgoImage.imgName = faker.music.songName();
-    mgoImage.isActive = true;
     mgoImage.mgObject = mgObject;
     return this.imageRepository.save(mgoImage);
   }
