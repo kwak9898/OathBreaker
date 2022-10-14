@@ -4,13 +4,14 @@ import { RolesService } from "./roles.service";
 import { RolesGuard } from "../../guards/roles.guard";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "./enum/role.enum";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { User } from "../users/entities/user.entity";
 import { RolesDto } from "./dto/roles.dto";
 
 @Controller("roles")
 @UseGuards(RolesGuard)
 @ApiTags("ROLES")
+@ApiBearerAuth("access-token")
 export class RolesController {
   constructor(
     private usersService: UsersService,

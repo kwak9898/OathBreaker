@@ -14,6 +14,7 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { MgobjectUpdateRequestDto } from "./dto/request/mgobject-update-request.dto";
 import { MgobjectDetailResponseDto } from "./dto/response/mgobject-detail-response.dto";
 import {
+  ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -45,6 +46,7 @@ const MgoImagePaginationQueryData: ApiPaginateQueryInterface = {
 @Controller("/mg-objects")
 @ApiTags("MG-OBJECT")
 @UseGuards(RolesGuard)
+@ApiBearerAuth("access-token")
 export class MgObjectController {
   constructor(
     private readonly mgObjectService: MgObjectService,

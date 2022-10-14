@@ -11,7 +11,12 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { User } from "./entities/user.entity";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../../guards/roles.guard";
@@ -23,6 +28,7 @@ import { UrlDto } from "./dto/url.dto";
 @Controller("users")
 @ApiTags("USERS")
 @UseGuards(RolesGuard)
+@ApiBearerAuth("access-token")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
