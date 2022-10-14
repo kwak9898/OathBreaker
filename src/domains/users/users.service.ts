@@ -13,6 +13,21 @@ export class UsersService {
     private userRepository: UserRepository
   ) {}
 
+  async initializeSuperUser() {
+    const admin = await this.userRepository.findOne({
+      where: { userId: "super" },
+    });
+    if (!admin) {
+      await this.userRepository.save({
+        userId: "super",
+        password: "super",
+        username: "admin",
+        roleName: "등록자",
+        team: "super",
+      });
+    }
+  }
+
   // 유저 생성
   createUser(createUserDto: CreateUserDto): Promise<User> {
     return this.userRepository.createUser(createUserDto);

@@ -23,6 +23,7 @@ export class UserRepository extends Repository<User> {
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const { userId, username, password, confirmPassword, team, roleName } =
       createUserDto;
+
     const user = this.create({
       userId,
       username,
@@ -30,6 +31,7 @@ export class UserRepository extends Repository<User> {
       team,
       roleName,
     });
+
     const existUser = await this.findOne({ where: { userId } });
 
     if (existUser !== null) {

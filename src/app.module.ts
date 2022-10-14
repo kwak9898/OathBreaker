@@ -12,6 +12,7 @@ import { RolesModule } from "./domains/roles/roles.module";
 import { MgObjectModule } from "./domains/mg-object/mg-object.module";
 import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
+import { UsersService } from "./domains/users/users.service";
 
 @Module({
   imports: [
@@ -44,4 +45,8 @@ import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-objec
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private userService: UsersService) {
+    userService.initializeSuperUser();
+  }
+}
