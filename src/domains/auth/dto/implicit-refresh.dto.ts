@@ -1,3 +1,3 @@
-export class ImplicitLoginDto {
+export class ImplicitRefreshDto {
   refreshToken: string;
 }
