@@ -61,7 +61,7 @@ describe("MgObject 테스트", () => {
       const response = await requestHelper.get(`${DOMAIN}/counts`);
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("mgObjectCnt");
-      expect(response.body).toHaveProperty("incompleteCnt");
+      expect(response.body).toHaveProperty("imageTotalCnt");
       expect(response.body).toHaveProperty("tmpCnt");
     });
   });
@@ -72,8 +72,6 @@ describe("MgObject 테스트", () => {
 
       // When
       const { body } = await requestHelper.get(DOMAIN + "?page=1&limit=10");
-
-      console.log(body);
 
       // Then
       expect(body).toHaveProperty("items");

@@ -18,7 +18,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --detectOpenHandles --forceExit --runInBand --config src/test/jest-e2e.json"
+    "test:e2e": "jest --detectOpenHandles --forceExit --runInBand --config src/test/jest-e2e.json",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@faker-js/faker": "^7.5.0",
@@ -37,6 +38,7 @@
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.2",
+    "husky": "^8.0.1",
     "mysql2": "^2.3.3",
     "nestjs-typeorm-paginate": "^4.0.2",
     "passport": "^0.6.0",
@@ -66,7 +68,9 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^8.0.0",
     "jest": "26.6.3",
+    "lint-staged": ">=10",
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",
     "supertest": "^6.2.4",
@@ -95,5 +99,11 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "eslint --cache --fix"
+    ]
   }
 }

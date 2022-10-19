@@ -19,13 +19,13 @@ export class UsersService {
       where: { userId: "super" },
     });
     if (!admin) {
-      await this.userRepository.save({
-        userId: "super",
-        password: await bcrypt.hash("super", 12),
-        username: "admin",
-        roleName: "등록자",
-        team: "super",
-      });
+      const user = new User();
+      user.userId = "super";
+      user.password = await bcrypt.hash("super", 12);
+      user.username = "super";
+      user.roleName = "관리자";
+      user.team = "super";
+      await this.userRepository.save(user);
     }
   }
 
