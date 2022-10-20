@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
+import { Role } from "./enum/role.enum";
 
 @Injectable()
 export class RoleRepository extends Repository<User> {
@@ -35,5 +36,14 @@ export class RoleRepository extends Repository<User> {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  // 유저의 역할 삭제
+  async deleteRoleByUser(userId: string): Promise<User> {
+    const user = await this.findOne({ where: { userId } });
+
+    user.roleName = Role.choose;
+    const changeRoleName = await this.save(user);
+    return changeRoleName;
   }
 }

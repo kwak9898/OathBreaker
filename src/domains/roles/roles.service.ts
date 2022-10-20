@@ -21,4 +21,9 @@ export class RolesService {
   updateRoleByUser(userId: string, roleName: string): Promise<User> {
     return this.roleRepository.updateRoleByUser(userId, roleName);
   }
+
+  // 유저 역할 삭제
+  deleteRoleByUser(userId: string): Promise<User> {
+    return this.roleRepository.deleteRoleByUser(userId);
+  }
 }
