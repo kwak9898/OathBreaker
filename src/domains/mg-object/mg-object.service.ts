@@ -111,15 +111,19 @@ export class MgObjectService {
 
     if (options.search) {
       queryBuilder
-        .where("mgo.mgName = :mgName", { mgName: options?.search ?? "" })
-        .orWhere("mgo.mgId = :mgId", { mgId: options?.search ?? "" })
-        .orWhere("mgo.mainMgCategory = :mainMgCategory", {
+        .where("mgo.mgName LIKE '%' || :mgName || '%' ", {
+          mgName: options?.search ?? "",
+        })
+        .orWhere("mgo.mgId LIKE '%' || :mgId || '%' ", {
+          mgId: options?.search ?? "",
+        })
+        .orWhere("mgo.mainMgCategory LIKE '%' || :mainMgCategory || '%'", {
           mainMgCategory: options?.search ?? "",
         })
-        .orWhere("mgo.mediumMgCategory = :mediumMgCategory", {
+        .orWhere("mgo.mediumMgCategory LIKE '%' || :mediumMgCategory || '%'", {
           mediumMgCategory: options?.search ?? "",
         })
-        .orWhere("mgo.subMgCategory = :subMgCategory", {
+        .orWhere("mgo.subMgCategory LIKE '%' || :subMgCategory || '%' ", {
           subMgCategory: options?.search ?? "",
         });
     }
