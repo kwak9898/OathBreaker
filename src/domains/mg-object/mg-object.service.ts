@@ -91,6 +91,7 @@ export class MgObjectService {
     options: MyPaginationQuery
   ): Promise<Pagination<MgObjectListResponseDto>> {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
+    queryBuilder.where("mgo.deletedAt IS NULL");
     queryBuilder
       .addSelect(
         "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
@@ -111,7 +112,7 @@ export class MgObjectService {
 
     if (options.search) {
       queryBuilder
-        .where("mgo.mgName LIKE '%' || :mgName || '%' ", {
+        .orWhere("mgo.mgName LIKE '%' || :mgName || '%' ", {
           mgName: options?.search ?? "",
         })
         .orWhere("mgo.mgId LIKE '%' || :mgId || '%' ", {

@@ -49,9 +49,10 @@ export class MgoImageService {
     statusFlag?: ImageStatusFlag
   ): Promise<Pagination<MgoImageListResponseDto>> {
     const queryBuilder = this.repository.createQueryBuilder("mgoImage");
+    queryBuilder.where("mgoImage.deletedAt IS NULL");
 
     if (mgoObjectId) {
-      queryBuilder.where("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
+      queryBuilder.andWhere("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
     }
 
     if (statusFlag) {
