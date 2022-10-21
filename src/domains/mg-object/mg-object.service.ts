@@ -33,19 +33,19 @@ export class MgObjectService {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
     queryBuilder
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.deleted_at is null)",
         "image_total_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0 and mgo_image.deleted_at is null)",
         "image_incomplete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1 and mgo_image.deleted_at is null)",
         "image_complete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2 and mgo_image.deleted_at is null)",
         "image_temp_cnt"
       )
       .where("mgo.mg_id = :mgId", { mgId: id });
@@ -94,19 +94,19 @@ export class MgObjectService {
     queryBuilder.where("mgo.deletedAt IS NULL");
     queryBuilder
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.deleted_at is null)",
         "image_total_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0 and mgo_image.deleted_at is null)",
         "image_incomplete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1 and mgo_image.deleted_at is null)",
         "image_complete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2 and mgo_image.deleted_at is null)",
         "image_temp_cnt"
       );
 
