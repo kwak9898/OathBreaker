@@ -110,24 +110,26 @@ export class MgObjectService {
         "image_temp_cnt"
       );
 
-    if (options.search) {
+    if (options.search != null) {
       queryBuilder
-        .orWhere("mgo.mgName LIKE '%' || :mgName || '%' ", {
-          mgName: options?.search ?? "",
+        .orWhere("mgo.mgName LIKE :mgName", {
+          mgName: `%${options.search}%`,
         })
-        .orWhere("mgo.mgId LIKE '%' || :mgId || '%' ", {
-          mgId: options?.search ?? "",
+        .orWhere("mgo.mgId = :mgId ", {
+          mgId: options.search,
         })
-        .orWhere("mgo.mainMgCategory LIKE '%' || :mainMgCategory || '%'", {
-          mainMgCategory: options?.search ?? "",
+        .orWhere("mgo.mainMgCategory LIKE :mainMgCategory", {
+          mainMgCategory: `${options.search}%`,
         })
-        .orWhere("mgo.mediumMgCategory LIKE '%' || :mediumMgCategory || '%'", {
-          mediumMgCategory: options?.search ?? "",
+        .orWhere("mgo.mediumMgCategory LIKE :mediumMgCategory", {
+          mediumMgCategory: `${options.search}%`,
         })
-        .orWhere("mgo.subMgCategory LIKE '%' || :subMgCategory || '%' ", {
-          subMgCategory: options?.search ?? "",
+        .orWhere("mgo.subMgCategory LIKE :subMgCategory", {
+          subMgCategory: `${options.search}%`,
         });
     }
+
+    console.log(queryBuilder.getQuery());
 
     const results = await paginateRawAndEntities(queryBuilder, options);
     const entities = results[0];
