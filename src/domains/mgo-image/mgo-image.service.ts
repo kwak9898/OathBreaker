@@ -55,10 +55,16 @@ export class MgoImageService {
       queryBuilder.andWhere("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
     }
 
-    if (statusFlag) {
-      queryBuilder.andWhere("mgoImage.statusFlag = :statusFlag", {
-        statusFlag,
-      });
+    if (statusFlag != null) {
+      if (statusFlag == ImageStatusFlag.INCOMPLETE_AND_COMPLETE) {
+        queryBuilder
+          .andWhere("mgoImage.statusFlag = 0")
+          .orWhere("mgoImage.statusFlag = 1");
+      } else {
+        queryBuilder.andWhere("mgoImage.statusFlag = :statusFlag", {
+          statusFlag,
+        });
+      }
     }
 
     const { items, meta } = await paginate<MgoImage>(queryBuilder, options);
