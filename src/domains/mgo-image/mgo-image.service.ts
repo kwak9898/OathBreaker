@@ -57,9 +57,9 @@ export class MgoImageService {
 
     if (statusFlag != null) {
       if (statusFlag == ImageStatusFlag.INCOMPLETE_AND_COMPLETE) {
-        queryBuilder
-          .andWhere("mgoImage.statusFlag = 0")
-          .orWhere("mgoImage.statusFlag = 1");
+        queryBuilder.andWhere(
+          "(mgoImage.statusFlag = 0 OR mgoImage.statusFlag = 1)"
+        );
       } else {
         queryBuilder.andWhere("mgoImage.statusFlag = :statusFlag", {
           statusFlag,
