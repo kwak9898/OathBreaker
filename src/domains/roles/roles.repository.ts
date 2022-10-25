@@ -37,21 +37,21 @@ export class RolesRepository extends Repository<RoleEntity> {
   }
 
   // 역할 수정
-  async updateRole(id: number, role: RoleEntity): Promise<RoleEntity> {
+  async updateRole(roleId: number, role: RoleEntity): Promise<RoleEntity> {
     role.updatedAt = new Date();
-    const roleId = await this.findOne({ where: { roleId: id } });
+    const existRole = await this.findOne({ where: { roleId } });
 
-    if (!roleId) {
-      throw new NotFoundException("존재하지 않는 역할입니다.");
+    if (!existRole) {
+      throw new NotFoundException("존재하지 않는 역할 입니다.");
     }
 
-    const updateRole = await this.save(role);
-    return updateRole;
+    await this.update(roleId, { roleName: role.roleName });
+    return existRole;
   }
 
   // 역할 삭제
-  async deleteRole(id: number): Promise<void> {
-    const existRole = await this.delete(id);
+  async deleteRole(roleId: number): Promise<void> {
+    const existRole = await this.delete(roleId);
 
     if (!existRole) {
       throw new NotFoundException("삭제할 역할이 없습니다.");

@@ -22,12 +22,12 @@ export class RolesService {
   }
 
   // 역할 수정
-  updateRole(id: number, role: RoleEntity): Promise<RoleEntity> {
-    return this.roleRepository.updateRole(id, role);
+  updateRole(roleId: number, role: RoleEntity): Promise<RoleEntity> {
+    return this.roleRepository.updateRole(roleId, role);
   }
 
   // 역할 삭제
-  deleteRole(id: number): Promise<void> {
-    return this.roleRepository.deleteRole(id);
+  deleteRole(roleId: number): Promise<void> {
+    return this.roleRepository.deleteRole(roleId);
   }
 }
