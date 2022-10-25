@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import { compare } from "bcrypt";
+import { compare } from "bcryptjs";
 import { ConfigService } from "@nestjs/config";
 import { User } from "../users/entities/user.entity";
 import { CreateUserDto } from "../users/dto/create-user.dto";
