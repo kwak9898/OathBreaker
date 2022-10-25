@@ -111,25 +111,32 @@ export class MgObjectService {
       );
 
     if (options.search != null) {
-      queryBuilder
-        .orWhere("mgo.mgName LIKE :mgName", {
-          mgName: `%${options.search}%`,
-        })
-        .orWhere("mgo.mgId = :mgId ", {
+      queryBuilder.andWhere(
+        "mgo.mg_name like :mgName or mgo.mgId = :mgId or mgo.mainMgCategory LIKE :mainMgCategory or mgo.mediumMgCategory LIKE :mediumMgCategory or mgo.subMgCategory LIKE :subMgCategory",
+        {
+          mgName: `${options.search}%`,
           mgId: options.search,
-        })
-        .orWhere("mgo.mainMgCategory LIKE :mainMgCategory", {
           mainMgCategory: `${options.search}%`,
-        })
-        .orWhere("mgo.mediumMgCategory LIKE :mediumMgCategory", {
           mediumMgCategory: `${options.search}%`,
-        })
-        .orWhere("mgo.subMgCategory LIKE :subMgCategory", {
           subMgCategory: `${options.search}%`,
-        });
+        }
+      );
+      // .orWhere("mgo.mgName LIKE :mgName", {
+      //   mgName: `%${options.search}%`,
+      // })
+      // .orWhere("mgo.mgId = :mgId ", {
+      //   mgId: options.search,
+      // })
+      // .orWhere("mgo.mainMgCategory LIKE :mainMgCategory", {
+      //   mainMgCategory: `${options.search}%`,
+      // })
+      // .orWhere("mgo.mediumMgCategory LIKE :mediumMgCategory", {
+      //   mediumMgCategory: `${options.search}%`,
+      // })
+      // .orWhere("mgo.subMgCategory LIKE :subMgCategory", {
+      //   subMgCategory: `${options.search}%`,
+      // });
     }
-
-    console.log(queryBuilder.getQuery());
 
     const results = await paginateRawAndEntities(queryBuilder, options);
     const entities = results[0];

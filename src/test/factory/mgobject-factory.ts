@@ -17,6 +17,9 @@ export class MgObjectFactory {
     mgObject.mgId = faker.name.fullName();
     mgObject.mgName = faker.music.songName();
     mgObject.mgoImages = [];
+    mgObject.mainMgCategory = faker.name.lastName();
+    mgObject.mediumMgCategory = faker.name.lastName();
+    mgObject.subMgCategory = faker.name.lastName();
 
     const savedMgObject = await this.repository.save(mgObject);
     for (let i = 0; i < 3; i++) {

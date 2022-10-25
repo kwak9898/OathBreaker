@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
 import { AuthService } from "../domains/auth/auth.service";
-import { RequestHelper } from "../utils/test.utils";
+import { getRandomInt, RequestHelper } from "../utils/test.utils";
 import { MgObjectRepository } from "../domains/mg-object/mg-object.repository";
 import { DatabaseModule } from "../database/database.module";
 import { MgobjectUpdateRequestDto } from "../domains/mg-object/dto/request/mgobject-update-request.dto";
@@ -14,6 +14,8 @@ import { UserRepository } from "../domains/users/user.repository";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { faker } from "@faker-js/faker";
 import { JwtService } from "@nestjs/jwt";
+import { MyPagination } from "../domains/base/pagination-response";
+import { MgObjectListResponseDto } from "../domains/mg-object/dto/response/mgobject-list-response.dto";
 
 describe("MgObject 테스트", () => {
   let app: INestApplication;
@@ -43,7 +45,6 @@ describe("MgObject 테스트", () => {
     authService = moduleFixture.get(AuthService);
     mgObjectFactory = moduleFixture.get(MgObjectFactory);
     userFactory = moduleFixture.get(UserFactory);
-    // await datasource.synchronize(true);
 
     token = authService.createAccessToken(
       (await userFactory.createBaseUser()).userId
@@ -79,6 +80,122 @@ describe("MgObject 테스트", () => {
       expect(body.meta.totalItems).toBe(100);
       expect(body.meta.itemCount).toBe(10);
       expect(body.meta.currentPage).toBe(1);
+    });
+  });
+
+  describe("Search", () => {
+    it("MG NAME으로 검색", async () => {
+      // given
+      const mgNameKeyword =
+        mgObjects[getRandomInt(mgObjects.length - 1)].mgName;
+      const filteredWithMgName = mgObjects.filter((o) =>
+        o.mgName.includes(mgNameKeyword)
+      );
+
+      // when
+      const response = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&search=${mgNameKeyword}`
+      );
+      const data = response.body as MyPagination<MgObjectListResponseDto>;
+
+      // then
+      expect(response.status).toBe(200);
+      expect(data.items.length).toBeGreaterThanOrEqual(1);
+      expect(data.items.length).toBe(filteredWithMgName.length);
+    });
+
+    it("MG ID로 검색", async () => {
+      // given
+      const mgIdKeyword = mgObjects[getRandomInt(mgObjects.length - 1)].mgId;
+      const dataFilteredWithId = mgObjects.filter(
+        (o) => o.mgId === mgIdKeyword
+      );
+
+      // when
+      const response = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&search=${mgIdKeyword}`
+      );
+      const data = response.body as MyPagination<MgObjectListResponseDto>;
+
+      // then
+      expect(response.status).toBe(200);
+      expect(data.items.length).toBeGreaterThanOrEqual(1);
+      expect(data.items.length).toBe(dataFilteredWithId.length);
+    });
+
+    it("MAIN MG CATEGORY로 검색", async () => {
+      // given
+      const mainMgCategoryKeyword =
+        mgObjects[getRandomInt(mgObjects.length - 1)].mainMgCategory;
+      const dataFilteredWithCategory = mgObjects.filter((o) =>
+        o.mainMgCategory.includes(mainMgCategoryKeyword)
+      );
+
+      // when
+      const response = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&search=${mainMgCategoryKeyword}`
+      );
+      const data = response.body as MyPagination<MgObjectListResponseDto>;
+
+      // then
+      expect(response.status).toBe(200);
+      expect(data.items.length).toBeGreaterThanOrEqual(1);
+      const isItemsHaveMediumMgCategory = data.items.some((o) =>
+        dataFilteredWithCategory
+          .map((r) => r.mainMgCategory)
+          .includes(o.mainMgCategory)
+      );
+      expect(isItemsHaveMediumMgCategory).toBeTruthy();
+    });
+
+    it("MEDIUM MG CATEGORY로 검색", async () => {
+      // given
+      const mediumMgCategory =
+        mgObjects[getRandomInt(mgObjects.length - 1)].mediumMgCategory;
+      const dataFilteredWithCategory = mgObjects.filter((o) =>
+        o.mediumMgCategory.includes(mediumMgCategory)
+      );
+
+      // when
+      const response = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&search=${mediumMgCategory}`
+      );
+      const data = response.body as MyPagination<MgObjectListResponseDto>;
+
+      // then
+      expect(response.status).toBe(200);
+      expect(data.items.length).toBeGreaterThanOrEqual(1);
+      const isItemsHaveMediumMgCategory = data.items.some((o) =>
+        dataFilteredWithCategory
+          .map((r) => r.mediumMgCategory)
+          .includes(o.mediumMgCategory)
+      );
+      expect(isItemsHaveMediumMgCategory).toBeTruthy();
+    });
+
+    it("SUM MG CATEGORY로 검색", async () => {
+      // given
+      const subMgCategoryKeyword =
+        mgObjects[getRandomInt(mgObjects.length - 1)].subMgCategory;
+      const dataFilteredWithCategory = mgObjects.filter((o) =>
+        o.subMgCategory.includes(subMgCategoryKeyword)
+      );
+
+      // when
+      const response = await requestHelper.get(
+        `${DOMAIN}?page=1&limit=10&search=${subMgCategoryKeyword}`
+      );
+      const data = response.body as MyPagination<MgObjectListResponseDto>;
+
+      // then
+      expect(response.status).toBe(200);
+      expect(data.items.length).toBeGreaterThanOrEqual(1);
+      const isItemsHaveSubMgCategory = data.items.some((o) =>
+        dataFilteredWithCategory
+          .map((r) => r.subMgCategory)
+          .includes(o.subMgCategory)
+      );
+      expect(isItemsHaveSubMgCategory).toBeTruthy();
     });
   });
 
@@ -194,7 +311,7 @@ describe("MgObject 테스트", () => {
     });
   });
 
-  const createBaseMgObject = async () => {
+  const createBaseMgObject = async (): Promise<Array<MgObject>> => {
     const promises = [];
     for (let i = 0; i < 100; i++) {
       promises.push(mgObjectFactory.createBaseMgObject());
