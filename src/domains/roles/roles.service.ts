@@ -1,24 +1,33 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UsersService } from "../users/users.service";
-import { User } from "../users/entities/user.entity";
-import { RoleRepository } from "./role.repository";
+import { RolesRepository } from "./roles.repository";
+import { RoleEntity } from "./entities/role.entity";
+import { CreateRoleDto } from "./dto/create-role.dto";
 
 @Injectable()
 export class RolesService {
   constructor(
-    private usersService: UsersService,
-    @InjectRepository(RoleRepository)
-    private roleRepository: RoleRepository
+    @InjectRepository(RolesRepository)
+    private roleRepository: RolesRepository
   ) {}
 
-  // 유저 역할 전체 조회
-  getAllByRole(): Promise<User[]> {
-    return this.roleRepository.getAllByRole();
+  // 역할 전체 조회
+  getAllRoles(): Promise<RoleEntity[]> {
+    return this.roleRepository.getAllRoles();
   }
 
-  // 유저 역할 수정
-  updateRoleByUser(userId: string, roleName: string): Promise<User> {
-    return this.roleRepository.updateRoleByUser(userId, roleName);
+  // 역할 생성
+  createRole(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
+    return this.roleRepository.createRole(createRoleDto);
+  }
+
+  // 역할 수정
+  updateRole(id: number, role: RoleEntity): Promise<RoleEntity> {
+    return this.roleRepository.updateRole(id, role);
+  }
+
+  // 역할 삭제
+  deleteRole(id: number): Promise<void> {
+    return this.roleRepository.deleteRole(id);
   }
 }
