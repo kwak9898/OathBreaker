@@ -7,6 +7,7 @@ import {
   Ip,
   Param,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -118,7 +119,7 @@ export class UsersController {
   /**
    * 유저의 IP주소 저장
    */
-  @Patch("/create/ip")
+  @Post("/create/ip")
   async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
     user.ip = ip;
     return await this.usersService.createIpByUser(user.userId, (user.ip = ip));
@@ -127,7 +128,7 @@ export class UsersController {
   /**
    * 유저의 URL 저장
    */
-  @Patch("/create/url")
+  @Post("/create/url")
   async createUrlByUser(@CurrentUser() user: User, @Body() url: UrlDto) {
     return await this.usersService.createUrlByUser(user.userId, url.url);
   }
