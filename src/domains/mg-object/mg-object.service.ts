@@ -123,6 +123,7 @@ export class MgObjectService {
       );
     }
 
+    queryBuilder.orderBy("mgo.createdAt", "DESC");
     const results = await paginateRawAndEntities(queryBuilder, options);
     const entities = results[0];
     const raws = results[1];

@@ -67,6 +67,8 @@ export class MgoImageService {
       }
     }
 
+    queryBuilder.orderBy("mgoImage.createdAt", "DESC");
+
     const { items, meta } = await paginate<MgoImage>(queryBuilder, options);
     const imageListResponseDto = items.map(
       (image) => new MgoImageListResponseDto(image)
