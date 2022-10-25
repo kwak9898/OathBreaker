@@ -93,9 +93,9 @@ export class UsersService {
   }
 
   // 유저의 최초 접속일 업데이트
-  async updateFirstAccessAt(userId: string) {
-    return this.userRepository.updateFirstAccessAt(userId);
-  }
+  // async updateFirstAccessAt(userId: string) {
+  //   return this.userRepository.updateFirstAccessAt(userId);
+  // }
 
   // 유저의 IP주소 저장
   async createIpByUser(userId: string, ip: string): Promise<User> {

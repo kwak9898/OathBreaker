@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
 import { Role } from "../../roles/enum/role.enum";
-import { Log } from "./log.entity";
+import { Log } from "../../logs/entities/log.entity";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {

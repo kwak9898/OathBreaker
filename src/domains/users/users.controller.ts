@@ -101,7 +101,7 @@ export class UsersController {
    * 모든 유저의 접속 로그 전체 조회
    */
   @Roles(Role.admin)
-  @Get("/connect/log")
+  @Get("/connect/logs")
   async getConnectLog(
     @Query() options: MyPaginationQuery
   ): Promise<Pagination<User>> {
@@ -111,10 +111,10 @@ export class UsersController {
   /**
    * 유저의 최초 접속일 업데이트
    */
-  @Patch("/access/first-date")
-  async updateFirstAccessAt(@CurrentUser() user: User) {
-    return await this.usersService.updateFirstAccessAt(user.userId);
-  }
+  // @Patch("/access/first-date")
+  // async updateFirstAccessAt(@CurrentUser() user: User) {
+  //   return await this.usersService.updateFirstAccessAt(user.userId);
+  // }
 
   /**
    * 유저의 IP주소 저장

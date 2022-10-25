@@ -148,7 +148,7 @@ export class UserRepository extends Repository<User> {
   // 모든 유저의 접속 로그 전체 조회
   async getConnectLog(): Promise<User[]> {
     const userLog = this.find({
-      select: ["userId", "username", "url", "ip", "firstAccessAt"],
+      select: ["userId", "username", "url", "ip"],
     });
 
     if (!userLog) {
@@ -159,10 +159,10 @@ export class UserRepository extends Repository<User> {
   }
 
   // 유저의 최초 접속일 업데이트
-  async updateFirstAccessAt(userId: string) {
-    const updateDate = new Date();
-    return this.update(userId, { firstAccessAt: updateDate });
-  }
+  // async updateFirstAccessAt(userId: string) {
+  //   const updateDate = new Date();
+  //   return this.update(userId, { firstAccessAt: updateDate });
+  // }
 
   // 유저의 IP주소 저장
   async createIpByUser(userId: string, ip: string): Promise<User> {
