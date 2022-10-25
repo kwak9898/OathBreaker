@@ -3,6 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { RolesRepository } from "./roles.repository";
 import { RoleEntity } from "./entities/role.entity";
 import { CreateRoleDto } from "./dto/create-role.dto";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
 @Injectable()
 export class RolesService {
@@ -12,8 +14,11 @@ export class RolesService {
   ) {}
 
   // 역할 전체 조회
-  getAllRoles(): Promise<RoleEntity[]> {
-    return this.roleRepository.getAllRoles();
+  // 역할 전체 조회
+  async getAllRoles(
+    options: MyPaginationQuery
+  ): Promise<Pagination<RoleEntity>> {
+    return paginate(this.roleRepository, options);
   }
 
   // 역할 생성

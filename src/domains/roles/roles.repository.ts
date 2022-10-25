@@ -9,17 +9,6 @@ export class RolesRepository extends Repository<RoleEntity> {
     super(RoleEntity, dataSource.createEntityManager());
   }
 
-  // 역할 전체 조회
-  async getAllRoles(): Promise<RoleEntity[]> {
-    const roles = await this.find();
-
-    if (!roles) {
-      throw new NotFoundException("역할들이 존재하지 않습니다.");
-    }
-
-    return roles;
-  }
-
   // 역할 생성
   async createRole(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
     const { roleName } = createRoleDto;

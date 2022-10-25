@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { RolesService } from "./roles.service";
@@ -15,6 +16,8 @@ import { RoleEntity } from "./entities/role.entity";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "./enum/role.enum";
 import { CreateRoleDto } from "./dto/create-role.dto";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { Pagination } from "nestjs-typeorm-paginate";
 
 @Controller("roles")
 @UseGuards(RolesGuard)
@@ -28,8 +31,10 @@ export class RolesController {
    */
   @Roles(Role.admin)
   @Get("")
-  getAllRoles(): Promise<RoleEntity[]> {
-    return this.rolesService.getAllRoles();
+  getAllRoles(
+    @Query() query: MyPaginationQuery
+  ): Promise<Pagination<RoleEntity>> {
+    return this.rolesService.getAllRoles(query);
   }
 
   /**
