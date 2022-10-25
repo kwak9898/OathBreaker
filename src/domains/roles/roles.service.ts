@@ -14,11 +14,10 @@ export class RolesService {
   ) {}
 
   // 역할 전체 조회
-  // 역할 전체 조회
   async getAllRoles(
     options: MyPaginationQuery
   ): Promise<Pagination<RoleEntity>> {
-    return paginate(this.roleRepository, options);
+    return paginate(await this.roleRepository, options);
   }
 
   // 역할 생성
