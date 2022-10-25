@@ -101,7 +101,7 @@ export class UsersController {
    * 모든 유저의 접속 로그 전체 조회
    */
   @Roles(Role.admin)
-  @Get("/connect/logs")
+  @Get("/connect/oath-logs")
   async getConnectLog(
     @Query() options: MyPaginationQuery
   ): Promise<Pagination<User>> {

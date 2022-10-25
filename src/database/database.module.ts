@@ -5,7 +5,7 @@ import { User } from "../domains/users/entities/user.entity";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
 import { AssignMgObject } from "../domains/assign-mg-object/entities/assign-mg-object";
-import { Log } from "../domains/logs/entities/log.entity";
+import { Log } from "../domains/oath-logs/entities/log.entity";
 
 @Module({
   imports: [
