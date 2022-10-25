@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Query, UseGuards } from "@nestjs/common";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { MgoImageService } from "./mgo-image.service";
-import { ImageStatusFlag, MgoImage } from "./entities/mgoImage.entity";
+import { MgoImage } from "./entities/mgoImage.entity";
 import { UpdateMgoImageStatusDto } from "./dto/request/update-mgo-image-status.dto";
 import { UpdateMgoImageMgObjectDto } from "./dto/request/update-mgo-image-mg-object.dto";
 import { MgObjectService } from "../mg-object/mg-object.service";
@@ -41,17 +41,6 @@ export class MgoImageController {
   @Get("/")
   @ApiPaginateQuery()
   @ApiOperation({ summary: "PAGING" })
-  @ApiQuery({
-    enum: ImageStatusFlag,
-    example: [
-      ImageStatusFlag.INCOMPLETED,
-      ImageStatusFlag.COMPLETED,
-      ImageStatusFlag.TEMP,
-      ImageStatusFlag.OTHER,
-    ],
-    name: "statusFlag",
-    required: false,
-  })
   @ApiQuery({
     name: "mgObjectId",
     required: false,
