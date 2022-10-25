@@ -112,7 +112,7 @@ export class MgObjectService {
 
     if (options.search != null) {
       queryBuilder.andWhere(
-        "mgo.mg_name like :mgName or mgo.mgId = :mgId or mgo.mainMgCategory LIKE :mainMgCategory or mgo.mediumMgCategory LIKE :mediumMgCategory or mgo.subMgCategory LIKE :subMgCategory",
+        "mgo.mg_name ilike :mgName or mgo.mgId = :mgId or mgo.mainMgCategory LIKE :mainMgCategory or mgo.mediumMgCategory LIKE :mediumMgCategory or mgo.subMgCategory LIKE :subMgCategory",
         {
           mgName: `${options.search}%`,
           mgId: options.search,
