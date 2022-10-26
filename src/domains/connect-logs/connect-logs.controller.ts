@@ -3,13 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Ip,
   Param,
   Post,
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import { RolesGuard } from "../../guards/roles.guard";
 import { ConnectLogsService } from "./connect-logs.service";
 import { Role } from "../roles/enum/role.enum";
@@ -21,6 +27,7 @@ import { User } from "../users/entities/user.entity";
 import { UrlDto } from "./dto/url.dto";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { ConnectLogListResponseDto } from "./dto/connect-log-list-response.dto";
+import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 
 @Controller("connect-logs")
 @ApiTags("LOG")
@@ -34,6 +41,10 @@ export class ConnectLogsController {
    */
   @Roles(Role.admin)
   @Get("")
+  @ApiPaginatedResponse(ConnectLogListResponseDto)
+  @ApiOperation({
+    summary: "접속 로그 전체 조회",
+  })
   getAllLogs(
     @Query() user: User,
     @Query() query: MyPaginationQuery
@@ -45,6 +56,11 @@ export class ConnectLogsController {
    * 접속 로그 생성
    */
   @Post("/create")
+  @ApiOkResponse({ type: ConnectLog })
+  @ApiOperation({
+    summary: "접속 로그 생성",
+  })
+  @HttpCode(200)
   async createLog(
     logId: number,
     @Body() url: UrlDto,
@@ -59,6 +75,9 @@ export class ConnectLogsController {
    */
   @Roles(Role.admin)
   @Delete("/:logId")
+  @ApiOperation({
+    summary: "접속 로그 삭제",
+  })
   deleteLog(@Param("logId") logId: number): Promise<void> {
     return this.logsService.deleteLog(logId);
   }

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -11,13 +12,19 @@ import {
 } from "@nestjs/common";
 import { RolesService } from "./roles.service";
 import { RolesGuard } from "../../guards/roles.guard";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import { RoleEntity } from "./entities/role.entity";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "./enum/role.enum";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
+import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 
 @Controller("roles")
 @UseGuards(RolesGuard)
@@ -31,6 +38,10 @@ export class RolesController {
    */
   @Roles(Role.admin)
   @Get("")
+  @ApiPaginatedResponse(RoleEntity)
+  @ApiOperation({
+    summary: "역할 전체 조회",
+  })
   getAllRoles(
     @Query() query: MyPaginationQuery
   ): Promise<Pagination<RoleEntity>> {
@@ -42,6 +53,11 @@ export class RolesController {
    */
   @Roles(Role.admin)
   @Post("create")
+  @ApiOkResponse({ type: RoleEntity })
+  @ApiOperation({
+    summary: "역할 생성",
+  })
+  @HttpCode(200)
   createRole(@Body() createRoleDto: CreateRoleDto): Promise<RoleEntity> {
     return this.rolesService.createRole(createRoleDto);
   }
@@ -51,6 +67,10 @@ export class RolesController {
    */
   @Roles(Role.admin)
   @Patch(":roleId")
+  @ApiOkResponse({ type: RoleEntity })
+  @ApiOperation({
+    summary: "역할 수정",
+  })
   async updateRole(
     @Param("roleId") roleId: number,
     @Body() role: RoleEntity
@@ -63,6 +83,9 @@ export class RolesController {
    */
   @Roles(Role.admin)
   @Delete(":roleId")
+  @ApiOperation({
+    summary: "역할 삭제",
+  })
   deleteRole(@Param("roleId") roleId: number): Promise<void> {
     return this.rolesService.deleteRole(roleId);
   }

@@ -58,6 +58,9 @@ export class UsersController {
    */
   @Roles(Role.admin)
   @Get("/roles/count")
+  @ApiOperation({
+    summary: "관리자 or 등록자인 유저 카운트 조회",
+  })
   async getAllByRoleCnt(): Promise<RoleCntDto> {
     const adminCnt = await this.usersService.getAllByAdminCnt();
     const registerCnt = await this.usersService.getAllByManagerCnt();
