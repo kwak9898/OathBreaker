@@ -27,29 +27,25 @@ export abstract class UpdateDeleteBaseEntity extends CreateOnlyEntity {
 }
 
 export abstract class BaseEntity {
-  @CreateDateColumn()
-  @Column("timestamp without time zone", {
+  @CreateDateColumn({
     name: "created_at",
     comment: "생성일",
-    nullable: true,
-    default: () => "CURRENT_TIMESTAMP",
+    type: "timestamp without time zone",
   })
   createdAt: Date;
 
-  @UpdateDateColumn()
-  @Column("timestamp without time zone", {
+  @UpdateDateColumn({
     name: "updated_at",
     comment: "수정일",
-    nullable: true,
-    default: () => "CURRENT_TIMESTAMP",
+    type: "timestamp without time zone",
   })
   updatedAt?: Date;
 
-  @DeleteDateColumn()
-  @Column("timestamp without time zone", {
+  @DeleteDateColumn({
     name: "deleted_at",
     comment: "삭제일",
     nullable: true,
+    type: "timestamp without time zone",
   })
   deletedAt?: Date;
 }

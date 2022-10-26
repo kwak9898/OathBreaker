@@ -33,19 +33,19 @@ export class MgObjectService {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
     queryBuilder
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
         "image_total_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0 and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
         "image_incomplete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1 and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
         "image_complete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2 and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
         "image_temp_cnt"
       )
       .where("mgo.mg_id = :mgId", { mgId: id });
@@ -91,22 +91,21 @@ export class MgObjectService {
     options: MyPaginationQuery
   ): Promise<Pagination<MgObjectListResponseDto>> {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
-    queryBuilder.where("mgo.deletedAt IS NULL");
     queryBuilder
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
         "image_total_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0 and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
         "image_incomplete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1 and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
         "image_complete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2 and mgo_image.deleted_at is null)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
         "image_temp_cnt"
       );
 
@@ -124,6 +123,7 @@ export class MgObjectService {
     }
 
     queryBuilder.orderBy("mgo.createdAt", "DESC");
+
     const results = await paginateRawAndEntities(queryBuilder, options);
     const entities = results[0];
     const raws = results[1];
