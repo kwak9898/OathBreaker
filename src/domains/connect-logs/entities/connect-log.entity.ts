@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { BaseEntity } from "../../base/base.entity";
@@ -36,7 +36,7 @@ export class ConnectLog extends BaseEntity {
   })
   accessAt?: Date;
 
-  @OneToOne(() => User, (user) => user.logId)
+  @ManyToOne(() => User, (user) => user.log)
   @JoinColumn({ name: "user_id" })
-  userId: User;
+  user: User;
 }

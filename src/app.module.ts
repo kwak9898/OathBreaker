@@ -13,7 +13,7 @@ import { MgObjectModule } from "./domains/mg-object/mg-object.module";
 import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
 import { UsersService } from "./domains/users/users.service";
-import { LogsModule } from "./domains/oath-logs/logs.module";
+import { ConnectLogsModule } from "./domains/connect-logs/connect-logs.module";
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { LogsModule } from "./domains/oath-logs/logs.module";
     MgObjectModule,
     MgoImageModule,
     AssignMgObjectModule,
-    LogsModule,
+    ConnectLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

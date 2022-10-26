@@ -169,12 +169,6 @@ export class UserRepository extends Repository<User> {
     return userLog;
   }
 
-  // 유저의 최초 접속일 업데이트
-  // async updateFirstAccessAt(userId: string) {
-  //   const updateDate = new Date();
-  //   return this.update(userId, { firstAccessAt: updateDate });
-  // }
-
   // 유저의 IP주소 저장
   async createIpByUser(userId: string, ip: string): Promise<User> {
     const user = this.findOne({ where: { userId } });

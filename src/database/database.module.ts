@@ -5,7 +5,7 @@ import { User } from "../domains/users/entities/user.entity";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgoImage } from "../domains/mgo-image/entities/mgoImage.entity";
 import { AssignMgObject } from "../domains/assign-mg-object/entities/assign-mg-object";
-import { ConnectLog } from "../domains/oath-logs/entities/log.entity";
+import { ConnectLog } from "../domains/connect-logs/entities/connect-log.entity";
 import { RoleEntity } from "../domains/roles/entities/role.entity";
 
 @Module({

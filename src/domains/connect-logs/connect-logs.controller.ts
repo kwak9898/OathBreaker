@@ -1,29 +1,34 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { RolesGuard } from "../../guards/roles.guard";
-import { LogsService } from "./logs.service";
+import { ConnectLogsService } from "./connect-logs.service";
 import { Role } from "../roles/enum/role.enum";
 import { Roles } from "../../dacorators/role.decorator";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { ConnectLog } from "./entities/log.entity";
+import { ConnectLog } from "./entities/connect-log.entity";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
+import { UrlDto } from "./dto/url.dto";
+import { CurrentUser } from "../../dacorators/current-user.decorators";
 
-@Controller("oath-logs")
+@Controller("connect-logs")
 @ApiTags("LOG")
 @UseGuards(RolesGuard)
 @ApiBearerAuth("access-token")
-export class LogsController {
-  constructor(private logsService: LogsService) {}
+export class ConnectLogsController {
+  constructor(private logsService: ConnectLogsService) {}
 
   /**
    * 접속 로그 전체 조회
@@ -40,16 +45,16 @@ export class LogsController {
   /**
    * 접속 로그 생성
    */
-  // @Roles(Role.admin)
-  // @Post("/create")
-  // createLog(
-  //   createLogDto: CreateLogDto,
-  //   user: User,
-  //   @Ip() ip: string
-  // ): Promise<Log> {
-  //   createLogDto.ip = ip;
-  //   return this.logsService.createLog(createLogDto, user);
-  // }
+  @Post("/create")
+  async createLog(
+    logId: number,
+    @Body() url: UrlDto,
+    @Ip() ip: string,
+    @CurrentUser() user: User
+  ): Promise<ConnectLog> {
+    console.log(user);
+    return this.logsService.createLog(logId, url.url, ip, user);
+  }
 
   /**
    * 접속 로그 수정

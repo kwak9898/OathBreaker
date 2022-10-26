@@ -24,7 +24,7 @@ import { RolesGuard } from "../../guards/roles.guard";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { UrlDto } from "./dto/url.dto";
+import { UrlDto } from "../connect-logs/dto/url.dto";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 import { UserListRequestDto } from "./dto/user-list-request.dto";
 import { GetConnectLogDto } from "./dto/get-connect-log.dto";
@@ -121,7 +121,7 @@ export class UsersController {
    * 전체 유저 접속 로그 전체 조회
    */
   @Roles(Role.admin)
-  @Get("/connect/oath-logs")
+  @Get("/connect/connect-logs")
   @Get("/connect/log")
   @ApiPaginatedResponse(GetConnectLogDto)
   @ApiOperation({
@@ -132,14 +132,6 @@ export class UsersController {
   ): Promise<Pagination<User>> {
     return await this.usersService.getConnectLog(options);
   }
-
-  /**
-   * 유저의 최초 접속일 업데이트
-   */
-  // @Patch("/access/first-date")
-  // async updateFirstAccessAt(@CurrentUser() user: User) {
-  //   return await this.usersService.updateFirstAccessAt(user.userId);
-  // }
 
   /**
    * 유저의 IP주소 저장

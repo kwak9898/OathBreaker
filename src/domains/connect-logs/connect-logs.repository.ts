@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
-import { ConnectLog } from "./entities/log.entity";
+import { ConnectLog } from "./entities/connect-log.entity";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
 @Injectable()
-export class LogsRepository extends Repository<ConnectLog> {
+export class ConnectLogsRepository extends Repository<ConnectLog> {
   constructor(private readonly dataSource: DataSource) {
     super(ConnectLog, dataSource.createEntityManager());
   }
@@ -19,33 +19,26 @@ export class LogsRepository extends Repository<ConnectLog> {
   ): Promise<Pagination<ConnectLog>> {
     const query = this.createQueryBuilder("log");
 
-    const logs = query.where("log.userId = :userId, log.username = :username", {
-      userId: user.userId,
-      username: user.username,
-    });
+    const logs = query.innerJoinAndSelect("log.user", "user");
     const pagination = paginate(logs, options);
     return pagination;
   }
 
   // 접속 로그 생성
-  // async createLog(
-  //   createLogDto: CreateLogDto,
-  //   user: User,
-  //   userId: string
-  // ): Promise<Log> {
-  //   const { logId, url, ip, firstAccessAt } = createLogDto;
-  //   const existLogId = await this.findOne({ where: { logId } });
-  //   userId = user.userId;
-  //
-  //   // const log = await this.create({
-  //   //   url,
-  //   //   ip,
-  //   //   firstAccessAt,
-  //   //   user,
-  //   // });
-  //   const log = await this.update(userId, { url, ip, firstAccessAt });
-  //   return log;
-  // }
+  async createLog(
+    logId: number,
+    url: string,
+    ip: string,
+    user: User
+  ): Promise<ConnectLog> {
+    const log = await this.create({
+      url,
+      ip,
+      accessAt: new Date(),
+      user,
+    });
+    return await this.save(log);
+  }
 
   // 접속 로그 수정
   async updateLog(

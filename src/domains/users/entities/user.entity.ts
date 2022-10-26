@@ -1,9 +1,15 @@
-import { BeforeUpdate, Column, Entity, OneToOne, PrimaryColumn } from "typeorm";
+import {
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+} from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
 import { Role } from "../../roles/enum/role.enum";
-import { ConnectLog } from "../../oath-logs/entities/log.entity";
+import { ConnectLog } from "../../connect-logs/entities/connect-log.entity";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {
@@ -72,8 +78,8 @@ export class User extends BaseEntity {
   })
   ip?: string;
 
-  @OneToOne(() => ConnectLog, (log) => log.userId)
-  logId: ConnectLog;
+  @OneToMany(() => ConnectLog, (log) => log.user)
+  log: ConnectLog[];
 
   async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 12);

@@ -52,11 +52,6 @@ export class UsersService {
     return paginate(queryBuilder, options);
   }
 
-  // 관리자 및 등록인 유저 전체 조회
-  getAllByRole(roleName: Role) {
-    return this.userRepository.getAllByRole(roleName);
-  }
-
   // 관리자인 유저 카운트 조회
   getAllByAdminCnt() {
     return this.userRepository.getAllByAdminCnt();
