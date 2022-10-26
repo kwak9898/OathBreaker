@@ -25,6 +25,7 @@ import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-bo
 import { ImplicitLoginDto } from "./dto/implicit-login.dto";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { RefreshResponseDto } from "./dto/refresh-response.dto";
+import { ImplicitRefreshDto } from "./dto/implicit-refresh.dto";
 
 @Controller("auth")
 @ApiTags("AUTH")
@@ -99,7 +100,7 @@ export class AuthController {
   @HttpCode(200)
   @ApiImplicitBody({
     name: "",
-    type: ImplicitLoginDto,
+    type: ImplicitRefreshDto,
     content: undefined,
   })
   async refresh(@CurrentUser() user: User): Promise<RefreshResponseDto> {

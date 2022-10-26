@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   Get,
+  Param,
   Post,
   Query,
 } from "@nestjs/common";
@@ -21,9 +22,9 @@ export class AssignMgController {
     private readonly userService: UsersService
   ) {}
 
-  @Post("/assign")
+  @Post("/assign/:mgObjectId")
   @Public()
-  async assign(@Query("mgObjectId") mgObjectId: string) {
+  async assign(@Param("mgObjectId") mgObjectId: string) {
     if (mgObjectId == null) {
       throw new BadRequestException("mgObjectId is required");
     }

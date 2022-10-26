@@ -3,9 +3,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { Role } from "../roles/enum/role.enum";
 
 @Injectable()
 export class UsersService {
@@ -19,13 +20,13 @@ export class UsersService {
       where: { userId: "super" },
     });
     if (!admin) {
-      await this.userRepository.save({
-        userId: "super",
-        password: await bcrypt.hash("super", 12),
-        username: "admin",
-        roleName: "등록자",
-        team: "super",
-      });
+      const user = new User();
+      user.userId = "super";
+      user.password = await bcrypt.hash("super", 12);
+      user.username = "super";
+      user.roleName = "관리자";
+      user.team = "super";
+      await this.userRepository.save(user);
     }
   }
 
@@ -35,8 +36,35 @@ export class UsersService {
   }
 
   // 유저 전체 조회
-  getAllUsers(options: MyPaginationQuery): Promise<Pagination<User>> {
-    return paginate(this.userRepository, options);
+  getAllUsers(
+    options: MyPaginationQuery,
+    roleName?: Role,
+    userId?: string
+  ): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder("user");
+    if (roleName) {
+      queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
+    }
+
+    if (userId) {
+      queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
+    }
+    return paginate(queryBuilder, options);
+  }
+
+  // 관리자 및 등록인 유저 전체 조회
+  getAllByRole(roleName: Role) {
+    return this.userRepository.getAllByRole(roleName);
+  }
+
+  // 관리자인 유저 카운트 조회
+  getAllByAdminCnt() {
+    return this.userRepository.getAllByAdminCnt();
+  }
+
+  // 등록자인 유저 카운트 조회
+  getAllByManagerCnt() {
+    return this.userRepository.getAllByRegisterCnt();
   }
 
   // 특정 유저 조회
@@ -105,5 +133,10 @@ export class UsersService {
   // 유저의 URL 저장
   async createUrlByUser(userId: string, url: string): Promise<User> {
     return this.userRepository.createUrlByUser(userId, url);
+  }
+
+  // 유저 접속 로그 삭제
+  async deleteLogByUser(userId: string): Promise<User> {
+    return await this.userRepository.deleteLogByUser(userId);
   }
 }

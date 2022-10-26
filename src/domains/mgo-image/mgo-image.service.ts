@@ -49,16 +49,25 @@ export class MgoImageService {
     statusFlag?: ImageStatusFlag
   ): Promise<Pagination<MgoImageListResponseDto>> {
     const queryBuilder = this.repository.createQueryBuilder("mgoImage");
+    queryBuilder.where("mgoImage.deletedAt IS NULL");
 
     if (mgoObjectId) {
-      queryBuilder.where("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
+      queryBuilder.andWhere("mgoImage.mgId = :mgId", { mgId: mgoObjectId });
     }
 
-    if (statusFlag) {
-      queryBuilder.andWhere("mgoImage.statusFlag = :statusFlag", {
-        statusFlag,
-      });
+    if (statusFlag != null) {
+      if (statusFlag == ImageStatusFlag.INCOMPLETE_AND_COMPLETE) {
+        queryBuilder.andWhere(
+          "(mgoImage.statusFlag = 0 OR mgoImage.statusFlag = 1)"
+        );
+      } else {
+        queryBuilder.andWhere("mgoImage.statusFlag = :statusFlag", {
+          statusFlag,
+        });
+      }
     }
+
+    queryBuilder.orderBy("mgoImage.createdAt", "DESC");
 
     const { items, meta } = await paginate<MgoImage>(queryBuilder, options);
     const imageListResponseDto = items.map(
