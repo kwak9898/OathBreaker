@@ -13,7 +13,7 @@ export class RolesRepository extends Repository<RoleEntity> {
     super(RoleEntity, dataSource.createEntityManager());
   }
 
-  // 역할 생성
+  // 역할  생성
   async createRole(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
     const { roleName } = createRoleDto;
 
