@@ -25,6 +25,8 @@ import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { UrlDto } from "./dto/url.dto";
+import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
+import { UserListRequestDto } from "./dto/user-list-request.dto";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -38,14 +40,19 @@ export class UsersController {
    */
   @Roles(Role.admin)
   @Get("")
-  @ApiOkResponse({ type: User, isArray: true })
+  @ApiPaginatedResponse(User)
   @ApiOperation({
     summary: "유저 전체 조회",
   })
   async getAllUsers(
-    @Query() query: MyPaginationQuery
+    @Query() query: MyPaginationQuery,
+    @Query() userListRequestDto: UserListRequestDto
   ): Promise<Pagination<User>> {
-    return this.usersService.getAllUsers(query);
+    return this.usersService.getAllUsers(
+      query,
+      userListRequestDto.roleName,
+      userListRequestDto.userId
+    );
   }
 
   /**

@@ -6,6 +6,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcrypt";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { Role } from "../roles/enum/role.enum";
 
 @Injectable()
 export class UsersService {
@@ -35,8 +36,20 @@ export class UsersService {
   }
 
   // 유저 전체 조회
-  getAllUsers(options: MyPaginationQuery): Promise<Pagination<User>> {
-    return paginate(this.userRepository, options);
+  getAllUsers(
+    options: MyPaginationQuery,
+    roleName?: Role,
+    userId?: string
+  ): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder("user");
+    if (roleName) {
+      queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
+    }
+
+    if (userId) {
+      queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
+    }
+    return paginate(queryBuilder, options);
   }
 
   // 특정 유저 조회
