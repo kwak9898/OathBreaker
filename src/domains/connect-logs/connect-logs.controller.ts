@@ -38,7 +38,7 @@ export class ConnectLogsController {
     @Query() user: User,
     @Query() query: MyPaginationQuery
   ): Promise<Pagination<ConnectLogListResponseDto>> {
-    return this.logsService.paginate(query);
+    return this.logsService.getAllLogs(query);
   }
 
   /**

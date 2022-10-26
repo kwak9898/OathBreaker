@@ -4,6 +4,8 @@ import { ConnectLog } from "./entities/connect-log.entity";
 import { User } from "../users/entities/user.entity";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { ConnectLogListResponseDto } from "./dto/connect-log-list-response.dto";
+import { MyPagination } from "../base/pagination-response";
 
 @Injectable()
 export class ConnectLogsRepository extends Repository<ConnectLog> {
@@ -13,14 +15,20 @@ export class ConnectLogsRepository extends Repository<ConnectLog> {
 
   // 접속 로그 전체 조회
   async getAllLogs(
-    user: User,
     options: MyPaginationQuery
-  ): Promise<Pagination<ConnectLog>> {
-    const query = this.createQueryBuilder("log");
+  ): Promise<Pagination<ConnectLogListResponseDto>> {
+    const query = await this.createQueryBuilder("log");
+    query.innerJoinAndSelect("log.user", "user");
+    const results = await paginate(query, options);
 
-    const logs = query.innerJoinAndSelect("log.user", "user");
-    const pagination = paginate(logs, options);
-    return pagination;
+    const data = results.items.map((item) => {
+      const dto = new ConnectLogListResponseDto(item);
+      dto.userId = item.user.userId;
+      dto.userName = item.user.username;
+      return dto;
+    });
+
+    return new MyPagination<ConnectLogListResponseDto>(data, results.meta);
   }
 
   // 접속 로그 생성

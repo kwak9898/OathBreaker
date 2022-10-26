@@ -3,29 +3,16 @@ import { OmitType } from "@nestjs/swagger";
 import { omit } from "../../../utils/dto.utils";
 
 export class ConnectLogListResponseDto extends OmitType(ConnectLog, [
-  "logId",
   "user",
-  "ip",
-  "accessAt",
   "updatedAt",
   "deletedAt",
+  "createdAt",
 ]) {
-  logId: number;
   userId: string;
-  username: string;
-  ip: string;
-  url: string;
-  accessAt: string;
+  userName: string;
 
   constructor(partial?: Partial<ConnectLog>) {
     super();
-    return omit(partial, [
-      "logId",
-      "user",
-      "ip",
-      "accessAt",
-      "updatedAt",
-      "deletedAt",
-    ]);
+    return omit(partial, ["user", "updatedAt", "deletedAt", "createdAt"]);
   }
 }

@@ -17,10 +17,9 @@ export class ConnectLogsService {
 
   // 접속 로그 전체 조회
   async getAllLogs(
-    user: User,
     options: MyPaginationQuery
-  ): Promise<Pagination<ConnectLog>> {
-    return this.logsRepository.getAllLogs(user, options);
+  ): Promise<Pagination<ConnectLogListResponseDto>> {
+    return this.logsRepository.getAllLogs(options);
   }
 
   // 접속 로그 생성
@@ -50,14 +49,15 @@ export class ConnectLogsService {
     const data = entities.items
       .map((item) => new ConnectLogListResponseDto(item))
       .map((item) => {
-        const raw = raws
-          .map((r) => r as any)
-          .find((raw) => raw.userId == item.userId);
-        item.logId = Number(raw.logId);
-        item.userId = String(raw.userId);
-        item.username = String(raw.username);
-        item.ip = String(raw.ip);
-        item.url = String(raw.url);
+        const raw = raws.map((r) => r as any);
+        // .find((raw) => raw.userId == item.logId);
+        // item.userId = String(raw.userId);
+        // item.username = String(raw.username);
+        // item.ip = String(raw.ip);
+        // item.url = String(raw.url);
+        // item.accessAt = String(raw.accessAt);
+        console.log("아이템!", item);
+        console.log("로우~~~~", raw);
         return item;
       });
 
