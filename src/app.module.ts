@@ -1,3 +1,4 @@
+import { join } from "path";
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -14,9 +15,15 @@ import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
 import { UsersService } from "./domains/users/users.service";
 import { ConnectLogsModule } from "./domains/connect-logs/connect-logs.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { AppInitializeModule } from "./config/app-initialize.module";
+import { AppInitializeService } from "./config/app-initialize.service";
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "client/dist"),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env?.NODE_ENV ?? "development"}`,
@@ -43,12 +50,19 @@ import { ConnectLogsModule } from "./domains/connect-logs/connect-logs.module";
     MgoImageModule,
     AssignMgObjectModule,
     ConnectLogsModule,
+    AppInitializeModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {
-  constructor(private userService: UsersService) {
-    userService.initializeSuperUser();
+  constructor(
+    private userService: UsersService,
+    private appInitializeService: AppInitializeService
+  ) {
+    if (process.env.NODE_ENV === "production") {
+      userService.initializeSuperUser();
+      appInitializeService.initializeMgObject();
+    }
   }
 }
