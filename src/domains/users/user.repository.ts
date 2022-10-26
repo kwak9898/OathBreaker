@@ -7,8 +7,9 @@ import {
 import { DataSource, Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
+import { Role } from "../roles/enum/role.enum";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -46,15 +47,25 @@ export class UserRepository extends Repository<User> {
     return await this.save(user);
   }
 
-  // 유저 전체 조회
-  async getAllUsers(): Promise<User[]> {
-    const users = await this.find();
-
-    if (!users) {
-      throw new NotFoundException("유저들이 존재하지 않습니다.");
-    }
+  // 관리자 및 등록자인 유저 전체 조회
+  async getAllByRole(roleName: Role) {
+    const users = await this.find({ where: { roleName } });
 
     return users;
+  }
+
+  // 관리자인 유저 전체 카운트 조회
+  async getAllByAdminCnt() {
+    const findAdminUser = await this.count({ where: { roleName: Role.admin } });
+    return findAdminUser;
+  }
+
+  // 등록자인 유저 전체 카운트 조회
+  async getAllByRegisterCnt() {
+    const findRegisterUser = await this.count({
+      where: { roleName: Role.manager },
+    });
+    return findRegisterUser;
   }
 
   // 특정 유저 조회

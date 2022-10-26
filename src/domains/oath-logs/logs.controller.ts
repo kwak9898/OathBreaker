@@ -2,10 +2,8 @@ import {
   Controller,
   Delete,
   Get,
-  Ip,
   Param,
   Patch,
-  Post,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -17,7 +15,6 @@ import { Roles } from "../../dacorators/role.decorator";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { Log } from "./entities/log.entity";
-import { CreateLogDto } from "./dto/create-log.dto";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
 
@@ -43,16 +40,16 @@ export class LogsController {
   /**
    * 접속 로그 생성
    */
-  @Roles(Role.admin)
-  @Post("/create")
-  createLog(
-    createLogDto: CreateLogDto,
-    user: User,
-    @Ip() ip: string
-  ): Promise<Log> {
-    createLogDto.ip = ip;
-    return this.logsService.createLog(createLogDto, user);
-  }
+  // @Roles(Role.admin)
+  // @Post("/create")
+  // createLog(
+  //   createLogDto: CreateLogDto,
+  //   user: User,
+  //   @Ip() ip: string
+  // ): Promise<Log> {
+  //   createLogDto.ip = ip;
+  //   return this.logsService.createLog(createLogDto, user);
+  // }
 
   /**
    * 접속 로그 수정

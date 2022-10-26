@@ -219,7 +219,8 @@ export class MgoImage extends BaseEntity {
 }
 
 export enum ImageStatusFlag {
-  INCOMPLETED = 0,
+  INCOMPLETE_AND_COMPLETE = -1,
+  UNCOMPLETED = 0,
   COMPLETED = 1,
   TEMP = 2,
   OTHER = 3,

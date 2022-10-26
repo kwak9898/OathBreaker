@@ -33,19 +33,19 @@ export class MgObjectService {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
     queryBuilder
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.deleted_at is null)",
         "image_total_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0 and mgo_image.deleted_at is null)",
         "image_incomplete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1 and mgo_image.deleted_at is null)",
         "image_complete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2 and mgo_image.deleted_at is null)",
         "image_temp_cnt"
       )
       .where("mgo.mg_id = :mgId", { mgId: id });
@@ -91,39 +91,39 @@ export class MgObjectService {
     options: MyPaginationQuery
   ): Promise<Pagination<MgObjectListResponseDto>> {
     const queryBuilder = this.repository.createQueryBuilder("mgo");
+    queryBuilder.where("mgo.deletedAt IS NULL");
     queryBuilder
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.deleted_at is null)",
         "image_total_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 0 and mgo_image.deleted_at is null)",
         "image_incomplete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 1 and mgo_image.deleted_at is null)",
         "image_complete_cnt"
       )
       .addSelect(
-        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2)",
+        "(select count(*) from mgo_image where mgo_image.mg_id = mgo.mg_id and mgo_image.status_flag = 2 and mgo_image.deleted_at is null)",
         "image_temp_cnt"
       );
 
-    if (options.search) {
-      queryBuilder
-        .where("mgo.mgName = :mgName", { mgName: options?.search ?? "" })
-        .orWhere("mgo.mgId = :mgId", { mgId: options?.search ?? "" })
-        .orWhere("mgo.mainMgCategory = :mainMgCategory", {
-          mainMgCategory: options?.search ?? "",
-        })
-        .orWhere("mgo.mediumMgCategory = :mediumMgCategory", {
-          mediumMgCategory: options?.search ?? "",
-        })
-        .orWhere("mgo.subMgCategory = :subMgCategory", {
-          subMgCategory: options?.search ?? "",
-        });
+    if (options.search != null) {
+      queryBuilder.andWhere(
+        "mgo.mg_name ilike :mgName or mgo.mgId = :mgId or mgo.mainMgCategory LIKE :mainMgCategory or mgo.mediumMgCategory LIKE :mediumMgCategory or mgo.subMgCategory LIKE :subMgCategory",
+        {
+          mgName: `${options.search}%`,
+          mgId: options.search,
+          mainMgCategory: `${options.search}%`,
+          mediumMgCategory: `${options.search}%`,
+          subMgCategory: `${options.search}%`,
+        }
+      );
     }
 
+    queryBuilder.orderBy("mgo.createdAt", "DESC");
     const results = await paginateRawAndEntities(queryBuilder, options);
     const entities = results[0];
     const raws = results[1];

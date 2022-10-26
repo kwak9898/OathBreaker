@@ -98,7 +98,7 @@ describe("AssignMgObject 테스트", () => {
 
       // When
       const response = await requestHelper.post(
-        `${DOMAIN}/assign?mgObjectId=${mgObject.mgId}`
+        `${DOMAIN}/assign/${mgObject.mgId}`
       );
 
       // Then

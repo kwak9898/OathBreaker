@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { Log } from "./entities/log.entity";
-import { CreateLogDto } from "./dto/create-log.dto";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
@@ -29,24 +28,24 @@ export class LogsRepository extends Repository<Log> {
   }
 
   // 접속 로그 생성
-  async createLog(
-    createLogDto: CreateLogDto,
-    user: User,
-    userId: string
-  ): Promise<Log> {
-    const { logId, url, ip, firstAccessAt } = createLogDto;
-    const existLogId = await this.findOne({ where: { logId } });
-    userId = user.userId;
-
-    // const log = await this.create({
-    //   url,
-    //   ip,
-    //   firstAccessAt,
-    //   user,
-    // });
-    const log = await this.update(userId, { url, ip, firstAccessAt });
-    return log;
-  }
+  // async createLog(
+  //   createLogDto: CreateLogDto,
+  //   user: User,
+  //   userId: string
+  // ): Promise<Log> {
+  //   const { logId, url, ip, firstAccessAt } = createLogDto;
+  //   const existLogId = await this.findOne({ where: { logId } });
+  //   userId = user.userId;
+  //
+  //   // const log = await this.create({
+  //   //   url,
+  //   //   ip,
+  //   //   firstAccessAt,
+  //   //   user,
+  //   // });
+  //   const log = await this.update(userId, { url, ip, firstAccessAt });
+  //   return log;
+  // }
 
   // 접속 로그 수정
   async updateLog(

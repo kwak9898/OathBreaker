@@ -1,5 +1,5 @@
 import { BeforeUpdate, Column, Entity, OneToOne, PrimaryColumn } from "typeorm";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
 import { Role } from "../../roles/enum/role.enum";

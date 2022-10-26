@@ -27,6 +27,8 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { UrlDto } from "./dto/url.dto";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 import { UserListRequestDto } from "./dto/user-list-request.dto";
+import { GetConnectLogDto } from "./dto/get-connect-log.dto";
+import { RoleCntDto } from "./dto/role-cnt.dto";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -53,6 +55,17 @@ export class UsersController {
       userListRequestDto.roleName,
       userListRequestDto.userId
     );
+  }
+
+  /**
+   * 관리자 or 등록자인 유저 카운트 조회
+   */
+  @Roles(Role.admin)
+  @Get("/roles/count")
+  async getAllByRoleCnt(): Promise<RoleCntDto> {
+    const adminCnt = await this.usersService.getAllByAdminCnt();
+    const registerCnt = await this.usersService.getAllByManagerCnt();
+    return new RoleCntDto(adminCnt, registerCnt);
   }
 
   /**
@@ -105,10 +118,15 @@ export class UsersController {
   }
 
   /**
-   * 모든 유저의 접속 로그 전체 조회
+   * 전체 유저 접속 로그 전체 조회
    */
   @Roles(Role.admin)
   @Get("/connect/oath-logs")
+  @Get("/connect/log")
+  @ApiPaginatedResponse(GetConnectLogDto)
+  @ApiOperation({
+    summary: "전체 유저 접속 로그 전체 조회",
+  })
   async getConnectLog(
     @Query() options: MyPaginationQuery
   ): Promise<Pagination<User>> {
@@ -127,6 +145,10 @@ export class UsersController {
    * 유저의 IP주소 저장
    */
   @Post("/create/ip")
+  @ApiOkResponse({ type: User })
+  @ApiOperation({
+    summary: "유저의 IP주소 저장",
+  })
   async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
     user.ip = ip;
     return await this.usersService.createIpByUser(user.userId, (user.ip = ip));
@@ -136,6 +158,10 @@ export class UsersController {
    * 유저의 URL 저장
    */
   @Post("/create/url")
+  @ApiOkResponse({ type: User })
+  @ApiOperation({
+    summary: "유저의 URL 저장",
+  })
   async createUrlByUser(@CurrentUser() user: User, @Body() url: UrlDto) {
     return await this.usersService.createUrlByUser(user.userId, url.url);
   }
