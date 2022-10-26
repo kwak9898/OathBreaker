@@ -15,6 +15,8 @@ import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
 import { UsersService } from "./domains/users/users.service";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { AppInitializeModule } from "./config/app-initialize.module";
+import { AppInitializeService } from "./config/app-initialize.service";
 
 @Module({
   imports: [
@@ -46,12 +48,19 @@ import { ServeStaticModule } from "@nestjs/serve-static";
     MgObjectModule,
     MgoImageModule,
     AssignMgObjectModule,
+    AppInitializeModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {
-  constructor(private userService: UsersService) {
-    userService.initializeSuperUser();
+  constructor(
+    private userService: UsersService,
+    private appInitializeService: AppInitializeService
+  ) {
+    if (process.env.NODE_ENV === "production") {
+      userService.initializeSuperUser();
+      appInitializeService.initializeMgObject();
+    }
   }
 }
