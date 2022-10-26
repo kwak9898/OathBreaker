@@ -3,7 +3,7 @@ import * as bcrypt from "bcryptjs";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
 import { Role } from "../../roles/enum/role.enum";
-import { Log } from "../../oath-logs/entities/log.entity";
+import { ConnectLog } from "../../oath-logs/entities/log.entity";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {
@@ -72,8 +72,8 @@ export class User extends BaseEntity {
   })
   ip?: string;
 
-  @OneToOne(() => Log, (log) => log.user)
-  log: Log;
+  @OneToOne(() => ConnectLog, (log) => log.userId)
+  logId: ConnectLog;
 
   async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 12);

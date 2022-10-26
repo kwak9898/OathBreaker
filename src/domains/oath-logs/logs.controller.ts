@@ -14,7 +14,7 @@ import { Role } from "../roles/enum/role.enum";
 import { Roles } from "../../dacorators/role.decorator";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { Log } from "./entities/log.entity";
+import { ConnectLog } from "./entities/log.entity";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
 
@@ -33,7 +33,7 @@ export class LogsController {
   getAllLogs(
     @Query() user: User,
     @Query() query: MyPaginationQuery
-  ): Promise<Pagination<Log>> {
+  ): Promise<Pagination<ConnectLog>> {
     return this.logsService.getAllLogs(user, query);
   }
 
@@ -60,7 +60,7 @@ export class LogsController {
     @Param("logId") logId: number,
     user: User,
     updateLogDto: UpdateLogDto
-  ): Promise<Log> {
+  ): Promise<ConnectLog> {
     return this.logsService.updateLog(logId, user, updateLogDto);
   }
 

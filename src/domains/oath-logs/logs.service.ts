@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { LogsRepository } from "./logs.repository";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { Log } from "./entities/log.entity";
+import { ConnectLog } from "./entities/log.entity";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
 
@@ -18,7 +18,7 @@ export class LogsService {
   async getAllLogs(
     user: User,
     options: MyPaginationQuery
-  ): Promise<Pagination<Log>> {
+  ): Promise<Pagination<ConnectLog>> {
     return this.getAllLogs(user, options);
   }
 
@@ -32,7 +32,7 @@ export class LogsService {
     logId: number,
     user: User,
     updateLogDto: UpdateLogDto
-  ): Promise<Log> {
+  ): Promise<ConnectLog> {
     return this.logsRepository.updateLog(logId, user, updateLogDto);
   }
 

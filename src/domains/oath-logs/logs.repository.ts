@@ -1,22 +1,22 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
-import { Log } from "./entities/log.entity";
+import { ConnectLog } from "./entities/log.entity";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
 @Injectable()
-export class LogsRepository extends Repository<Log> {
+export class LogsRepository extends Repository<ConnectLog> {
   constructor(private readonly dataSource: DataSource) {
-    super(Log, dataSource.createEntityManager());
+    super(ConnectLog, dataSource.createEntityManager());
   }
 
   // 접속 로그 전체 조회
   async getAllLogs(
     user: User,
     options: MyPaginationQuery
-  ): Promise<Pagination<Log>> {
+  ): Promise<Pagination<ConnectLog>> {
     const query = this.createQueryBuilder("log");
 
     const logs = query.where("log.userId = :userId, log.username = :username", {
@@ -52,7 +52,7 @@ export class LogsRepository extends Repository<Log> {
     logId: number,
     user: User,
     updateLogDto: UpdateLogDto
-  ): Promise<Log> {
+  ): Promise<ConnectLog> {
     const { url, ip, firstAccessAt } = updateLogDto;
     const existLogByUser = await this.findOne({ where: { logId } });
 
@@ -60,7 +60,7 @@ export class LogsRepository extends Repository<Log> {
       throw new NotFoundException("존재하는 로그가 없습니다.");
     }
 
-    await this.update(logId, { url, ip, firstAccessAt });
+    await this.update(logId, { url, ip, accessAt: firstAccessAt });
     return;
   }
 
