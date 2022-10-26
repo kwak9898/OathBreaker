@@ -1,3 +1,4 @@
+import { join } from "path";
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -13,9 +14,13 @@ import { MgObjectModule } from "./domains/mg-object/mg-object.module";
 import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
 import { UsersService } from "./domains/users/users.service";
+import { ServeStaticModule } from "@nestjs/serve-static";
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "client/dist"),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env?.NODE_ENV ?? "development"}`,
