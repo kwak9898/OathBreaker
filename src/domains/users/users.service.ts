@@ -94,11 +94,6 @@ export class UsersService {
     return this.userRepository.removeRefreshToken(userId);
   }
 
-  // 로그인
-  login(createUserDto: CreateUserDto) {
-    return this.userRepository.login(createUserDto);
-  }
-
   // 유저의 refreshToken 조회
   findRefreshToken(jwtToken: string): Promise<User> {
     return this.userRepository.findRefreshToken(jwtToken);
@@ -107,11 +102,5 @@ export class UsersService {
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
     return this.userRepository.updateLastAccessAt(userId);
-  }
-
-  // 모든 유저의 접속 로그 전체 조회
-  async getConnectLog(options: MyPaginationQuery): Promise<Pagination<User>> {
-    const queryBuilder = this.userRepository.createQueryBuilder("user");
-    return paginate(queryBuilder, options);
   }
 }

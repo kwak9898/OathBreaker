@@ -24,7 +24,6 @@ import { Pagination } from "nestjs-typeorm-paginate";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 import { UserListRequestDto } from "./dto/user-list-request.dto";
-import { GetConnectLogDto } from "./dto/get-connect-log.dto";
 import { RoleCntDto } from "./dto/role-cnt.dto";
 
 @Controller("users")
@@ -112,21 +111,5 @@ export class UsersController {
   @Patch("/access/last-date")
   async updateLastAccessAt(@CurrentUser() user: User) {
     await this.usersService.updateLastAccessAt(user.userId);
-  }
-
-  /**
-   * 전체 유저 접속 로그 전체 조회
-   */
-  @Roles(Role.admin)
-  @Get("/connect/connect-logs")
-  @Get("/connect/log")
-  @ApiPaginatedResponse(GetConnectLogDto)
-  @ApiOperation({
-    summary: "전체 유저 접속 로그 전체 조회",
-  })
-  async getConnectLog(
-    @Query() options: MyPaginationQuery
-  ): Promise<Pagination<User>> {
-    return await this.usersService.getConnectLog(options);
   }
 }
