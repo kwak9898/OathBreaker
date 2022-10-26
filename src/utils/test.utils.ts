@@ -33,6 +33,6 @@ export class RequestHelper {
   }
 }
 
-export function getRandomInt(max) {
+export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
