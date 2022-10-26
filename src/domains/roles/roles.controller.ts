@@ -52,7 +52,7 @@ export class RolesController {
    * 역할 생성
    */
   @Roles(Role.admin)
-  @Post("create")
+  @Post("")
   @ApiOkResponse({ type: RoleEntity })
   @ApiOperation({
     summary: "역할 생성",

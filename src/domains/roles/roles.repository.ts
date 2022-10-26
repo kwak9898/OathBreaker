@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { RoleEntity } from "./entities/role.entity";
 import { CreateRoleDto } from "./dto/create-role.dto";
@@ -18,7 +22,7 @@ export class RolesRepository extends Repository<RoleEntity> {
     const existRole = await this.findOne({ where: { roleName } });
 
     if (existRole !== null) {
-      throw new NotFoundException("이미 존재하는 역할입니다.");
+      throw new BadRequestException("이미 존재하는 역할입니다.");
     }
 
     const saveRole = await this.save(role);

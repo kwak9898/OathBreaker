@@ -46,7 +46,6 @@ export class ConnectLogsController {
     summary: "접속 로그 전체 조회",
   })
   getAllLogs(
-    @Query() user: User,
     @Query() query: MyPaginationQuery
   ): Promise<Pagination<ConnectLogListResponseDto>> {
     return this.logsService.getAllLogs(query);
@@ -55,19 +54,18 @@ export class ConnectLogsController {
   /**
    * 접속 로그 생성
    */
-  @Post("/create")
+  @Post("")
   @ApiOkResponse({ type: ConnectLog })
   @ApiOperation({
     summary: "접속 로그 생성",
   })
   @HttpCode(200)
   async createLog(
-    logId: number,
     @Body() url: UrlDto,
     @Ip() ip: string,
     @CurrentUser() user: User
   ): Promise<ConnectLog> {
-    return this.logsService.createLog(logId, url.url, ip, user);
+    return this.logsService.createLog(url.url, ip, user);
   }
 
   /**

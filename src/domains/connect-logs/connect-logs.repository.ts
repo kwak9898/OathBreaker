@@ -32,12 +32,7 @@ export class ConnectLogsRepository extends Repository<ConnectLog> {
   }
 
   // 접속 로그 생성
-  async createLog(
-    logId: number,
-    url: string,
-    ip: string,
-    user: User
-  ): Promise<ConnectLog> {
+  async createLog(url: string, ip: string, user: User): Promise<ConnectLog> {
     const log = await this.create({
       url,
       ip,
