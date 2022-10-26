@@ -37,6 +37,6 @@ export class ConnectLog extends BaseEntity {
   accessAt?: Date;
 
   @ManyToOne(() => User, (user) => user.log)
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: "user_id", referencedColumnName: "userId" })
   user: User;
 }

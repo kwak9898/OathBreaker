@@ -5,7 +5,6 @@ import {
   Get,
   Ip,
   Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -19,9 +18,9 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { ConnectLog } from "./entities/connect-log.entity";
 import { User } from "../users/entities/user.entity";
-import { UpdateLogDto } from "./dto/update-log.dto";
 import { UrlDto } from "./dto/url.dto";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
+import { ConnectLogListResponseDto } from "./dto/connect-log-list-response.dto";
 
 @Controller("connect-logs")
 @ApiTags("LOG")
@@ -38,8 +37,8 @@ export class ConnectLogsController {
   getAllLogs(
     @Query() user: User,
     @Query() query: MyPaginationQuery
-  ): Promise<Pagination<ConnectLog>> {
-    return this.logsService.getAllLogs(user, query);
+  ): Promise<Pagination<ConnectLogListResponseDto>> {
+    return this.logsService.paginate(query);
   }
 
   /**
@@ -52,21 +51,7 @@ export class ConnectLogsController {
     @Ip() ip: string,
     @CurrentUser() user: User
   ): Promise<ConnectLog> {
-    console.log(user);
     return this.logsService.createLog(logId, url.url, ip, user);
-  }
-
-  /**
-   * 접속 로그 수정
-   */
-  @Roles(Role.admin)
-  @Patch("/:logId")
-  updateLog(
-    @Param("logId") logId: number,
-    user: User,
-    updateLogDto: UpdateLogDto
-  ): Promise<ConnectLog> {
-    return this.logsService.updateLog(logId, user, updateLogDto);
   }
 
   /**
