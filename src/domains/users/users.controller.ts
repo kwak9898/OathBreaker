@@ -4,10 +4,8 @@ import {
   Controller,
   Delete,
   Get,
-  Ip,
   Param,
   Patch,
-  Post,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -24,7 +22,6 @@ import { RolesGuard } from "../../guards/roles.guard";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { UrlDto } from "../connect-logs/dto/url.dto";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 import { UserListRequestDto } from "./dto/user-list-request.dto";
 import { GetConnectLogDto } from "./dto/get-connect-log.dto";
@@ -131,30 +128,5 @@ export class UsersController {
     @Query() options: MyPaginationQuery
   ): Promise<Pagination<User>> {
     return await this.usersService.getConnectLog(options);
-  }
-
-  /**
-   * 유저의 IP주소 저장
-   */
-  @Post("/create/ip")
-  @ApiOkResponse({ type: User })
-  @ApiOperation({
-    summary: "유저의 IP주소 저장",
-  })
-  async createIpByUser(@CurrentUser() user: User, @Ip() ip: string) {
-    user.ip = ip;
-    return await this.usersService.createIpByUser(user.userId, (user.ip = ip));
-  }
-
-  /**
-   * 유저의 URL 저장
-   */
-  @Post("/create/url")
-  @ApiOkResponse({ type: User })
-  @ApiOperation({
-    summary: "유저의 URL 저장",
-  })
-  async createUrlByUser(@CurrentUser() user: User, @Body() url: UrlDto) {
-    return await this.usersService.createUrlByUser(user.userId, url.url);
   }
 }

@@ -114,14 +114,4 @@ export class UsersService {
     const queryBuilder = this.userRepository.createQueryBuilder("user");
     return paginate(queryBuilder, options);
   }
-
-  // 유저의 IP주소 저장
-  async createIpByUser(userId: string, ip: string): Promise<User> {
-    return this.userRepository.createIpByUser(userId, ip);
-  }
-
-  // 유저의 URL 저장
-  async createUrlByUser(userId: string, url: string): Promise<User> {
-    return this.userRepository.createUrlByUser(userId, url);
-  }
 }

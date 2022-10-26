@@ -155,41 +155,4 @@ export class UserRepository extends Repository<User> {
     const updateDate = new Date();
     return this.update(userId, { lastAccessAt: updateDate });
   }
-
-  // 모든 유저의 접속 로그 전체 조회
-  async getConnectLog(): Promise<User[]> {
-    const userLog = this.find({
-      select: ["userId", "username", "url", "ip"],
-    });
-
-    if (!userLog) {
-      throw new NotFoundException("모든 유저의 접속 로그가 존재하지 않습니다.");
-    }
-
-    return userLog;
-  }
-
-  // 유저의 IP주소 저장
-  async createIpByUser(userId: string, ip: string): Promise<User> {
-    const user = this.findOne({ where: { userId } });
-
-    if (!user) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
-
-    await this.update(userId, { ip });
-    return user;
-  }
-
-  // 유저의 URL 저장
-  async createUrlByUser(userId: string, url: string): Promise<User> {
-    const user = this.findOne({ where: { userId } });
-
-    if (!user) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
-
-    await this.update(userId, { url });
-    return user;
-  }
 }

@@ -64,20 +64,6 @@ export class User extends BaseEntity {
   })
   lastAccessAt?: Date;
 
-  @Column("character varying", {
-    name: "url",
-    comment: "접근 페이지",
-    nullable: true,
-  })
-  url?: string;
-
-  @Column("character varying", {
-    name: "ip",
-    comment: "ip 주소",
-    nullable: true,
-  })
-  ip?: string;
-
   @OneToMany(() => ConnectLog, (log) => log.user)
   log: ConnectLog[];
 
