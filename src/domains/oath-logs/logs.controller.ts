@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   Patch,
   Post,
@@ -44,7 +45,12 @@ export class LogsController {
    */
   @Roles(Role.admin)
   @Post("/create")
-  createLog(createLogDto: CreateLogDto, user: User): Promise<Log> {
+  createLog(
+    createLogDto: CreateLogDto,
+    user: User,
+    @Ip() ip: string
+  ): Promise<Log> {
+    createLogDto.ip = ip;
     return this.logsService.createLog(createLogDto, user);
   }
 

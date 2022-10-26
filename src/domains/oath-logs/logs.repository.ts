@@ -29,9 +29,14 @@ export class LogsRepository extends Repository<Log> {
   }
 
   // 접속 로그 생성
-  async createLog(createLogDto: CreateLogDto, user: User): Promise<Log> {
-    const { url, ip, firstAccessAt } = createLogDto;
-    const user = await this.findOne({ where: { user: User } });
+  async createLog(
+    createLogDto: CreateLogDto,
+    user: User,
+    userId: string
+  ): Promise<Log> {
+    const { logId, url, ip, firstAccessAt } = createLogDto;
+    const existLogId = await this.findOne({ where: { logId } });
+    userId = user.userId;
 
     // const log = await this.create({
     //   url,
@@ -39,7 +44,7 @@ export class LogsRepository extends Repository<Log> {
     //   firstAccessAt,
     //   user,
     // });
-    const log = await this.update(user.userId, { url, ip, firstAccessAt });
+    const log = await this.update(userId, { url, ip, firstAccessAt });
     return log;
   }
 
