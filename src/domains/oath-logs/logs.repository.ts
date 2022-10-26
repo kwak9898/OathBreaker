@@ -4,6 +4,8 @@ import { Log } from "./entities/log.entity";
 import { CreateLogDto } from "./dto/create-log.dto";
 import { User } from "../users/entities/user.entity";
 import { UpdateLogDto } from "./dto/update-log.dto";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { paginate, Pagination } from "nestjs-typeorm-paginate";
 
 @Injectable()
 export class LogsRepository extends Repository<Log> {
@@ -11,18 +13,33 @@ export class LogsRepository extends Repository<Log> {
     super(Log, dataSource.createEntityManager());
   }
 
+  // 접속 로그 전체 조회
+  async getAllLogs(
+    user: User,
+    options: MyPaginationQuery
+  ): Promise<Pagination<Log>> {
+    const query = this.createQueryBuilder("log");
+
+    const logs = query.where("log.userId = :userId, log.username = :username", {
+      userId: user.userId,
+      username: user.username,
+    });
+    const pagination = paginate(logs, options);
+    return pagination;
+  }
+
   // 접속 로그 생성
   async createLog(createLogDto: CreateLogDto, user: User): Promise<Log> {
     const { url, ip, firstAccessAt } = createLogDto;
+    const user = await this.findOne({ where: { user: User } });
 
-    const log = await this.create({
-      url,
-      ip,
-      firstAccessAt,
-      user,
-    });
-
-    await this.save(log);
+    // const log = await this.create({
+    //   url,
+    //   ip,
+    //   firstAccessAt,
+    //   user,
+    // });
+    const log = await this.update(user.userId, { url, ip, firstAccessAt });
     return log;
   }
 
@@ -45,6 +62,12 @@ export class LogsRepository extends Repository<Log> {
 
   // 접속 로그 삭제
   async deleteLog(logId: number): Promise<void> {
-    // TODO 구현하기
+    const log = await this.findOne({ where: { logId } });
+
+    if (!log) {
+      throw new NotFoundException("유저의 로그가 존재하지 않습니다.");
+    }
+
+    await this.delete(logId);
   }
 }

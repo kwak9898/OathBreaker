@@ -2,10 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LogsRepository } from "./logs.repository";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { Pagination } from "nestjs-typeorm-paginate";
 import { Log } from "./entities/log.entity";
 import { CreateLogDto } from "./dto/create-log.dto";
 import { User } from "../users/entities/user.entity";
+import { UpdateLogDto } from "./dto/update-log.dto";
 
 @Injectable()
 export class LogsService {
@@ -15,12 +16,29 @@ export class LogsService {
   ) {}
 
   // 접속 로그 전체 조회
-  async getAllLogs(options: MyPaginationQuery): Promise<Pagination<Log>> {
-    return paginate(await this.logsRepository, options);
+  async getAllLogs(
+    user: User,
+    options: MyPaginationQuery
+  ): Promise<Pagination<Log>> {
+    return this.getAllLogs(user, options);
   }
 
   // 접속 로그 생성
   createLog(createLogDto: CreateLogDto, user: User): Promise<Log> {
     return this.logsRepository.createLog(createLogDto, user);
+  }
+
+  // 접속 로그 수정
+  updateLog(
+    logId: number,
+    user: User,
+    updateLogDto: UpdateLogDto
+  ): Promise<Log> {
+    return this.logsRepository.updateLog(logId, user, updateLogDto);
+  }
+
+  // 접속 로그 삭제
+  deleteLog(logId: number): Promise<void> {
+    return this.logsRepository.deleteLog(logId);
   }
 }
