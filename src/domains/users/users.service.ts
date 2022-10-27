@@ -5,8 +5,10 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { paginateRawAndEntities, Pagination } from "nestjs-typeorm-paginate";
 import { Role } from "../roles/enum/role.enum";
+import { UserListResponseDto } from "./dto/UserListResponse.dto";
+import { MyPagination } from "../base/pagination-response";
 
 @Injectable()
 export class UsersService {
@@ -36,11 +38,11 @@ export class UsersService {
   }
 
   // 유저 전체 조회
-  getAllUsers(
+  async getAllUsers(
     options: MyPaginationQuery,
     roleName?: Role,
     userId?: string
-  ): Promise<Pagination<User>> {
+  ): Promise<Pagination<UserListResponseDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder("user");
     if (roleName) {
       queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
@@ -49,7 +51,23 @@ export class UsersService {
     if (userId) {
       queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
     }
-    return paginate(queryBuilder, options);
+    queryBuilder.innerJoinAndSelect("user.log", "log");
+    const results = await paginateRawAndEntities(queryBuilder, options);
+    const entities = results[0];
+    const raws = results[1];
+
+    const data = entities.items
+      .map((item) => new UserListResponseDto(item))
+      .map((item) => {
+        const raw = raws
+          .map((r) => r as any)
+          .find((rs) => (rs.user_user_id = item.userId));
+        item.accessAt = raw.log_access_at;
+        console.log("rawrawraw", raw);
+        console.log("itemitem", item);
+        return item;
+      });
+    return new MyPagination<UserListResponseDto>(data, entities.meta);
   }
 
   // 관리자인 유저 카운트 조회
