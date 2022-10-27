@@ -58,7 +58,10 @@ export class AppModule {
     private userService: UsersService,
     private appInitializeService: AppInitializeService
   ) {
-    if (process.env.NODE_ENV === "production") {
+    if (
+      process.env.NODE_ENV === "development" ||
+      process.env.NODE_ENV === "production"
+    ) {
       userService.initializeSuperUser();
       appInitializeService.initializeMgObject();
     }

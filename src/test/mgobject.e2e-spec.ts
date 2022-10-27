@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
-import { AuthService } from "../domains/auth/auth.service";
 import { getRandomInt, RequestHelper } from "../utils/test.utils";
 import { MgObjectRepository } from "../domains/mg-object/mg-object.repository";
 import { DatabaseModule } from "../database/database.module";
@@ -9,23 +8,40 @@ import { MgobjectUpdateRequestDto } from "../domains/mg-object/dto/request/mgobj
 import { MGOBJECT_EXCEPTION } from "../exception/error-code";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgObjectFactory } from "./factory/mgobject-factory";
-import { UserFactory } from "./factory/user-factory";
 import { UserRepository } from "../domains/users/user.repository";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { faker } from "@faker-js/faker";
 import { JwtService } from "@nestjs/jwt";
+import { CountForDashboardResponseDto } from "../domains/mg-object/dto/response/count-for-dashboard-response.dto";
+import { MgobjectDetailResponseDto } from "../domains/mg-object/dto/response/mgobject-detail-response.dto";
 import { MyPagination } from "../domains/base/pagination-response";
 import { MgObjectListResponseDto } from "../domains/mg-object/dto/response/mgobject-list-response.dto";
+import { AuthService } from "../domains/auth/auth.service";
+import { UsersService } from "../domains/users/users.service";
+import { DataSource } from "typeorm";
+import { UserFactory } from "./factory/user-factory";
+import { AuthFactory } from "./factory/auth-factory";
 
 describe("MgObject 테스트", () => {
   let app: INestApplication;
   let token;
   const DOMAIN = "/mg-objects";
-  let authService: AuthService;
   let requestHelper: RequestHelper;
   let mgObjectFactory: MgObjectFactory;
   let userFactory: UserFactory;
+  let authFactory: AuthFactory;
+  let datasource: DataSource;
+  let authService: AuthService;
   let mgObjects: MgObject[];
+
+  const totalObjectCnt = 10;
+  const totalImageCnt = totalObjectCnt * 8;
+  const totalTmpCnt = totalImageCnt / 4;
+
+  const imageCntInObject = 8;
+  const unCompleteCntInObject = imageCntInObject / 4;
+  const completeCntInObject = imageCntInObject / 4;
+  const tmpCntInObject = imageCntInObject / 4;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -34,21 +50,20 @@ describe("MgObject 테스트", () => {
         MgObjectFactory,
         MgObjectRepository,
         MgoImageRepository,
-        UserFactory,
         UserRepository,
         DatabaseModule,
         JwtService,
+        AuthService,
+        UsersService,
+        AuthFactory,
       ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    authService = moduleFixture.get(AuthService);
     mgObjectFactory = moduleFixture.get(MgObjectFactory);
-    userFactory = moduleFixture.get(UserFactory);
+    authFactory = moduleFixture.get(AuthFactory);
 
-    token = authService.createAccessToken(
-      (await userFactory.createBaseUser()).userId
-    );
+    token = await authFactory.createTestToken();
 
     requestHelper = new RequestHelper(app, token);
 
@@ -59,11 +74,15 @@ describe("MgObject 테스트", () => {
 
   describe("COUNTS", () => {
     it("전체 개수 조회", async () => {
+      // when
       const response = await requestHelper.get(`${DOMAIN}/counts`);
+
+      //then
+      const body = response.body as CountForDashboardResponseDto;
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("mgObjectCnt");
-      expect(response.body).toHaveProperty("imageTotalCnt");
-      expect(response.body).toHaveProperty("tmpCnt");
+      expect(body.mgObjectCnt).toBe(totalObjectCnt);
+      expect(body.imageTotalCnt).toBe(totalImageCnt);
+      expect(body.tmpCnt).toBe(totalTmpCnt);
     });
   });
 
@@ -72,22 +91,36 @@ describe("MgObject 테스트", () => {
       // Given
 
       // When
-      const { body } = await requestHelper.get(DOMAIN + "?page=1&limit=10");
+      const response = await requestHelper.get(DOMAIN + "?page=1&limit=10");
+      const body = response.body as MyPagination<MgObjectListResponseDto>;
 
       // Then
       expect(body).toHaveProperty("items");
       expect(body).toHaveProperty("meta");
-      expect(body.meta.totalItems).toBe(100);
-      expect(body.meta.itemCount).toBe(10);
+      expect(body.meta.totalItems).toBe(totalObjectCnt);
       expect(body.meta.currentPage).toBe(1);
+
+      body.items.forEach((item) => {
+        expect(item.createdAt).toBeDefined();
+        expect(item.mgId).toBeDefined();
+        expect(item.lastTransferToTempAt).toBeDefined();
+        expect(item).toHaveProperty("mainMgCategory");
+        expect(item).toHaveProperty("mediumMgCategory");
+        expect(item).toHaveProperty("subMgCategory");
+        expect(item.imageTotalCnt).toBe(imageCntInObject);
+        expect(item.imageIncompleteCnt).toBe(unCompleteCntInObject);
+        expect(item.imageCompleteCnt).toBe(completeCntInObject);
+        expect(item.imageTempCnt).toBe(tmpCntInObject);
+      });
     });
   });
+
+  // describe("SOFT DELETE TEST", () => {});
 
   describe("Search", () => {
     it("MG NAME으로 검색", async () => {
       // given
-      const mgNameKeyword =
-        mgObjects[getRandomInt(mgObjects.length - 1)].mgName;
+      const mgNameKeyword = getRandomMgObject().mgName;
       const filteredWithMgName = mgObjects.filter((o) =>
         o.mgName.includes(mgNameKeyword)
       );
@@ -106,7 +139,7 @@ describe("MgObject 테스트", () => {
 
     it("MG ID로 검색", async () => {
       // given
-      const mgIdKeyword = mgObjects[getRandomInt(mgObjects.length - 1)].mgId;
+      const mgIdKeyword = getRandomMgObject().mgId;
       const dataFilteredWithId = mgObjects.filter(
         (o) => o.mgId === mgIdKeyword
       );
@@ -125,8 +158,7 @@ describe("MgObject 테스트", () => {
 
     it("MAIN MG CATEGORY로 검색", async () => {
       // given
-      const mainMgCategoryKeyword =
-        mgObjects[getRandomInt(mgObjects.length - 1)].mainMgCategory;
+      const mainMgCategoryKeyword = getRandomMgObject().mainMgCategory;
       const dataFilteredWithCategory = mgObjects.filter((o) =>
         o.mainMgCategory.includes(mainMgCategoryKeyword)
       );
@@ -150,8 +182,7 @@ describe("MgObject 테스트", () => {
 
     it("MEDIUM MG CATEGORY로 검색", async () => {
       // given
-      const mediumMgCategory =
-        mgObjects[getRandomInt(mgObjects.length - 1)].mediumMgCategory;
+      const mediumMgCategory = getRandomMgObject().mediumMgCategory;
       const dataFilteredWithCategory = mgObjects.filter((o) =>
         o.mediumMgCategory.includes(mediumMgCategory)
       );
@@ -175,8 +206,7 @@ describe("MgObject 테스트", () => {
 
     it("SUM MG CATEGORY로 검색", async () => {
       // given
-      const subMgCategoryKeyword =
-        mgObjects[getRandomInt(mgObjects.length - 1)].subMgCategory;
+      const subMgCategoryKeyword = getRandomMgObject().subMgCategory;
       const dataFilteredWithCategory = mgObjects.filter((o) =>
         o.subMgCategory.includes(subMgCategoryKeyword)
       );
@@ -202,14 +232,20 @@ describe("MgObject 테스트", () => {
   describe("상세 조회", () => {
     it("성공", async () => {
       // Given
-      const mgObject = mgObjects[0];
+      const mgObject = getRandomMgObject();
 
       // When
-      const { body } = await requestHelper.get(`${DOMAIN}/${mgObject.mgId}`);
+      const response = await requestHelper.get(`${DOMAIN}/${mgObject.mgId}`);
+      const body = response.body as MgobjectDetailResponseDto;
 
       // Then
-      expect(body).toHaveProperty("imageTotalCnt");
-      expect(body).toHaveProperty("imageTempCnt");
+      expect(response.status).toBe(200);
+      expect(body.mgId).toBe(mgObject.mgId);
+      expect(body.imageTotalCnt).toBe(imageCntInObject);
+      expect(body.imageTempCnt).toBe(tmpCntInObject);
+      expect(body).toHaveProperty("mainMgCategory");
+      expect(body).toHaveProperty("mediumMgCategory");
+      expect(body).toHaveProperty("subMgCategory");
     });
 
     it("찾을 수 없음", async () => {
@@ -217,6 +253,8 @@ describe("MgObject 테스트", () => {
 
       // When
       const response = await requestHelper.get(`${DOMAIN}/not_founded_id`);
+
+      // Then
       expect(response.statusCode).toBe(404);
       expect(response.body.message).toBe(
         MGOBJECT_EXCEPTION.MGOBJECT_NOT_FOUND.message
@@ -227,7 +265,7 @@ describe("MgObject 테스트", () => {
   describe("수정", () => {
     it("성공", async () => {
       // Given
-      const mgObject = mgObjects[1];
+      const mgObject = getRandomMgObject();
       const mgoUpdateDto = new MgobjectUpdateRequestDto();
       mgoUpdateDto.mainMgCategory = faker.name.jobTitle();
       mgoUpdateDto.mediumMgCategory = faker.name.fullName();
@@ -239,7 +277,6 @@ describe("MgObject 테스트", () => {
         `${DOMAIN}/${mgObject.mgId}`,
         mgoUpdateDto
       );
-
       const body = response.body;
 
       // Then
@@ -269,7 +306,7 @@ describe("MgObject 테스트", () => {
   describe("mg-object 추천", () => {
     it("성공", async () => {
       // Given
-      const imageId = mgObjects[0].mgoImages[0].imgId;
+      const imageId = getRandomMgObject().mgoImages[0].imgId;
 
       // When
       const response = await requestHelper.get(
@@ -311,9 +348,13 @@ describe("MgObject 테스트", () => {
     });
   });
 
+  function getRandomMgObject() {
+    return mgObjects[getRandomInt(totalObjectCnt - 1)];
+  }
+
   const createBaseMgObject = async (): Promise<Array<MgObject>> => {
     const promises = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < totalObjectCnt; i++) {
       promises.push(mgObjectFactory.createBaseMgObject());
     }
     return await Promise.all(promises);

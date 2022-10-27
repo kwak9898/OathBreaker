@@ -1,14 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { AppModule } from "../app.module";
-import { AuthService } from "../domains/auth/auth.service";
 import { getRandomInt, RequestHelper } from "../utils/test.utils";
 import { MgObjectRepository } from "../domains/mg-object/mg-object.repository";
 import { DatabaseModule } from "../database/database.module";
-import { DataSource } from "typeorm";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgObjectFactory } from "./factory/mgobject-factory";
-import { UserFactory } from "./factory/user-factory";
 import { MgoImageRepository } from "../domains/mgo-image/mgo-image.repository";
 import { UserRepository } from "../domains/users/user.repository";
 import { UpdateMgoImageStatusDto } from "../domains/mgo-image/dto/request/update-mgo-image-status.dto";
@@ -21,18 +18,27 @@ import {
 } from "../exception/error-code";
 import { ImageStatusFlag } from "../domains/mgo-image/entities/mgoImage.entity";
 import { JwtService } from "@nestjs/jwt";
+import { AuthFactory } from "./factory/auth-factory";
+import { AuthService } from "../domains/auth/auth.service";
+import { UsersService } from "../domains/users/users.service";
 
 describe("MgObject Image 테스트", () => {
   let app: INestApplication;
   let token;
   const DOMAIN = "/mgo-images";
-  let authService: AuthService;
   let requestHelper: RequestHelper;
   let mgObjectFactory: MgObjectFactory;
-  let userFactory: UserFactory;
-  let datasource: DataSource;
+  let authFactory: AuthFactory;
   let mgObjects: MgObject[];
   let mgObjectService: MgObjectService;
+
+  const totalObjectCnt = 10;
+
+  const imageCntInObject = 8;
+  const unCompleteCntInObject = imageCntInObject / 4;
+  const completeCntInObject = imageCntInObject / 4;
+  const tmpCntInObject = imageCntInObject / 4;
+  const otherCntInObject = (imageCntInObject / 4) * totalObjectCnt;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -42,25 +48,21 @@ describe("MgObject Image 테스트", () => {
         MgObjectRepository,
         MgoImageRepository,
         MgObjectService,
-        UserFactory,
         UserRepository,
         DatabaseModule,
         JwtService,
+        AuthFactory,
+        AuthService,
+        UsersService,
       ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    authService = moduleFixture.get(AuthService);
     mgObjectFactory = moduleFixture.get(MgObjectFactory);
-    userFactory = moduleFixture.get(UserFactory);
+    authFactory = moduleFixture.get(AuthFactory);
     mgObjectService = moduleFixture.get(MgObjectService);
 
-    datasource = moduleFixture.get(DataSource);
-    await datasource.synchronize(true);
-
-    token = authService.createAccessToken(
-      (await userFactory.createBaseUser()).userId
-    );
+    token = await authFactory.createTestToken();
 
     requestHelper = new RequestHelper(app, token);
 
@@ -77,13 +79,11 @@ describe("MgObject Image 테스트", () => {
 
       // When
       const { body } = await requestHelper.get(
-        `${DOMAIN}?mgObjectId=${
-          mgObjects[getRandomInt(10)].mgId
-        }&page=1&limit=10`
+        `${DOMAIN}?mgObjectId=${getRandomMgObject().mgId}&page=1&limit=10`
       );
 
       // Then
-      expect(body.meta.totalItems).toBe(3);
+      expect(body.meta.totalItems).toBe(imageCntInObject);
       expect(body).toHaveProperty("items");
       for (const item of body.items) {
         expect(item).toHaveProperty("isErrorImage");
@@ -97,12 +97,12 @@ describe("MgObject Image 테스트", () => {
       // When
       const { body } = await requestHelper.get(
         `${DOMAIN}?mgObjectId=${
-          mgObjects[getRandomInt(10)].mgId
-        }&page=1&limit=10&statusFlag=0`
+          getRandomMgObject().mgId
+        }&page=1&limit=10&statusFlag=${ImageStatusFlag.UNCOMPLETED}`
       );
 
       // Then
-      expect(body.meta.totalItems).toBe(3);
+      expect(body.meta.totalItems).toBe(unCompleteCntInObject);
       expect(body).toHaveProperty("items");
       expect(body).toHaveProperty("meta");
     });
@@ -113,12 +113,12 @@ describe("MgObject Image 테스트", () => {
       // When
       const { body } = await requestHelper.get(
         `${DOMAIN}?mgObjectId=${
-          mgObjects[getRandomInt(10)].mgId
-        }&page=1&limit=10&statusFlag=1`
+          getRandomMgObject().mgId
+        }&page=1&limit=10&statusFlag=${ImageStatusFlag.COMPLETED}`
       );
 
       // Then
-      expect(body.meta.totalItems).toBe(0);
+      expect(body.meta.totalItems).toBe(completeCntInObject);
       expect(body).toHaveProperty("items");
       expect(body).toHaveProperty("meta");
     });
@@ -129,12 +129,12 @@ describe("MgObject Image 테스트", () => {
       // When
       const { body } = await requestHelper.get(
         `${DOMAIN}?mgObjectId=${
-          mgObjects[getRandomInt(10)].mgId
+          getRandomMgObject().mgId
         }&page=1&limit=10&statusFlag=${ImageStatusFlag.TEMP}`
       );
 
       // Then
-      expect(body.meta.totalItems).toBe(0);
+      expect(body.meta.totalItems).toBe(tmpCntInObject);
       expect(body).toHaveProperty("items");
       expect(body).toHaveProperty("meta");
     });
@@ -148,7 +148,7 @@ describe("MgObject Image 테스트", () => {
       );
 
       // Then
-      expect(body.meta.totalItems).toBe(0);
+      expect(body.meta.totalItems).toBe(otherCntInObject);
       expect(body).toHaveProperty("items");
       expect(body).toHaveProperty("meta");
     });
@@ -200,7 +200,6 @@ describe("MgObject Image 테스트", () => {
         `${DOMAIN}?mgObjectId=${mgObject.mgId}&page=1&limit=10&statusFlag=${ImageStatusFlag.COMPLETED}`
       );
 
-      expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
         expect(item.statusFlag).toBe(ImageStatusFlag.COMPLETED);
       }
@@ -224,7 +223,6 @@ describe("MgObject Image 테스트", () => {
         `${DOMAIN}?mgObjectId=${mgObject.mgId}&page=1&limit=10&statusFlag=${ImageStatusFlag.TEMP}`
       );
 
-      expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
         expect(item.statusFlag).toBe(ImageStatusFlag.TEMP);
         expect(item).toHaveProperty("isErrorImage");
@@ -255,7 +253,6 @@ describe("MgObject Image 테스트", () => {
         `${DOMAIN}?page=1&limit=10&statusFlag=${ImageStatusFlag.OTHER}`
       );
 
-      expect(body.meta.itemCount).toBe(3);
       for (const item of body.items) {
         expect(item).toHaveProperty("isErrorImage");
         expect(item.statusFlag).toBe(ImageStatusFlag.OTHER);
@@ -266,14 +263,10 @@ describe("MgObject Image 테스트", () => {
   describe("IMAGE에 새로운  MG ID를 부여 ", () => {
     it("성공", async () => {
       // Given
-      const mgObject = getRandomMgObject();
-      let targetObject = mgObjects[getRandomInt(100)];
-      while (mgObject.mgId == targetObject.mgId) {
-        targetObject = mgObjects[getRandomInt(100)];
-      }
+      const { mgObject, targetObject } = twoMgObject();
 
       const mgoImage = mgObject.mgoImages.map((image) => image.imgId)[
-        getRandomInt(3)
+        getRandomInt(mgObject.mgoImages.length - 1)
       ];
 
       const dto = new UpdateMgoImageMgObjectDto();
@@ -290,11 +283,7 @@ describe("MgObject Image 테스트", () => {
 
     it("이미지를 찾을 수 없음", async () => {
       // Given
-      const mgObject = getRandomMgObject();
-      let targetObject = mgObjects[getRandomInt(100)];
-      while (mgObject.mgId == targetObject.mgId) {
-        targetObject = mgObjects[getRandomInt(100)];
-      }
+      const targetObject = getRandomMgObject();
 
       const dto = new UpdateMgoImageMgObjectDto();
       dto.imageId = faker.random.word();
@@ -318,7 +307,7 @@ describe("MgObject Image 테스트", () => {
       const mgObject = getRandomMgObject();
 
       const mgoImageId = mgObject.mgoImages.map((image) => image.imgId)[
-        getRandomInt(3)
+        getRandomInt(mgObject.mgoImages.length - 1)
       ];
 
       const dto = new UpdateMgoImageMgObjectDto();
@@ -353,12 +342,21 @@ describe("MgObject Image 테스트", () => {
   });
 
   function getRandomMgObject() {
-    return mgObjects[getRandomInt(100)];
+    return mgObjects[getRandomInt(totalObjectCnt - 1)];
   }
 
-  const createBaseMgObject = async () => {
+  function twoMgObject() {
+    const mgObject = getRandomMgObject();
+    let targetObject = getRandomMgObject();
+    while (mgObject.mgId == targetObject.mgId) {
+      targetObject = getRandomMgObject();
+    }
+    return { mgObject, targetObject };
+  }
+
+  const createBaseMgObject = async (): Promise<Array<MgObject>> => {
     const promises = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < totalObjectCnt; i++) {
       promises.push(mgObjectFactory.createBaseMgObject());
     }
     return await Promise.all(promises);
