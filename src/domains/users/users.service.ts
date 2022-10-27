@@ -52,11 +52,6 @@ export class UsersService {
     return paginate(queryBuilder, options);
   }
 
-  // 관리자 및 등록인 유저 전체 조회
-  getAllByRole(roleName: Role) {
-    return this.userRepository.getAllByRole(roleName);
-  }
-
   // 관리자인 유저 카운트 조회
   getAllByAdminCnt() {
     return this.userRepository.getAllByAdminCnt();
@@ -99,11 +94,6 @@ export class UsersService {
     return this.userRepository.removeRefreshToken(userId);
   }
 
-  // 로그인
-  login(createUserDto: CreateUserDto) {
-    return this.userRepository.login(createUserDto);
-  }
-
   // 유저의 refreshToken 조회
   findRefreshToken(jwtToken: string): Promise<User> {
     return this.userRepository.findRefreshToken(jwtToken);
@@ -112,31 +102,5 @@ export class UsersService {
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
     return this.userRepository.updateLastAccessAt(userId);
-  }
-
-  // 모든 유저의 접속 로그 전체 조회
-  async getConnectLog(options: MyPaginationQuery): Promise<Pagination<User>> {
-    const queryBuilder = this.userRepository.createQueryBuilder("user");
-    return paginate(queryBuilder, options);
-  }
-
-  // 유저의 최초 접속일 업데이트
-  async updateFirstAccessAt(userId: string) {
-    return this.userRepository.updateFirstAccessAt(userId);
-  }
-
-  // 유저의 IP주소 저장
-  async createIpByUser(userId: string, ip: string): Promise<User> {
-    return this.userRepository.createIpByUser(userId, ip);
-  }
-
-  // 유저의 URL 저장
-  async createUrlByUser(userId: string, url: string): Promise<User> {
-    return this.userRepository.createUrlByUser(userId, url);
-  }
-
-  // 유저 접속 로그 삭제
-  async deleteLogByUser(userId: string): Promise<User> {
-    return await this.userRepository.deleteLogByUser(userId);
   }
 }
