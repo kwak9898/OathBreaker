@@ -9,10 +9,10 @@ import { UserRepository } from "../domains/users/user.repository";
 import { DatabaseModule } from "../database/database.module";
 import { JwtService } from "@nestjs/jwt";
 
-describe("역할 관련 테스트", () => {
+describe("접속 로그 관련 테스트", () => {
   let app: INestApplication;
   let token;
-  const rolesDomain = "/roles";
+  const ConnectLogDomain = "/connect-log";
   let userId: string | undefined;
   let username: string | undefined;
   let password: string | undefined;

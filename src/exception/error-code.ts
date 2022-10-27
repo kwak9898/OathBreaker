@@ -9,7 +9,30 @@ export const AUTH_EXCEPTION = {
   },
 };
 
-export const USER_EXCEPTION = {};
+export const USER_EXCEPTION = {
+  USER_NOT_FOUND: {
+    code: "USER_NOT_FOUND",
+    message: "존재하는 유저가 없습니다.",
+  },
+};
+
+export const ROLE_EXCEPTION = {
+  ROLE_NOT_FOUND: {
+    code: "ROLE_NOT_FOUND",
+    message: "역할을 찾을 수 없습니다.",
+  },
+  ROLE_EXIST: {
+    code: "ROLE_BAD_REQUEST",
+    message: "이미 존재하는 역할입니다.",
+  },
+};
+
+export const CONNECT_LOG_EXCEPTION = {
+  CONNECT_LOG_NOT_FOUND: {
+    code: "CONNECT_LOG_NOT_FOUND",
+    message: "유저의 접속 로그를 찾을 수 없습니다.",
+  },
+};
 
 export const MGOBJECT_EXCEPTION = {
   MGOBJECT_NOT_FOUND: {

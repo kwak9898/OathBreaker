@@ -157,6 +157,7 @@ describe("회원 인증 관련 테스트", () => {
       // When
       const response = await request(app.getHttpServer())
         .post(`${AuthDomain}/signout`)
+        // .auth(refreshToken, { type: "bearer" })
         .send({ userId, password, refreshToken });
 
       // Then
