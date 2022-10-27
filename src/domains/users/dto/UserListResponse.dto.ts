@@ -8,7 +8,7 @@ export class UserListResponseDto extends OmitType(User, [
   "deletedAt",
   "createdAt",
 ]) {
-  accessAt: any;
+  accessAt: Date;
 
   constructor(partial?: Partial<User>) {
     super();
