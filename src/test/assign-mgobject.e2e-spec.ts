@@ -51,12 +51,13 @@ describe("AssignMgObject 테스트", () => {
     mgObjectFactory = moduleFixture.get(MgObjectFactory);
     userFactory = moduleFixture.get(UserFactory);
     assignMgObjectFactory = moduleFixture.get(AssignMgobjectFactory);
+
     user = await userFactory.createBaseUser();
     token = authService.createAccessToken(user.userId);
-
     requestHelper = new RequestHelper(app, token);
 
     await app.init();
+
     await createBaseAssignMgObject();
   });
 

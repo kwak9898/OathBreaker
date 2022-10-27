@@ -25,10 +25,9 @@ export class AppInitializeService {
       for (let i = 0; i < 90; i++) {
         mgObjectInitPromise.push(this.createDefaultMgObjectForTest(i));
       }
+      const results = await Promise.all(mgObjectInitPromise);
+      console.log("Initialize MgObject : ", results);
     }
-
-    const results = await Promise.all(mgObjectInitPromise);
-    console.log("Initialize MgObject : ", results);
   }
 
   async isInitializedDefaultMgObject(): Promise<boolean> {

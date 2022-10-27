@@ -61,7 +61,7 @@ export class MgoImageController {
 
   /**
    * 선택한 IMAGE들의 상태값을 변경합니다.
-   * IMAGE_STATUS = INCOMPLETED(0), COMPLETED(1), TEMP(2), OTHER(3)
+   * IMAGE_STATUS = UNCOMPLETED(0), COMPLETED(1), TEMP(2), OTHER(3)
    */
   @Patch("/status")
   @ApiOperation({
