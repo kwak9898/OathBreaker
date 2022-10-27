@@ -6,6 +6,7 @@ import {
 import { DataSource, Repository } from "typeorm";
 import { RoleEntity } from "./entities/role.entity";
 import { CreateRoleDto } from "./dto/create-role.dto";
+import { ROLE_EXCEPTION } from "../../exception/error-code";
 
 @Injectable()
 export class RolesRepository extends Repository<RoleEntity> {
@@ -22,7 +23,7 @@ export class RolesRepository extends Repository<RoleEntity> {
     const existRole = await this.findOne({ where: { roleName } });
 
     if (existRole !== null) {
-      throw new BadRequestException("이미 존재하는 역할입니다.");
+      throw new BadRequestException(ROLE_EXCEPTION.ROLE_EXIST);
     }
 
     const saveRole = await this.save(role);
@@ -35,7 +36,7 @@ export class RolesRepository extends Repository<RoleEntity> {
     const existRole = await this.findOne({ where: { roleId } });
 
     if (!existRole) {
-      throw new NotFoundException("존재하지 않는 역할 입니다.");
+      throw new NotFoundException(ROLE_EXCEPTION.ROLE_NOT_FOUND);
     }
 
     await this.update(roleId, { roleName: role.roleName });
@@ -44,10 +45,11 @@ export class RolesRepository extends Repository<RoleEntity> {
 
   // 역할 삭제
   async deleteRole(roleId: number): Promise<void> {
-    const existRole = await this.delete(roleId);
+    const role = await this.findOne({ where: { roleId } });
 
-    if (!existRole) {
-      throw new NotFoundException("삭제할 역할이 없습니다.");
+    if (!role) {
+      throw new NotFoundException(ROLE_EXCEPTION.ROLE_NOT_FOUND);
     }
+    await this.delete(roleId);
   }
 }

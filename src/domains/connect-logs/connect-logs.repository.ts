@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { ConnectLog } from "./entities/connect-log.entity";
 import { User } from "../users/entities/user.entity";
@@ -44,12 +44,6 @@ export class ConnectLogsRepository extends Repository<ConnectLog> {
 
   // 접속 로그 삭제
   async deleteLog(logId: number): Promise<void> {
-    const log = await this.findOne({ where: { logId } });
-
-    if (!log) {
-      throw new NotFoundException("유저의 로그가 존재하지 않습니다.");
-    }
-
     await this.delete(logId);
   }
 }

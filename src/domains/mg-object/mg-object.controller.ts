@@ -120,7 +120,7 @@ export class MgObjectController {
    */
   @Get("/ai/recommend/:imageId")
   @ApiOperation({ summary: "추천 MG-OBJECT" })
-  @ApiParam({ name: "imageId", type: "string" })
+  @ApiParam({ name: "imageId", type: "string", description: "IMAGE ID" })
   @Roles(Role.admin)
   async recommend(
     @Param("imageId") imageId: string
