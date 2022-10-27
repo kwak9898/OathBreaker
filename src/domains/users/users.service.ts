@@ -61,9 +61,6 @@ export class UsersService {
       const logAccess = item.log.slice(-1)[0];
       console.log(item);
       dto.accessAt = logAccess.accessAt;
-      // console.log(logAccess.accessAt);
-      // 2022-10-27T10:40:02.959Z
-      // 2022-10-27T08:46:11.281Z
       return dto;
     });
     return new MyPagination<UserListResponseDto>(data, results.meta);
