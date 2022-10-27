@@ -14,6 +14,7 @@ import { MgObjectModule } from "./domains/mg-object/mg-object.module";
 import { MgoImageModule } from "./domains/mgo-image/mgo-image.module";
 import { AssignMgObjectModule } from "./domains/assign-mg-object/assign-mg-object.module";
 import { UsersService } from "./domains/users/users.service";
+import { ConnectLogsModule } from "./domains/connect-logs/connect-logs.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { AppInitializeModule } from "./config/app-initialize.module";
 import { AppInitializeService } from "./config/app-initialize.service";
@@ -48,6 +49,7 @@ import { AppInitializeService } from "./config/app-initialize.service";
     MgObjectModule,
     MgoImageModule,
     AssignMgObjectModule,
+    ConnectLogsModule,
     AppInitializeModule,
   ],
   controllers: [AppController],

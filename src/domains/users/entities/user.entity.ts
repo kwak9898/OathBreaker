@@ -1,8 +1,15 @@
-import { BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
+import {
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+} from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
 import { Role } from "../../roles/enum/role.enum";
+import { ConnectLog } from "../../connect-logs/entities/connect-log.entity";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {
@@ -51,32 +58,14 @@ export class User extends BaseEntity {
   roleName?: string;
 
   @Column("timestamp without time zone", {
-    name: "first_access_at",
-    comment: "접속 시간",
-    nullable: true,
-  })
-  firstAccessAt?: Date;
-
-  @Column("timestamp without time zone", {
     name: "last_access_at",
     comment: "최근 접속일",
     nullable: true,
   })
   lastAccessAt?: Date;
 
-  @Column("character varying", {
-    name: "url",
-    comment: "접근 페이지",
-    nullable: true,
-  })
-  url?: string;
-
-  @Column("character varying", {
-    name: "ip",
-    comment: "ip 주소",
-    nullable: true,
-  })
-  ip?: string;
+  @OneToMany(() => ConnectLog, (log) => log.user)
+  log: ConnectLog[];
 
   async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 12);

@@ -3,65 +3,90 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
+  Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
 import { RolesService } from "./roles.service";
 import { RolesGuard } from "../../guards/roles.guard";
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
+import { RoleEntity } from "./entities/role.entity";
 import { Roles } from "../../dacorators/role.decorator";
 import { Role } from "./enum/role.enum";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { User } from "../users/entities/user.entity";
-import { RolesDto } from "./dto/roles.dto";
+import { CreateRoleDto } from "./dto/create-role.dto";
+import { MyPaginationQuery } from "../base/pagination-query";
+import { Pagination } from "nestjs-typeorm-paginate";
+import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 
 @Controller("roles")
 @UseGuards(RolesGuard)
 @ApiTags("ROLES")
 @ApiBearerAuth("access-token")
 export class RolesController {
-  constructor(
-    private usersService: UsersService,
-    private rolesService: RolesService
-  ) {}
+  constructor(private rolesService: RolesService) {}
 
   /**
    * 역할 전체 조회
    */
   @Roles(Role.admin)
-  @Get()
+  @Get("")
+  @ApiPaginatedResponse(RoleEntity)
   @ApiOperation({
     summary: "역할 전체 조회",
   })
-  getRoleByUser() {
-    return { roles: ["관리자", "등록자"] };
+  getAllRoles(
+    @Query() query: MyPaginationQuery
+  ): Promise<Pagination<RoleEntity>> {
+    return this.rolesService.getAllRoles(query);
   }
 
   /**
-   * 유저 역할 수정
+   * 역할 생성
    */
   @Roles(Role.admin)
-  @Patch("/:userId")
+  @Post("")
+  @ApiOkResponse({ type: RoleEntity })
   @ApiOperation({
-    summary: "유저 역할 수정",
+    summary: "역할 생성",
   })
-  updateRoleByUser(
-    @Param("userId") userId: string,
-    @Body() roleDto: RolesDto
-  ): Promise<User> {
-    return this.rolesService.updateRoleByUser(userId, roleDto.roleName);
+  @HttpCode(200)
+  createRole(@Body() createRoleDto: CreateRoleDto): Promise<RoleEntity> {
+    return this.rolesService.createRole(createRoleDto);
   }
 
   /**
-   * 유저 역할 삭제
+   * 역할 수정
    */
   @Roles(Role.admin)
-  @Delete("/:userId")
+  @Patch(":roleId")
+  @ApiOkResponse({ type: RoleEntity })
   @ApiOperation({
-    summary: "유저 역할 삭제",
+    summary: "역할 수정",
   })
-  async deleteRoleByUser(@Param("userId") userId: string): Promise<User> {
-    return await this.rolesService.deleteRoleByUser(userId);
+  async updateRole(
+    @Param("roleId") roleId: number,
+    @Body() role: RoleEntity
+  ): Promise<RoleEntity> {
+    return await this.rolesService.updateRole(roleId, role);
+  }
+
+  /**
+   * 역할 삭제
+   */
+  @Roles(Role.admin)
+  @Delete(":roleId")
+  @ApiOperation({
+    summary: "역할 삭제",
+  })
+  deleteRole(@Param("roleId") roleId: number): Promise<void> {
+    return this.rolesService.deleteRole(roleId);
   }
 }
