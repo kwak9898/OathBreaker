@@ -39,8 +39,7 @@ export class AuthController {
   /**
    * 유저 생성
    */
-  // @Roles(Role.admin)
-  @Public()
+  @Roles(Role.admin)
   @ApiOperation({
     summary: "유저 생성",
   })
