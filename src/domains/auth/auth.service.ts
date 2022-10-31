@@ -48,24 +48,6 @@ export class AuthService {
     });
   }
 
-  // 로그아웃
-  getCookiesForLogOut() {
-    return {
-      accessOption: {
-        domain: "localhost",
-        path: "/",
-        httpOnly: true,
-        maxAge: 0,
-      },
-      refreshOption: {
-        domain: "localhost",
-        path: "/",
-        httpOnly: true,
-        maxAge: 0,
-      },
-    };
-  }
-
   private async verifyPassword(password: string, hashedPassword: string) {
     const isPasswordMatch = await compare(password, hashedPassword);
     if (!isPasswordMatch) {

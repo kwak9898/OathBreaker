@@ -111,6 +111,10 @@ export class UsersService {
 
   // 특정 유저 삭제
   deleteUser(userId: string): Promise<void> {
+    if (!userId) {
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
+    }
+
     return this.userRepository.deleteUser(userId);
   }
 
