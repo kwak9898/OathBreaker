@@ -3,7 +3,7 @@ import { omit } from "../../../utils/dto.utils";
 import { User } from "../entities/user.entity";
 
 export class UserListResponseDto extends OmitType(User, [
-  "log",
+  "logList",
   "updatedAt",
   "deletedAt",
   "createdAt",
@@ -12,6 +12,6 @@ export class UserListResponseDto extends OmitType(User, [
 
   constructor(partial?: Partial<User>) {
     super();
-    return omit(partial, ["log", "updatedAt", "deletedAt", "createdAt"]);
+    return omit(partial, ["logList", "updatedAt", "deletedAt", "createdAt"]);
   }
 }

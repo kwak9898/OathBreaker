@@ -52,15 +52,17 @@ export class UsersService {
       queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
     }
     queryBuilder
-      .innerJoinAndSelect("user.log", "log")
-      .orderBy("log.accessAt", "ASC");
+      .leftJoinAndSelect("user.logList", "logList")
+      .orderBy("logList.accessAt", "DESC");
     const results = await paginate(queryBuilder, options);
 
     const data = results.items.map((item) => {
       const dto = new UserListResponseDto(item);
-      const logAccess = item.log.slice(-1)[0];
-      console.log(item);
-      dto.accessAt = logAccess.accessAt;
+      if (item.logList.length == 0) {
+        dto.accessAt = undefined;
+      } else {
+        dto.accessAt = item.logList[0].accessAt;
+      }
       return dto;
     });
     return new MyPagination<UserListResponseDto>(data, results.meta);

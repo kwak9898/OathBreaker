@@ -67,7 +67,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => ConnectLog, (log) => log.user)
   @JoinColumn({ name: "log_id", referencedColumnName: "logId" })
-  log: ConnectLog[];
+  logList: ConnectLog[];
 
   async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 12);
