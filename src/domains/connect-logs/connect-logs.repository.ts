@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { ConnectLog } from "./entities/connect-log.entity";
-import { User } from "../users/entities/user.entity";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 import { ConnectLogListResponseDto } from "./dto/connect-log-list-response.dto";
@@ -17,8 +16,8 @@ export class ConnectLogsRepository extends Repository<ConnectLog> {
   async getAllLogs(
     options: MyPaginationQuery
   ): Promise<Pagination<ConnectLogListResponseDto>> {
-    const query = await this.createQueryBuilder("log");
-    query.innerJoinAndSelect("log.user", "user");
+    const query = await this.createQueryBuilder("logList");
+    query.innerJoinAndSelect("logList.user", "user");
     const results = await paginate(query, options);
 
     const data = results.items.map((item) => {
@@ -29,17 +28,6 @@ export class ConnectLogsRepository extends Repository<ConnectLog> {
     });
 
     return new MyPagination<ConnectLogListResponseDto>(data, results.meta);
-  }
-
-  // 접속 로그 생성
-  async createLog(url: string, ip: string, user: User): Promise<ConnectLog> {
-    const log = await this.create({
-      url,
-      ip,
-      accessAt: new Date(),
-      user,
-    });
-    return await this.save(log);
   }
 
   // 접속 로그 삭제

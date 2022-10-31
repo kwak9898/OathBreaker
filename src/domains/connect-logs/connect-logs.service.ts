@@ -3,13 +3,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ConnectLogsRepository } from "./connect-logs.repository";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { ConnectLog } from "./entities/connect-log.entity";
 import { User } from "../users/entities/user.entity";
 import { ConnectLogListResponseDto } from "./dto/connect-log-list-response.dto";
 import {
   CONNECT_LOG_EXCEPTION,
   USER_EXCEPTION,
 } from "../../exception/error-code";
+import { CreateConnectLogResponseDto } from "./dto/createConnectLogResponseDto";
 
 @Injectable()
 export class ConnectLogsService {
@@ -26,12 +26,29 @@ export class ConnectLogsService {
   }
 
   // 접속 로그 생성
-  createLog(url: string, ip: string, user: User): Promise<ConnectLog> {
+  async createLog(
+    url: string,
+    ip: string,
+    user: User
+  ): Promise<CreateConnectLogResponseDto> {
     if (!user) {
       throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
     }
 
-    return this.logsRepository.createLog(url, ip, user);
+    const log = this.logsRepository.create({
+      url,
+      ip,
+      accessAt: new Date(),
+      user,
+    });
+
+    const persistLog = await this.logsRepository.save(log);
+
+    const dto = new CreateConnectLogResponseDto(persistLog);
+    dto.userId = persistLog.user.userId;
+    dto.userName = persistLog.user.username;
+
+    return dto;
   }
 
   // 접속 로그 삭제
