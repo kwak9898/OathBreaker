@@ -25,7 +25,7 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 import { UserListRequestDto } from "./dto/user-list-request.dto";
 import { RoleCntDto } from "./dto/role-cnt.dto";
-import { UserListResponseDto } from "./dto/UserListResponse.dto";
+import { UserListResponseDto } from "./dto/user-list-response.dto";
 
 @Controller("users")
 @ApiTags("USERS")
