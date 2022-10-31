@@ -2,6 +2,7 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryColumn,
 } from "typeorm";
@@ -65,7 +66,8 @@ export class User extends BaseEntity {
   lastAccessAt?: Date;
 
   @OneToMany(() => ConnectLog, (log) => log.user)
-  log: ConnectLog[];
+  @JoinColumn({ name: "log_id", referencedColumnName: "logId" })
+  logList: ConnectLog[];
 
   async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 12);

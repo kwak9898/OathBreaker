@@ -25,6 +25,7 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
 import { UserListRequestDto } from "./dto/user-list-request.dto";
 import { RoleCntDto } from "./dto/role-cnt.dto";
+import { UserListResponseDto } from "./dto/user-list-response.dto";
 
 @Controller("users")
 @ApiTags("USERS")
@@ -45,7 +46,7 @@ export class UsersController {
   async getAllUsers(
     @Query() query: MyPaginationQuery,
     @Query() userListRequestDto: UserListRequestDto
-  ): Promise<Pagination<User>> {
+  ): Promise<Pagination<UserListResponseDto>> {
     return this.usersService.getAllUsers(
       query,
       userListRequestDto.roleName,

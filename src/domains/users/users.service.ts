@@ -7,6 +7,8 @@ import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 import { Role } from "../roles/enum/role.enum";
+import { UserListResponseDto } from "./dto/user-list-response.dto";
+import { MyPagination } from "../base/pagination-response";
 
 @Injectable()
 export class UsersService {
@@ -36,11 +38,11 @@ export class UsersService {
   }
 
   // 유저 전체 조회
-  getAllUsers(
+  async getAllUsers(
     options: MyPaginationQuery,
     roleName?: Role,
     userId?: string
-  ): Promise<Pagination<User>> {
+  ): Promise<Pagination<UserListResponseDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder("user");
     if (roleName) {
       queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
@@ -49,7 +51,13 @@ export class UsersService {
     if (userId) {
       queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
     }
-    return paginate(queryBuilder, options);
+    queryBuilder
+      .leftJoinAndSelect("user.logList", "logList")
+      .orderBy("logList.accessAt", "DESC");
+    const results = await paginate(queryBuilder, options);
+
+    const data = results.items.map((item) => new UserListResponseDto(item));
+    return new MyPagination<UserListResponseDto>(data, results.meta);
   }
 
   // 관리자인 유저 카운트 조회
