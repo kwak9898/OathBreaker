@@ -50,7 +50,7 @@ describe("접속 로그 관련 테스트", () => {
     await app.init();
   });
 
-  describe("역할 조회/수정/삭제", () => {
+  describe("접속 로그 조회/생성/삭제", () => {
     it("TEST", () => {
       console.log("TEST");
     });
