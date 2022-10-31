@@ -115,7 +115,6 @@ describe("계정 관련 테스트", () => {
     //     .get(`${UserDomain}/roles/count/?page=1&limit=10`)
     //     .auth(token, { type: "bearer" });
     //
-    //   console.log(response);
     //
     //   // Then
     //   expect(response.statusCode).toBe(HttpStatus.OK);
