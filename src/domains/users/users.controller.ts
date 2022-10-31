@@ -1,6 +1,5 @@
 import { UsersService } from "./users.service";
 import {
-  Body,
   Controller,
   Delete,
   Get,
@@ -80,22 +79,6 @@ export class UsersController {
   })
   async getUserById(@Param("userId") userId: string): Promise<User> {
     return this.usersService.getUserById(userId);
-  }
-
-  /**
-   * 유저 수정
-   */
-  @Roles(Role.admin)
-  @Patch(":userId")
-  @ApiOkResponse({ type: User })
-  @ApiOperation({
-    summary: "유저 수정",
-  })
-  async updateUser(
-    @Param("userId") userId: string,
-    @Body() user: User
-  ): Promise<User> {
-    return this.usersService.updateUser(userId, user);
   }
 
   /**

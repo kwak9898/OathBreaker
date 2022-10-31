@@ -121,22 +121,22 @@ describe("계정 관련 테스트", () => {
     //   expect(response.statusCode).toBe(HttpStatus.OK);
     // });
 
-    it("특정 계정 수정 성공", async (done) => {
-      // Given
-      userId = "test000";
-      username = "update-user1";
-      roleName = "관리자";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .patch(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, username, roleName });
-
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      done();
-    });
+    // it("특정 계정 수정 성공", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //   username = "update-user1";
+    //   roleName = "관리자";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .patch(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" })
+    //     .send({ userId, username, roleName });
+    //
+    //   // Then
+    //   expect(response.statusCode).toBe(HttpStatus.OK);
+    //   done();
+    // });
 
     it("유저 퇴종 접속일 업데이트 성공", async (done) => {
       // Given

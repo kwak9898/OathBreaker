@@ -2,14 +2,13 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
-import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../roles/enum/role.enum";
+import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -47,13 +46,6 @@ export class UserRepository extends Repository<User> {
     return await this.save(user);
   }
 
-  // 관리자 및 등록자인 유저 전체 조회
-  async getAllByRole(roleName: Role) {
-    const users = await this.find({ where: { roleName } });
-
-    return users;
-  }
-
   // 관리자인 유저 전체 카운트 조회
   async getAllByAdminCnt() {
     const findAdminUser = await this.count({ where: { roleName: Role.admin } });
@@ -82,20 +74,26 @@ export class UserRepository extends Repository<User> {
       where: { userId },
     });
 
-    if (!findUser) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
-
     return findUser;
   }
 
   // 특정 유저 수정
-  async updateUser(userId: string, user: User): Promise<User> {
-    user.updatedAt = new Date();
-    const existUser = this.getUserById(userId);
+  async updateUser(
+    userId: string,
+    plainPassword?: string,
+    roleName?: string
+  ): Promise<User> {
+    const existUser = await this.getUserById(userId);
 
-    await this.save(user);
-    return existUser;
+    if (plainPassword) {
+      existUser.password = await bcrypt.hash(plainPassword, 12);
+    }
+
+    if (roleName) {
+      existUser.roleName = roleName;
+    }
+
+    return this.save(existUser);
   }
 
   // 특정 유저 삭제
@@ -128,21 +126,6 @@ export class UserRepository extends Repository<User> {
     return this.update(userId, {
       jwtToken: null,
     });
-  }
-
-  // 회원 로그인
-  async login(createUserDto: CreateUserDto): Promise<{ accessToken }> {
-    const { userId, password } = createUserDto;
-    const user = await this.getUserById(userId);
-
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const payload = { userId };
-      const accessToken = this.jwtService.sign(payload);
-
-      return { accessToken };
-    } else {
-      throw new UnauthorizedException("로그인 실패");
-    }
   }
 
   // 유저의 refreshToken 조회
