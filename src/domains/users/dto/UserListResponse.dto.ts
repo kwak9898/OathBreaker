@@ -10,7 +10,6 @@ export class UserListResponseDto extends OmitType(User, [
   "createdAt",
 ]) {
   accessAt?: Date;
-  user: User;
 
   constructor(partial?: Partial<User>) {
     super();
