@@ -1,15 +1,8 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcryptjs";
 import { ConfigService } from "@nestjs/config";
-import { User } from "../users/entities/user.entity";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 
 @Injectable()
@@ -71,37 +64,6 @@ export class AuthService {
         maxAge: 0,
       },
     };
-  }
-
-  async logout(refreshToken: string): Promise<void> {
-    const user = await this.usersService.findRefreshToken(refreshToken);
-
-    if (!user) {
-      throw new NotFoundException("토근이 유효하지 않습니다.");
-    }
-
-    user.jwtToken = "";
-
-    await this.usersService.updateUser(user.userId, user);
-    return;
-  }
-
-  async changePassword(userId: string, plainPassword: string, user?: User) {
-    try {
-      if (!user) {
-        user = await this.usersService.getUserById(userId);
-      }
-
-      await user.hashPassword(plainPassword);
-      await this.usersService.updateUser(userId, user);
-
-      return user;
-    } catch (err) {
-      if (err) {
-        throw new BadRequestException("다시 시도해주세요.");
-      }
-      return err;
-    }
   }
 
   private async verifyPassword(password: string, hashedPassword: string) {

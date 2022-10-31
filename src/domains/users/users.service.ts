@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
@@ -83,13 +83,30 @@ export class UsersService {
   }
 
   // 특정 유저 조회
-  getUserById(userId: string): Promise<User> {
-    return this.userRepository.getUserById(userId);
+  async getUserById(userId: string): Promise<User> {
+    const user = await this.userRepository.getUserById(userId);
+    if (!user) {
+      throw new NotFoundException("존재하지 않는 유저입니다.");
+    }
+    return user;
   }
 
   // 특정 유저 수정
-  updateUser(userId: string, user: User): Promise<User> {
-    return this.userRepository.updateUser(userId, user);
+  async updateUser(
+    userId: string,
+    plainPassword?: string,
+    roleName?: string
+  ): Promise<User> {
+    const user = await this.getUserById(userId);
+    if (plainPassword) {
+      user.password = await bcrypt.hash(plainPassword, 12);
+    }
+
+    if (roleName) {
+      user.roleName = roleName;
+    }
+
+    return this.userRepository.save(user);
   }
 
   // 특정 유저 삭제

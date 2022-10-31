@@ -20,7 +20,7 @@ import { Role } from "../roles/enum/role.enum";
 import { RolesGuard } from "../../guards/roles.guard";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
-import { ChangePasswordDto } from "./dto/change-password.dto";
+import { ChangeUserDto } from "./dto/change-user.dto";
 import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-body.decorator";
 import { ImplicitLoginDto } from "./dto/implicit-login.dto";
 import { LoginResponseDto } from "./dto/login-response.dto";
@@ -108,18 +108,18 @@ export class AuthController {
   }
 
   /**
-   * 비밀번호 변경
+   * 비밀번호 및 권한 변경
    */
   @Roles(Role.admin)
-  @Patch("change-password/:userId")
+  @Patch("change-user/:userId")
   @ApiOperation({
-    summary: "비밀번호 변경",
+    summary: "비밀번호 및 권한 변경",
   })
   @ApiBearerAuth("access-token")
-  async changePassword(
+  async changeByUser(
     @Param("userId") userId: string,
-    @Body() dto: ChangePasswordDto
+    @Body() dto: ChangeUserDto
   ) {
-    await this.authService.changePassword(userId, dto.password);
+    await this.usersService.updateUser(userId, dto.password, dto.roleName);
   }
 }
