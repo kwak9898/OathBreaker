@@ -10,7 +10,7 @@ export class RoleEntity extends BaseEntity {
   roleId: number;
 
   @Column("character varying", {
-    name: "roleName",
+    name: "role_name",
     comment: "역할",
     nullable: false,
   })
