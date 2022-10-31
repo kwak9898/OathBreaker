@@ -58,11 +58,10 @@ export class UsersService {
 
     const data = results.items.map((item) => {
       const dto = new UserListResponseDto(item);
-      if (item.logList.length == 0) {
-        dto.accessAt = undefined;
-      } else {
-        dto.accessAt = item.logList[0].accessAt;
-      }
+
+      const accessAt = UserListResponseDto.accessAtIsNull(item.logList);
+
+      dto.accessAt = accessAt;
       return dto;
     });
     return new MyPagination<UserListResponseDto>(data, results.meta);
