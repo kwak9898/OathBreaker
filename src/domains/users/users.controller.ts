@@ -50,7 +50,8 @@ export class UsersController {
     return this.usersService.getAllUsers(
       query,
       userListRequestDto.roleName,
-      userListRequestDto.userId
+      userListRequestDto.userId,
+      userListRequestDto.username
     );
   }
 

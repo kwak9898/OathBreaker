@@ -6,9 +6,9 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
-import { Role } from "../roles/enum/role.enum";
 import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
+import { Role } from "../roles/enum/role.enum";
 
 @Injectable()
 export class UsersService {
@@ -41,9 +41,11 @@ export class UsersService {
   async getAllUsers(
     options: MyPaginationQuery,
     roleName?: Role,
-    userId?: string
+    userId?: string,
+    username?: string
   ): Promise<Pagination<UserListResponseDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder("user");
+
     if (roleName) {
       queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
     }
@@ -51,6 +53,13 @@ export class UsersService {
     if (userId) {
       queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
     }
+
+    if (username) {
+      queryBuilder.where("user.username LIKE :username", {
+        username: `%${username}%`,
+      });
+    }
+
     queryBuilder
       .leftJoinAndSelect("user.logList", "logList")
       .orderBy("logList.accessAt", "DESC");
