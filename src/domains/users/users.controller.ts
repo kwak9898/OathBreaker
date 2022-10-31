@@ -78,7 +78,7 @@ export class UsersController {
     summary: "특정 유저 조회",
   })
   async getUserById(@Param("userId") userId: string): Promise<User> {
-    return this.usersService.getUserById(userId);
+    return this.usersService.findOneByUser(userId);
   }
 
   /**

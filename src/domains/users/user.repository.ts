@@ -61,6 +61,16 @@ export class UserRepository extends Repository<User> {
   }
 
   // 특정 유저 조회
+  async findOneByUser(userId: string): Promise<User> {
+    const findUser = await this.findOne({
+      select: ["userId", "username", "roleName", "team", "lastAccessAt"],
+      where: { userId },
+    });
+
+    return findUser;
+  }
+
+  // 비밀번호 및 로그인에 사용할 method
   async getUserById(userId: string): Promise<User> {
     const findUser = await this.findOne({
       select: [
@@ -98,11 +108,7 @@ export class UserRepository extends Repository<User> {
 
   // 특정 유저 삭제
   async deleteUser(userId: string): Promise<void> {
-    const existUser = await this.delete(userId);
-
-    if (!existUser) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
-    }
+    await this.delete(userId);
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장

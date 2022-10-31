@@ -14,6 +14,10 @@ export const USER_EXCEPTION = {
     code: "USER_NOT_FOUND",
     message: "존재하는 유저가 없습니다.",
   },
+  USER_EXIST: {
+    code: "USER_BAC_REQUEST",
+    message: "이미 존재하는 유저입니다.",
+  },
 };
 
 export const ROLE_EXCEPTION = {
