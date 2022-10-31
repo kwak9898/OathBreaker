@@ -46,14 +46,17 @@ export class UsersService {
   ): Promise<Pagination<UserListResponseDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder("user");
 
+    // 권한 검색 Query
     if (roleName) {
       queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
     }
 
+    // 유저 아이디 검색 Query
     if (userId) {
       queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
     }
 
+    // 유저 이름 검색 Query
     if (username) {
       queryBuilder.where("user.username LIKE :username", {
         username: `%${username}%`,
