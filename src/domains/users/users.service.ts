@@ -7,7 +7,7 @@ import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 import { Role } from "../roles/enum/role.enum";
-import { UserListResponseDto } from "./dto/UserListResponse.dto";
+import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
 
 @Injectable()
@@ -56,14 +56,7 @@ export class UsersService {
       .orderBy("logList.accessAt", "DESC");
     const results = await paginate(queryBuilder, options);
 
-    const data = results.items.map((item) => {
-      const dto = new UserListResponseDto(item);
-
-      const accessAt = UserListResponseDto.accessAtIsNull(item.logList);
-
-      dto.accessAt = accessAt;
-      return dto;
-    });
+    const data = results.items.map((item) => new UserListResponseDto(item));
     return new MyPagination<UserListResponseDto>(data, results.meta);
   }
 
