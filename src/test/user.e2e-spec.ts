@@ -107,19 +107,20 @@ describe("계정 관련 테스트", () => {
       done();
     });
 
-    // it("관리자 or 등록자인 유저 카운트 조회 성공", async (done) => {
-    //   // Given
-    //
-    //   // When
-    //   const response = await request(app.getHttpServer())
-    //     .get(`${UserDomain}/roles/count/?page=1&limit=10`)
-    //     .auth(token, { type: "bearer" });
-    //
-    //   console.log(response);
-    //
-    //   // Then
-    //   expect(response.statusCode).toBe(HttpStatus.OK);
-    // });
+    it("관리자 or 등록자인 유저 카운트 조회 성공", async (done) => {
+      // Given
+
+      // When
+      const response = await request(app.getHttpServer())
+        .get(`${UserDomain}/roles/count/?page=1&limit=10`)
+        .auth(token, { type: "bearer" });
+
+      console.log(response);
+
+      // Then
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      done();
+    });
 
     it("특정 계정 수정 성공", async (done) => {
       // Given
