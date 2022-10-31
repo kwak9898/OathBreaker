@@ -9,6 +9,7 @@ import { paginate, Pagination } from "nestjs-typeorm-paginate";
 import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
 import { Role } from "../roles/enum/role.enum";
+import { USER_EXCEPTION } from "../../exception/error-code";
 
 @Injectable()
 export class UsersService {
@@ -116,6 +117,11 @@ export class UsersService {
     }
 
     return this.userRepository.deleteUser(userId);
+  }
+
+  // 특정 유저 조회
+  async findOneByUser(userId: string): Promise<User> {
+    return this.userRepository.findOneByUser(userId);
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장
