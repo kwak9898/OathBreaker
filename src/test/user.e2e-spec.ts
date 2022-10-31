@@ -2,168 +2,237 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataSource } from "typeorm";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
-import * as request from "supertest";
 import { UsersService } from "../domains/users/users.service";
 import { AuthService } from "../domains/auth/auth.service";
-import { UserFactory } from "./factory/user-factory";
 import { DatabaseModule } from "../database/database.module";
 import { UserRepository } from "../domains/users/user.repository";
 import { JwtService } from "@nestjs/jwt";
+import { AuthFactory } from "./factory/auth-factory";
+import { RequestHelper } from "../utils/test.utils";
+import { CreateUserDto } from "../domains/users/dto/create-user.dto";
+import { Role } from "../domains/roles/enum/role.enum";
+import { UserFactory } from "./factory/user-factory";
 
 describe("계정 관련 테스트", () => {
   let app: INestApplication;
   let usersService: UsersService;
   let authService: AuthService;
+
+  let requestHelper: RequestHelper;
+  let authFactory: AuthFactory;
   let userFactory: UserFactory;
+  let dataSource: DataSource;
+
   let userId: string | undefined;
   let username: string | undefined;
   let password: string | undefined;
   let roleName: string | undefined;
   let confirmPassword: string | undefined;
   let team: string | undefined;
+
   let token;
+  let user;
+
   const UserDomain = "/users";
   const AuthDomain = "/auth";
-  let databaseSource: DataSource;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [UserFactory, DatabaseModule, UserRepository, JwtService],
+      providers: [
+        UserRepository,
+        DatabaseModule,
+        JwtService,
+        AuthService,
+        UsersService,
+        AuthFactory,
+        UserFactory,
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     authService = moduleFixture.get(AuthService);
     usersService = moduleFixture.get(UsersService);
-    userFactory = moduleFixture.get(UserFactory);
-    databaseSource = moduleFixture.get(DataSource);
-    await databaseSource.synchronize(true);
 
-    token = authService.createAccessToken(
-      (await userFactory.createBaseUser()).userId
-    );
+    authFactory = moduleFixture.get(AuthFactory);
+    userFactory = moduleFixture.get(UserFactory);
+
+    dataSource = moduleFixture.get(DataSource);
+    await dataSource.synchronize(true);
+
+    token = await authFactory.createTestToken();
+    user = await userFactory.createManagerUser();
+
+    requestHelper = new RequestHelper(app, token);
 
     await app.init();
   });
 
-  describe("계정 생성/조회/수정/삭제 테스트", () => {
-    it("계정 생성 성공", async (done) => {
+  describe("계정 생성", () => {
+    it("성공", async (done) => {
       // Given
-      userId = "test000";
-      username = "tester000";
-      password = "passwordpw11@";
-      roleName = "등록자";
-      confirmPassword = "passwordpw11@";
-      team = "운영";
+      const createUserDto = new CreateUserDto();
+      createUserDto.userId = "tester123";
+      createUserDto.username = "tester";
+      createUserDto.team = "운영";
+      createUserDto.roleName = Role.manager;
+      createUserDto.password = "password123@";
+      createUserDto.confirmPassword = "password123@";
 
       // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signup`)
-        .auth(token, { type: "bearer" })
-        .send({
-          userId,
-          username,
-          password,
-          roleName,
-          confirmPassword,
-          team,
-        });
+      const response = await requestHelper.post(
+        `${AuthDomain}/signup`,
+        createUserDto
+      );
 
       // Then
       expect(response.statusCode).toBe(HttpStatus.CREATED);
-      expect(response.body.userId).toBe(userId);
-      expect(response.body.username).toBe(username);
-      expect(response.body.roleName).toBe(roleName);
-      expect(response.body.team).toBe(team);
+      expect(response.body.userId).toBe(createUserDto.userId);
+      expect(response.body.username).toBe(createUserDto.username);
+      expect(response.body.roleName).toBe(createUserDto.roleName);
+      expect(response.body.team).toBe(createUserDto.team);
       done();
     });
 
-    it("전체 계정 조회 성공", async (done) => {
+    it("ConfirmPassword 없을 때 실패", async (done) => {
       // Given
+      const createUserDto = new CreateUserDto();
+      createUserDto.userId = "tester123";
+      createUserDto.username = "tester";
+      createUserDto.team = "운영";
+      createUserDto.roleName = Role.manager;
+      createUserDto.password = "password123@";
 
       // When
-      const response = await request(app.getHttpServer())
-        .get(`${UserDomain}?page=1&limit=10`)
-        .auth(token, { type: "bearer" });
+      const response = await requestHelper.post(
+        `${AuthDomain}/signup`,
+        createUserDto
+      );
 
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(response.body).toHaveProperty("items");
+      console.log(response.body);
+
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body.error).toBe("Bad Request");
+      expect(response.body.message[0]).toBe(
+        "confirmPassword must match /^[a-zA-Z0-9`~!@#$%^&*()-_=+]*$/ regular expression"
+      );
       done();
     });
 
-    it("특정 계정 조회 성공", async (done) => {
-      // Given
-      userId = "test000";
+    describe("전체 계정 조회", () => {
+      it("성공", async (done) => {
+        // When
+        const response = await requestHelper.get(
+          `${UserDomain}?page=1&limit=10`
+        );
 
-      // When
-      const response = await request(app.getHttpServer())
-        .get(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" });
-
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(response.body.userId).toBe(userId);
-      done();
+        // Then
+        const bodyMeta = response.body.meta;
+        expect(response.statusCode).toBe(HttpStatus.OK);
+        expect(bodyMeta.totalPages).toBe(1);
+        expect(bodyMeta.itemsPerPage).toBe(10);
+        done();
+      });
     });
 
-    it("관리자 or 등록자인 유저 카운트 조회 성공", async (done) => {
-      // Given
+    describe("특정 계정 조회", () => {
+      it("성공", async (done) => {
+        // Given
+        userId = user.userId;
+        // When
+        const response = await requestHelper.get(`${UserDomain}/${userId}`);
 
-      // When
-      const response = await request(app.getHttpServer())
-        .get(`${UserDomain}/roles/count/?page=1&limit=10`)
-        .auth(token, { type: "bearer" });
+        // Then
+        expect(response.statusCode).toBe(HttpStatus.OK);
+        expect(response.body.userId).toBe(userId);
+        done();
+      });
 
-      console.log(response);
+      it("실패", async (done) => {
+        // Given
+        userId = "failUser1";
 
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      done();
+        // When
+        const response = await requestHelper.get(`${UserDomain}/${userId}`);
+
+        // Then
+        expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+        expect(response.body.message).toBe("존재하지 않는 유저입니다.");
+        done();
+      });
     });
-
-    it("특정 계정 수정 성공", async (done) => {
-      // Given
-      userId = "test000";
-      username = "update-user1";
-      roleName = "관리자";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .patch(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, username, roleName });
-
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      done();
-    });
-
-    it("유저 퇴종 접속일 업데이트 성공", async (done) => {
-      // Given
-
-      // When
-      const response = await request(app.getHttpServer())
-        .patch(`${UserDomain}/access/last-date`)
-        .auth(token, { type: "bearer" });
-
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      done();
-    });
-
-    it("특정 계정 삭제 성공", async (done) => {
-      // Given
-      userId = "test000";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .delete(`${UserDomain}/${userId}`)
-        .auth(token, { type: "bearer" });
-
-      // Then
-      expect(response.statusCode).toBe(HttpStatus.OK);
-      done();
-    });
+    // it("특정 계정 조회 성공", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .get(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" });
+    //
+    //   // Then
+    //   expect(response.statusCode).toBe(HttpStatus.OK);
+    //   expect(response.body.userId).toBe(userId);
+    //   done();
+    // });
+    //
+    // it("관리자 or 등록자인 유저 카운트 조회 성공", async (done) => {
+    //   // Given
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .get(`${UserDomain}/roles/count/?page=1&limit=10`)
+    //     .auth(token, { type: "bearer" });
+    //
+    //   console.log(response);
+    //
+    //   // Then
+    //   expect(response.statusCode).toBe(HttpStatus.OK);
+    //   done();
+    // });
+    //
+    // it("특정 계정 수정 성공", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //   username = "update-user1";
+    //   roleName = "관리자";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .patch(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" })
+    //     .send({ userId, username, roleName });
+    //
+    //   // Then
+    //   expect(response.statusCode).toBe(HttpStatus.OK);
+    //   done();
+    // });
+    //
+    // it("유저 퇴종 접속일 업데이트 성공", async (done) => {
+    //   // Given
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .patch(`${UserDomain}/access/last-date`)
+    //     .auth(token, { type: "bearer" });
+    //
+    //   // Then
+    //   expect(response.statusCode).toBe(HttpStatus.OK);
+    //   done();
+    // });
+    //
+    // it("특정 계정 삭제 성공", async (done) => {
+    //   // Given
+    //   userId = "test000";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .delete(`${UserDomain}/${userId}`)
+    //     .auth(token, { type: "bearer" });
+    //
+    //   // Then
+    //   expect(response.statusCode).toBe(HttpStatus.OK);
+    //   done();
+    // });
   });
 });

@@ -89,7 +89,7 @@ export class UserRepository extends Repository<User> {
     return findUser;
   }
 
-  // 특정 유저 수정
+  // 특정 유저 수정 (권한, 패스워드)
   async updateUser(userId: string, user: User): Promise<User> {
     user.updatedAt = new Date();
     const existUser = this.getUserById(userId);
