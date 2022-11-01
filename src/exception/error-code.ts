@@ -7,6 +7,10 @@ export const AUTH_EXCEPTION = {
     code: "AUTH_CODE_INVALID",
     message: "Invalid authentication code",
   },
+  AUTH_BAD_REQUEST: {
+    code: "AUTH_BAD_REQUEST",
+    message: "'아이디/패스워드’ 다시 확인하여 주세요",
+  },
 };
 
 export const USER_EXCEPTION = {

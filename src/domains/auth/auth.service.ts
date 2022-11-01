@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcryptjs";
 import { ConfigService } from "@nestjs/config";
 import { CreateUserDto } from "../users/dto/create-user.dto";
+import { AUTH_EXCEPTION } from "../../exception";
 
 @Injectable()
 export class AuthService {
@@ -51,10 +52,7 @@ export class AuthService {
   private async verifyPassword(password: string, hashedPassword: string) {
     const isPasswordMatch = await compare(password, hashedPassword);
     if (!isPasswordMatch) {
-      throw new HttpException(
-        "'아이디/패스워드’ 다시 확인하여 주세요",
-        HttpStatus.BAD_REQUEST
-      );
+      throw new BadRequestException(AUTH_EXCEPTION.AUTH_BAD_REQUEST);
     }
   }
 }
