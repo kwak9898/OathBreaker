@@ -3,5 +3,6 @@ export class UserDto {
   username: string;
   password: string;
   roleName: string;
+  refreshToken: string;
   updatedAt: Date;
 }
