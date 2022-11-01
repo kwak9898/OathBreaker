@@ -87,7 +87,7 @@ export class UsersService {
   async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
     }
     return user;
   }
@@ -139,11 +139,6 @@ export class UsersService {
   // Refresh Token 초기화
   removeRefreshToken(userId: string) {
     return this.userRepository.removeRefreshToken(userId);
-  }
-
-  // 유저의 refreshToken 조회
-  findRefreshToken(jwtToken: string): Promise<User> {
-    return this.userRepository.findRefreshToken(jwtToken);
   }
 
   // 유저의 최종 접속일 업데이트

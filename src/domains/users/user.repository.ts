@@ -119,11 +119,6 @@ export class UserRepository extends Repository<User> {
     });
   }
 
-  // 유저의 refreshToken 조회
-  async findRefreshToken(jwtToken: string): Promise<User> {
-    return await this.findOne({ where: { jwtToken } });
-  }
-
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
     const updateDate = new Date();
