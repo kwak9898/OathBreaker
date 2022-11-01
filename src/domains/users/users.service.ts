@@ -107,7 +107,7 @@ export class UsersService {
       user.roleName = roleName;
     }
 
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   // 특정 유저 삭제

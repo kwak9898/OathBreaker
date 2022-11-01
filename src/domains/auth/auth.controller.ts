@@ -116,10 +116,7 @@ export class AuthController {
     summary: "비밀번호 및 권한 변경",
   })
   @ApiBearerAuth("access-token")
-  async changeByUser(
-    @Param("userId") userId: string,
-    @Body() dto: ChangeUserDto
-  ) {
-    await this.usersService.updateUser(userId, dto.password, dto.roleName);
+  changeByUser(@Param("userId") userId: string, @Body() dto: ChangeUserDto) {
+    return this.usersService.updateUser(userId, dto.password, dto.roleName);
   }
 }
