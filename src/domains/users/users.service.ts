@@ -111,12 +111,9 @@ export class UsersService {
   }
 
   // 특정 유저 삭제
-  deleteUser(userId: string): Promise<void> {
-    if (!userId) {
-      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
-    }
-
-    return this.userRepository.deleteUser(userId);
+  async deleteUser(userId: string): Promise<void> {
+    const user = await this.findOneByUser(userId);
+    return this.userRepository.deleteUser(user.userId);
   }
 
   // 특정 유저 조회
@@ -143,6 +140,7 @@ export class UsersService {
 
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
-    return this.userRepository.updateLastAccessAt(userId);
+    const user = await this.findOneByUser(userId);
+    return this.userRepository.updateLastAccessAt(user.userId);
   }
 }

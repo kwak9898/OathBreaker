@@ -98,6 +98,6 @@ export class UsersController {
    */
   @Patch("/access/last-date")
   async updateLastAccessAt(@CurrentUser() user: User) {
-    await this.usersService.updateLastAccessAt(user.userId);
+    return await this.usersService.updateLastAccessAt(user.userId);
   }
 }
