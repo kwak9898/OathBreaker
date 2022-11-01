@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserRepository } from "./user.repository";
 import { User } from "./entities/user.entity";
@@ -6,9 +6,10 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
-import { Role } from "../roles/enum/role.enum";
 import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
+import { Role } from "../roles/enum/role.enum";
+import { USER_EXCEPTION } from "../../exception/error-code";
 
 @Injectable()
 export class UsersService {
@@ -41,16 +42,28 @@ export class UsersService {
   async getAllUsers(
     options: MyPaginationQuery,
     roleName?: Role,
-    userId?: string
+    userId?: string,
+    username?: string
   ): Promise<Pagination<UserListResponseDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder("user");
+
+    // 권한 검색 Query
     if (roleName) {
       queryBuilder.where("user.roleName = :roleName", { roleName: roleName });
     }
 
+    // 유저 아이디 검색 Query
     if (userId) {
       queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
     }
+
+    // 유저 이름 검색 Query
+    if (username) {
+      queryBuilder.where("user.username LIKE :username", {
+        username: `%${username}%`,
+      });
+    }
+
     queryBuilder
       .leftJoinAndSelect("user.logList", "logList")
       .orderBy("logList.accessAt", "DESC");
@@ -71,18 +84,44 @@ export class UsersService {
   }
 
   // 특정 유저 조회
-  getUserById(userId: string): Promise<User> {
-    return this.userRepository.getUserById(userId);
+  async getUserById(userId: string): Promise<User> {
+    const user = await this.userRepository.getUserById(userId);
+    if (!user) {
+      throw new NotFoundException("존재하지 않는 유저입니다.");
+    }
+    return user;
   }
 
   // 특정 유저 수정
-  updateUser(userId: string, user: User): Promise<User> {
-    return this.userRepository.updateUser(userId, user);
+  async updateUser(
+    userId: string,
+    plainPassword?: string,
+    roleName?: string
+  ): Promise<User> {
+    const user = await this.getUserById(userId);
+    if (plainPassword) {
+      user.password = await bcrypt.hash(plainPassword, 12);
+    }
+
+    if (roleName) {
+      user.roleName = roleName;
+    }
+
+    return this.userRepository.save(user);
   }
 
   // 특정 유저 삭제
   deleteUser(userId: string): Promise<void> {
+    if (!userId) {
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
+    }
+
     return this.userRepository.deleteUser(userId);
+  }
+
+  // 특정 유저 조회
+  async findOneByUser(userId: string): Promise<User> {
+    return this.userRepository.findOneByUser(userId);
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장

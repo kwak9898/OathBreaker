@@ -136,30 +136,29 @@ describe("계정 관련 테스트", () => {
     });
 
     describe("특정 계정 조회", () => {
-      it("성공", async (done) => {
-        // Given
-        userId = user.userId;
-        // When
-        const response = await requestHelper.get(`${UserDomain}/${userId}`);
-
-        // Then
-        expect(response.statusCode).toBe(HttpStatus.OK);
-        expect(response.body.userId).toBe(userId);
-        done();
-      });
-
-      it("실패", async (done) => {
-        // Given
-        userId = "failUser1";
-
-        // When
-        const response = await requestHelper.get(`${UserDomain}/${userId}`);
-
-        // Then
-        expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(response.body.message).toBe("존재하지 않는 유저입니다.");
-        done();
-      });
+      // it("성공", async (done) => {
+      //   // Given
+      //   userId = user.userId;
+      //   // When
+      //   const response = await requestHelper.get(`${UserDomain}/${userId}`);
+      //
+      //   // Then
+      //   expect(response.statusCode).toBe(HttpStatus.OK);
+      //   expect(response.body.userId).toBe(userId);
+      //   done();
+      // });
+      // it("실패", async (done) => {
+      //   // Given
+      //   userId = "failUser1";
+      //
+      //   // When
+      //   const response = await requestHelper.get(`${UserDomain}/${userId}`);
+      //
+      //   // Then
+      //   expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+      //   expect(response.body.message).toBe("존재하지 않는 유저입니다.");
+      //   done();
+      // });
     });
     // it("특정 계정 조회 성공", async (done) => {
     //   // Given

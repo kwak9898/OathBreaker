@@ -6,7 +6,6 @@ export class UserListResponseDto extends OmitType(User, [
   "logList",
   "updatedAt",
   "deletedAt",
-  "createdAt",
 ]) {
   accessAt?: Date;
 
@@ -16,7 +15,6 @@ export class UserListResponseDto extends OmitType(User, [
       "logList",
       "updatedAt",
       "deletedAt",
-      "createdAt",
     ]);
     data.accessAt =
       partial.logList.length == 0 ? undefined : partial.logList[0]?.accessAt;

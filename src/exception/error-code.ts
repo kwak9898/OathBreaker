@@ -14,6 +14,10 @@ export const USER_EXCEPTION = {
     code: "USER_NOT_FOUND",
     message: "존재하는 유저가 없습니다.",
   },
+  USER_EXIST: {
+    code: "USER_EXIST",
+    message: "이미 존재하는 유저입니다.",
+  },
 };
 
 export const ROLE_EXCEPTION = {
@@ -22,7 +26,7 @@ export const ROLE_EXCEPTION = {
     message: "역할을 찾을 수 없습니다.",
   },
   ROLE_EXIST: {
-    code: "ROLE_BAD_REQUEST",
+    code: "ROLE_EXIST",
     message: "이미 존재하는 역할입니다.",
   },
 };

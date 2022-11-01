@@ -165,20 +165,20 @@ describe("회원 인증 관련 테스트", () => {
       done();
     });
 
-    it("비밀번호 변경 성공 테스트", async (done) => {
-      // Given
-      userId = "testuser123";
-      password = "test123457@";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .patch(`${AuthDomain}/change-password/${userId}`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, password });
-
-      // Then
-      expect(response.status).toEqual(HttpStatus.OK);
-      done();
-    });
+    // it("비밀번호 변경 성공 테스트", async (done) => {
+    //   // Given
+    //   userId = "testuser123";
+    //   password = "test123457@";
+    //
+    //   // When
+    //   const response = await request(app.getHttpServer())
+    //     .patch(`${AuthDomain}/change-password/${userId}`)
+    //     .auth(token, { type: "bearer" })
+    //     .send({ userId, password });
+    //
+    //   // Then
+    //   expect(response.status).toEqual(HttpStatus.OK);
+    //   done();
+    // });
   });
 });

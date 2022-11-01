@@ -28,6 +28,7 @@ import { UrlDto } from "./dto/url.dto";
 import { CurrentUser } from "../../dacorators/current-user.decorators";
 import { ConnectLogListResponseDto } from "./dto/connect-log-list-response.dto";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
+import { CreateConnectLogResponseDto } from "./dto/createConnectLogResponseDto";
 
 @Controller("connect-logs")
 @ApiTags("LOG")
@@ -64,7 +65,7 @@ export class ConnectLogsController {
     @Body() url: UrlDto,
     @Ip() ip: string,
     @CurrentUser() user: User
-  ): Promise<ConnectLog> {
+  ): Promise<CreateConnectLogResponseDto> {
     return this.logsService.createLog(url.url, ip, user);
   }
 
