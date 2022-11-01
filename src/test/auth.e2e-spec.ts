@@ -2,183 +2,157 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataSource } from "typeorm";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AppModule } from "../app.module";
-import * as request from "supertest";
-import { AuthService } from "../domains/auth/auth.service";
 import { UsersService } from "../domains/users/users.service";
-import { UserFactory } from "./factory/user-factory";
+import { AuthService } from "../domains/auth/auth.service";
 import { DatabaseModule } from "../database/database.module";
-import { JwtService } from "@nestjs/jwt";
 import { UserRepository } from "../domains/users/user.repository";
+import { JwtService } from "@nestjs/jwt";
+import { AuthFactory } from "./factory/auth-factory";
+import { RequestHelper } from "../utils/test.utils";
+import { UserFactory } from "./factory/user-factory";
+import { UserDto } from "../domains/users/dto/user.dto";
+import { AUTH_EXCEPTION } from "../exception";
+import { USER_EXCEPTION } from "../exception/error-code";
 
 describe("회원 인증 관련 테스트", () => {
   let app: INestApplication;
+  let usersService: UsersService;
+  let authService: AuthService;
+
+  let requestHelper: RequestHelper;
+  let authFactory: AuthFactory;
+  let userFactory: UserFactory;
+  let dataSource: DataSource;
+
   let token;
   let refreshToken;
+  let user;
+
   const AuthDomain = "/auth";
-  let authService: AuthService;
-  let usersService: UsersService;
-  let userFactory: UserFactory;
-  let userId: string;
-  let username: string;
-  let password: string;
-  let confirmPassword: string;
-  let roleName: string;
-  let team: string;
-  let databaseSource: DataSource;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [UserFactory, DatabaseModule, UserRepository, JwtService],
+      providers: [
+        UserRepository,
+        DatabaseModule,
+        JwtService,
+        AuthService,
+        UsersService,
+        AuthFactory,
+        UserFactory,
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     authService = moduleFixture.get(AuthService);
     usersService = moduleFixture.get(UsersService);
+
+    authFactory = moduleFixture.get(AuthFactory);
     userFactory = moduleFixture.get(UserFactory);
-    databaseSource = moduleFixture.get(DataSource);
-    await databaseSource.synchronize(false);
 
-    token = authService.createAccessToken(
-      (await userFactory.createBaseUser()).userId
-    );
+    dataSource = moduleFixture.get(DataSource);
+    await dataSource.synchronize(true);
 
-    refreshToken = authService.createRefreshToken(
-      (await userFactory.createBaseUser()).userId
-    );
+    token = await authFactory.createTestToken();
+    refreshToken = await authFactory.createTestRefreshToken();
+    user = await userFactory.createManagerUser();
+
+    requestHelper = new RequestHelper(app, token);
 
     await app.init();
   });
 
-  describe("계성 생성 테스트", () => {
-    it("생성 성공", async (done) => {
-      // Given
-      userId = "testuser123";
-      username = "tester";
-      password = "test12345@";
-      confirmPassword = "test12345@";
-      roleName = "등록자";
-      team = "운영";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signup`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, username, password, confirmPassword, roleName, team });
-
-      // Then
-      expect(response.statusCode).toBe(201);
-      expect(response.body["userId"]).toBe(userId);
-      expect(response.body["username"]).toBe(username);
-      done();
-    });
-
-    it("생성 시 아이디 길이가 4이하일 경우", async (done) => {
-      //Given
-      userId = "re1";
-      username = "tester";
-      password = "test12345@";
-      confirmPassword = "test12345@";
-      roleName = "관리자";
-      team = "운영";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signup`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, username, password, confirmPassword, roleName, team });
-
-      // Then
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe("Bad Request");
-      done();
-    });
-
-    it("생성 시 유저의 이름의 길이가 4이하일 경우", async (done) => {
-      // Given
-      userId = "testtest123";
-      username = "tnt";
-      password = "test12345@";
-      confirmPassword = "test12345@";
-      roleName = "등록자";
-      team = "운영";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signup`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, username, password, confirmPassword, roleName, team });
-
-      // Then
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe("Bad Request");
-      done();
-    });
-
-    it("생성 시 유저의 비밀번호의 길이가 10이하일 경우", async (done) => {
-      // Given
-      userId = "testtest123";
-      username = "ian";
-      password = "test12@";
-
-      // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signup`)
-        .auth(token, { type: "bearer" })
-        .send({ userId, username, password });
-
-      // Then
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe("Bad Request");
-      done();
-    });
-  });
-
   describe("로그인 테스트", () => {
-    it("로그인 성공", async (done) => {
+    it("성공", async (done) => {
       // Given
-      userId = "testuser123";
-      password = "test12345@";
+      const testUser = await userFactory.createTestUser();
+      const dto = new UserDto();
+
+      dto.userId = testUser.userId;
+      dto.password = "password123@";
 
       // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signin`)
-        .send({ userId, password });
+      const response = await requestHelper.post(`${AuthDomain}/signin`, dto);
 
       // Then
-      expect(response.status).toEqual(HttpStatus.OK);
+      const body = response.body;
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(body.accessToken).not.toBeNull();
+      expect(body.refreshToken).not.toBeNull();
       done();
     });
 
-    it("로그아웃 성공 테스트", async (done) => {
+    it("비밀번호가 틀렸을 때 실패", async (done) => {
       // Given
-      userId = "testuser123";
-      password = "test12345@";
+      const testUser = await userFactory.createTestUser();
+      const dto = new UserDto();
+
+      dto.userId = testUser.userId;
+      dto.password = "password1234@";
+
       // When
-      const response = await request(app.getHttpServer())
-        .post(`${AuthDomain}/signout`)
-        // .auth(refreshToken, { type: "bearer" })
-        .send({ userId, password, refreshToken });
+      const response = await requestHelper.post(`${AuthDomain}/signin`, dto);
 
       // Then
-      expect(response.status).toEqual(HttpStatus.CREATED);
+      const body = response.body;
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(body.code).toBe(AUTH_EXCEPTION.AUTH_BAD_REQUEST.code);
+      expect(body.message).toBe(AUTH_EXCEPTION.AUTH_BAD_REQUEST.message);
       done();
     });
 
-    // it("비밀번호 변경 성공 테스트", async (done) => {
-    //   // Given
-    //   userId = "testuser123";
-    //   password = "test123457@";
-    //
-    //   // When
-    //   const response = await request(app.getHttpServer())
-    //     .patch(`${AuthDomain}/change-password/${userId}`)
-    //     .auth(token, { type: "bearer" })
-    //     .send({ userId, password });
-    //
-    //   // Then
-    //   expect(response.status).toEqual(HttpStatus.OK);
-    //   done();
-    // });
+    it("아이디가 틀렸을 때 실패", async (done) => {
+      // Given
+      await userFactory.createTestUser();
+      const dto = new UserDto();
+
+      dto.userId = "testuser1234";
+      dto.password = "password123@";
+
+      // When
+      const response = await requestHelper.post(`${AuthDomain}/signin`, dto);
+
+      // Then
+      const body = response.body;
+      expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+      expect(body.code).toBe(USER_EXCEPTION.USER_NOT_FOUND.code);
+      expect(body.message).toBe(USER_EXCEPTION.USER_NOT_FOUND.message);
+      done();
+    });
+
+    describe("로그아웃", () => {
+      it("성공", async (done) => {
+        // Given
+        const testUser = await userFactory.createTestUser();
+        const dto = new UserDto();
+        dto.userId = testUser.userId;
+        dto.password = testUser.password;
+        dto.refreshToken = refreshToken;
+
+        // When
+        const response = await requestHelper.post(`${AuthDomain}/signout`, dto);
+
+        // Then
+        expect(response.statusCode).toBe(HttpStatus.OK);
+        done();
+      });
+
+      it("refreshToken 없으면 실패", async (done) => {
+        // Given
+        const testUser = await userFactory.createTestUser();
+        const dto = new UserDto();
+        dto.userId = testUser.userId;
+        dto.password = testUser.password;
+
+        // When
+        const response = await requestHelper.post(`${AuthDomain}/signout`, dto);
+
+        // Then
+        expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+        expect(response.body.message).toBe("Unauthorized");
+        done();
+      });
+    });
   });
 });
