@@ -1,9 +1,14 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../roles/enum/role.enum";
+import { USER_EXCEPTION } from "../../exception/error-code";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -61,6 +66,10 @@ export class UserRepository extends Repository<User> {
       select: ["userId", "username", "roleName", "team", "lastAccessAt"],
       where: { userId },
     });
+
+    if (!findUser) {
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
+    }
 
     return findUser;
   }
