@@ -103,4 +103,24 @@ describe("역할 생성/조회/수정/삭제 테스트", () => {
       done();
     });
   });
+
+  describe("역할 조회", () => {
+    it("성공", async (done) => {
+      // Given
+      await roleFactory.createTestRole();
+
+      // When
+      const response = await requestHelper.get(`${RoleDomain}?page=1&limit=10`);
+
+      // Then
+      const body = response.body;
+      const meta = response.body.meta;
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(body.roleId).not.toBeNull();
+      expect(body.roleName).not.toBeNull();
+      expect(meta.totalPages).toBe(1);
+      expect(meta.itemsPerPage).toBe(10);
+      done();
+    });
+  });
 });
