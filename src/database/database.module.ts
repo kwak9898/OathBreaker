@@ -29,7 +29,9 @@ import { RoleEntity } from "../domains/roles/entities/role.entity";
           RoleEntity,
         ],
         synchronize: configService.get("NODE_ENV") !== "production",
-        dropSchema: configService.get("NODE_ENV") === "test",
+        dropSchema:
+          configService.get("NODE_ENV") === "test" ||
+          configService.get("NODE_ENV") === "ci",
       }),
     }),
   ],
