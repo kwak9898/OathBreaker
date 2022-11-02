@@ -29,7 +29,7 @@ import { AppInitializeService } from "./config/app-initialize.service";
       envFilePath: `.env.${process.env?.NODE_ENV ?? "development"}`,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
-          .valid("development", "production", "test", "staging")
+          .valid("development", "production", "test", "staging", "ci")
           .default("development"),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
