@@ -9,8 +9,8 @@ import {
 import * as bcrypt from "bcryptjs";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../base/base.entity";
-import { Role } from "../../roles/enum/role.enum";
 import { ConnectLog } from "../../connect-logs/entities/connect-log.entity";
+import { Role } from "../../roles/enum/role.enum";
 
 @Entity("oath_user", { schema: "public" })
 export class User extends BaseEntity {
@@ -48,13 +48,11 @@ export class User extends BaseEntity {
     nullable: true,
   })
   team?: string;
-  @Column({
-    type: "enum",
-    enum: Role,
+  @Column("character varying", {
     name: "role_name",
     comment: "역할",
-    nullable: false,
     default: Role.choose,
+    nullable: false,
   })
   roleName?: string;
 
