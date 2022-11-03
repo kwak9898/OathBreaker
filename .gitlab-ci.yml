@@ -15,6 +15,7 @@ variables:
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  DOCKER_TLS_CERTDIR: "/certs"
 
 install:
   image: node:16-alpine
@@ -42,8 +43,8 @@ build-dev:
 
 build-prod:
   services:
-    - docker:dind
-  image: docker:20.10.8
+    - docker:20.10.16-dind
+  image: docker:20.10.16
   stage: build
   only:
     - master
@@ -51,6 +52,8 @@ build-prod:
     - docker
   script:
     - docker build --target production-stage -t pumpkin-api .
+  # - docker login
+  # - docker push
 
 deploy-dev:
   stage: deploy
@@ -64,12 +67,13 @@ deploy-dev:
 
 deploy-prod:
   services:
-    - docker:dind
-  image: docker:20.10.8
+    - docker:20.10.16-dind
+  image: docker:20.10.16
   stage: deploy
   only:
     - master
   tags:
     - docker
   script:
-    - docker images
+    - docker ps
+    # - command deploy
