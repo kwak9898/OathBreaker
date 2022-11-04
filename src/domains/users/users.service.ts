@@ -5,10 +5,11 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { paginateRawAndEntities, Pagination } from "nestjs-typeorm-paginate";
+import { USER_EXCEPTION } from "../../exception/error-code";
 import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
-import { USER_EXCEPTION } from "../../exception/error-code";
+import { ConnectLog } from "../connect-logs/entities/connect-log.entity";
 
 @Injectable()
 export class UsersService {
@@ -44,7 +45,17 @@ export class UsersService {
     userId?: string,
     username?: string
   ): Promise<Pagination<UserListResponseDto>> {
-    const queryBuilder = this.userRepository.createQueryBuilder("user");
+    const queryBuilder = this.userRepository
+      .createQueryBuilder("user")
+      .select((sub) => {
+        return sub
+          .subQuery()
+          .select("oath_log.accessAt")
+          .from(ConnectLog, "oath_log")
+          .where("oath_log.user = user.userId")
+          .orderBy("oath_log.accessAt", "DESC")
+          .limit(1);
+      });
 
     // 권한 검색 Query
     if (roleName) {
@@ -63,14 +74,21 @@ export class UsersService {
       });
     }
 
-    queryBuilder
-      .leftJoinAndSelect("user.logList", "logList")
-      .orderBy("logList.accessAt", "DESC");
-    const results = await paginate(queryBuilder, options);
+    const results = await paginateRawAndEntities(queryBuilder, options);
+    const entities = results[0];
+    const raws = results[1];
 
-    // Data Mapping
-    const data = results.items.map((item) => new UserListResponseDto(item));
-    return new MyPagination<UserListResponseDto>(data, results.meta);
+    // user data 처리
+    const data = entities.items
+      .map((item) => new UserListResponseDto(item))
+      .map((item) => {
+        const raw = raws
+          .map((a) => a as any)
+          .find((partialUser) => partialUser.user_user_id == item.userId);
+        item.accessAt = raw.oath_log_access_at;
+        return item;
+      });
+    return new MyPagination<UserListResponseDto>(data, entities.meta);
   }
 
   // 관리자인 유저 카운트 조회
@@ -87,7 +105,7 @@ export class UsersService {
   async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
-      throw new NotFoundException("존재하지 않는 유저입니다.");
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
     }
     return user;
   }
@@ -111,16 +129,17 @@ export class UsersService {
   }
 
   // 특정 유저 삭제
-  deleteUser(userId: string): Promise<void> {
-    if (!userId) {
-      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
-    }
-
-    return this.userRepository.deleteUser(userId);
+  async deleteUser(userId: string): Promise<void> {
+    const user = await this.findOneByUser(userId);
+    await this.userRepository.delete(user.userId);
   }
 
   // 특정 유저 조회
   async findOneByUser(userId: string): Promise<User> {
+    if (!userId) {
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
+    }
+
     return this.userRepository.findOneByUser(userId);
   }
 
@@ -141,13 +160,9 @@ export class UsersService {
     return this.userRepository.removeRefreshToken(userId);
   }
 
-  // 유저의 refreshToken 조회
-  findRefreshToken(jwtToken: string): Promise<User> {
-    return this.userRepository.findRefreshToken(jwtToken);
-  }
-
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
-    return this.userRepository.updateLastAccessAt(userId);
+    const user = await this.findOneByUser(userId);
+    return this.userRepository.updateLastAccessAt(user.userId);
   }
 }
