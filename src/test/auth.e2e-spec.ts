@@ -97,8 +97,8 @@ describe("회원 인증 관련 테스트", () => {
       // Then
       const body = response.body;
       expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(body.code).toBe(AUTH_EXCEPTION.AUTH_BAD_REQUEST.code);
-      expect(body.message).toBe(AUTH_EXCEPTION.AUTH_BAD_REQUEST.message);
+      expect(body.code).toBe(AUTH_EXCEPTION.AUTH_LOGIN_FAIL.code);
+      expect(body.message).toBe(AUTH_EXCEPTION.AUTH_LOGIN_FAIL.message);
       done();
     });
 

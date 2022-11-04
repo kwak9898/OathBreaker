@@ -52,7 +52,7 @@ export class AuthService {
   private async verifyPassword(password: string, hashedPassword: string) {
     const isPasswordMatch = await compare(password, hashedPassword);
     if (!isPasswordMatch) {
-      throw new BadRequestException(AUTH_EXCEPTION.AUTH_BAD_REQUEST);
+      throw new BadRequestException(AUTH_EXCEPTION.AUTH_LOGIN_FAIL);
     }
   }
 }

@@ -31,6 +31,7 @@ describe("계정 생성/조회/수정/삭제 테스트", () => {
 
   let token;
   let user;
+  let userList;
 
   const UserDomain = "/users";
   const AuthDomain = "/auth";
@@ -61,6 +62,7 @@ describe("계정 생성/조회/수정/삭제 테스트", () => {
 
     token = await authFactory.createTestToken();
     user = await userFactory.createManagerUser();
+    //userList = await userFactory.createBaseUserList();
 
     requestHelper = new RequestHelper(app, token);
 
