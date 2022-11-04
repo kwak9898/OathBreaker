@@ -16,6 +16,8 @@ variables:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
   DOCKER_TLS_CERTDIR: "/certs"
+  SERVICE_PORT: 8090
+  PROJECT_NAME: pumpkin-api
 
 install:
   image: node:16-alpine
@@ -39,7 +41,7 @@ build-dev:
   tags:
     - shell
   script:
-    - docker build --target production-stage -t pumpkin-api .
+    - docker build --target production-stage -t ${PROJECT_NAME} .
 
 build-prod:
   services:
@@ -51,7 +53,7 @@ build-prod:
   tags:
     - docker
   script:
-    - docker build --target production-stage -t pumpkin-api .
+    - docker build --target production-stage -t ${PROJECT_NAME} .
   # - docker login
   # - docker push
 
@@ -62,9 +64,9 @@ deploy-dev:
   tags:
     - shell
   script:
-    - docker stop pumpkin-api
-    - docker rm pumpkin-api
-    - docker run -d -p 8090:8090 --name pumpkin-api pumpkin-api
+    - CONTAINER_ID=$(docker ps -a -f "name=pumpkin-api" --format "{{.ID}}") # 컨테이너 아이디만 추출
+    - if [ "$CONTAINER_ID" != "" ]; then docker stop ${CONTAINER_ID}; docker rm ${CONTAINER_ID}; fi # 해당 서비스가 실행중일 경우 중지후 컨테이너 삭제
+    - docker run -d -p ${SERVICE_PORT}:${SERVICE_PORT} --name ${PROJECT_NAME} ${PROJECT_NAME} # 실행하기
 
 deploy-prod:
   services:
