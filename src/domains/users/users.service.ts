@@ -68,6 +68,7 @@ export class UsersService {
       .orderBy("logList.accessAt", "DESC");
     const results = await paginate(queryBuilder, options);
 
+    // Data Mapping
     const data = results.items.map((item) => new UserListResponseDto(item));
     return new MyPagination<UserListResponseDto>(data, results.meta);
   }
