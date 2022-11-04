@@ -5,11 +5,11 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from "bcryptjs";
 import { MyPaginationQuery } from "../base/pagination-query";
-import { paginate, Pagination } from "nestjs-typeorm-paginate";
+import { paginateRawAndEntities, Pagination } from "nestjs-typeorm-paginate";
+import { USER_EXCEPTION } from "../../exception/error-code";
 import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
-import { Role } from "../roles/enum/role.enum";
-import { USER_EXCEPTION } from "../../exception/error-code";
+import { ConnectLog } from "../connect-logs/entities/connect-log.entity";
 
 @Injectable()
 export class UsersService {
@@ -41,11 +41,21 @@ export class UsersService {
   // 유저 전체 조회
   async getAllUsers(
     options: MyPaginationQuery,
-    roleName?: Role,
+    roleName?: string,
     userId?: string,
     username?: string
   ): Promise<Pagination<UserListResponseDto>> {
-    const queryBuilder = this.userRepository.createQueryBuilder("user");
+    const queryBuilder = this.userRepository
+      .createQueryBuilder("user")
+      .select((sub) => {
+        return sub
+          .subQuery()
+          .select("oath_log.accessAt")
+          .from(ConnectLog, "oath_log")
+          .where("oath_log.user = user.userId")
+          .orderBy("oath_log.accessAt", "DESC")
+          .limit(1);
+      });
 
     // 권한 검색 Query
     if (roleName) {
@@ -54,23 +64,31 @@ export class UsersService {
 
     // 유저 아이디 검색 Query
     if (userId) {
-      queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
+      queryBuilder.where("user.userId = :userId", { userId: userId });
     }
 
     // 유저 이름 검색 Query
     if (username) {
-      queryBuilder.where("user.username LIKE :username", {
-        username: `%${username}%`,
+      queryBuilder.where("user.username = :username", {
+        username: username,
       });
     }
 
-    queryBuilder
-      .leftJoinAndSelect("user.logList", "logList")
-      .orderBy("logList.accessAt", "DESC");
-    const results = await paginate(queryBuilder, options);
+    const results = await paginateRawAndEntities(queryBuilder, options);
+    const entities = results[0];
+    const raws = results[1];
 
-    const data = results.items.map((item) => new UserListResponseDto(item));
-    return new MyPagination<UserListResponseDto>(data, results.meta);
+    // user data 처리
+    const data = entities.items
+      .map((item) => new UserListResponseDto(item))
+      .map((item) => {
+        const raw = raws
+          .map((a) => a as any)
+          .find((partialUser) => partialUser.user_user_id == item.userId);
+        item.accessAt = raw.oath_log_access_at;
+        return item;
+      });
+    return new MyPagination<UserListResponseDto>(data, entities.meta);
   }
 
   // 관리자인 유저 카운트 조회
@@ -107,17 +125,21 @@ export class UsersService {
       user.roleName = roleName;
     }
 
-    return await this.userRepository.save(user);
+    return this.userRepository.save(user);
   }
 
   // 특정 유저 삭제
   async deleteUser(userId: string): Promise<void> {
     const user = await this.findOneByUser(userId);
-    return this.userRepository.deleteUser(user.userId);
+    await this.userRepository.delete(user.userId);
   }
 
   // 특정 유저 조회
   async findOneByUser(userId: string): Promise<User> {
+    if (!userId) {
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
+    }
+
     return this.userRepository.findOneByUser(userId);
   }
 

@@ -13,7 +13,7 @@
 ## Jira 티켓 링크
 
 <!-- 
-   ex) https://jira
+   ex) https://mergerity.atlassian.net/browse/MERGY-XXXX
 -->
 
 ## 작업 분류

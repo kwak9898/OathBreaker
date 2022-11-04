@@ -11,13 +11,6 @@ export class UserListResponseDto extends OmitType(User, [
 
   constructor(partial?: Partial<User>) {
     super();
-    const data = omit<UserListResponseDto>(partial, [
-      "logList",
-      "updatedAt",
-      "deletedAt",
-    ]);
-    data.accessAt =
-      partial.logList.length == 0 ? undefined : partial.logList[0]?.accessAt;
-    return data;
+    return omit(partial, ["logList", "updatedAt", "deletedAt"]);
   }
 }
