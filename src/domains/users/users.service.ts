@@ -8,7 +8,6 @@ import { MyPaginationQuery } from "../base/pagination-query";
 import { paginate, Pagination } from "nestjs-typeorm-paginate";
 import { UserListResponseDto } from "./dto/user-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
-import { Role } from "../roles/enum/role.enum";
 import { USER_EXCEPTION } from "../../exception/error-code";
 
 @Injectable()
@@ -41,7 +40,7 @@ export class UsersService {
   // 유저 전체 조회
   async getAllUsers(
     options: MyPaginationQuery,
-    roleName?: Role,
+    roleName?: string,
     userId?: string,
     username?: string
   ): Promise<Pagination<UserListResponseDto>> {
@@ -54,13 +53,13 @@ export class UsersService {
 
     // 유저 아이디 검색 Query
     if (userId) {
-      queryBuilder.where("user.userId LIKE :userId", { userId: `%${userId}%` });
+      queryBuilder.where("user.userId = :userId", { userId: userId });
     }
 
     // 유저 이름 검색 Query
     if (username) {
-      queryBuilder.where("user.username LIKE :username", {
-        username: `%${username}%`,
+      queryBuilder.where("user.username = :username", {
+        username: username,
       });
     }
 
