@@ -38,16 +38,21 @@ export class AssignMgController {
     name: "userId",
     required: true,
     description: "USER ID",
+    type: String,
   })
   @ApiQuery({
     name: "startDate",
     required: false,
     description: "작업일 기준 시작일",
+    type: Date,
+    example: "2022-01-01",
   })
   @ApiQuery({
     name: "endDate",
     required: false,
     description: "작업일 기준 완료일",
+    type: Date,
+    example: "2021-01-31",
   })
   @ApiPaginatedResponse(MgObjectListResponseDto)
   async pagination(@Query() query: AssignMgPaginationQuery) {
