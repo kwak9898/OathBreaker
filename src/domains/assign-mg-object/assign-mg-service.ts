@@ -2,7 +2,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { AssignMgRepository } from "./assign-mg-repository";
 import { User } from "../users/entities/user.entity";
 import { AssignMgCountsResponseDto } from "./dto/response/assign-mg-counts-response.dto";
-import { MyPaginationQuery } from "../base/pagination-query";
 import { paginateRawAndEntities } from "nestjs-typeorm-paginate";
 import { MgObjectListResponseDto } from "../mg-object/dto/response/mgobject-list-response.dto";
 import { MyPagination } from "../base/pagination-response";
@@ -11,6 +10,7 @@ import { MgObjectService } from "../mg-object/mg-object.service";
 import { UserRepository } from "../users/user.repository";
 import { Role } from "../roles/enum/role.enum";
 import { getRandomInt } from "../../utils/test.utils";
+import { AssignMgPaginationQuery } from "./dto/request/assignMgPaginationQuery";
 
 export class AssignMgService {
   constructor(
@@ -21,7 +21,7 @@ export class AssignMgService {
     private userRepository: UserRepository
   ) {}
 
-  async pagination(options: MyPaginationQuery, user: User) {
+  async pagination(query: AssignMgPaginationQuery, user: User) {
     const queryBuilder = await this.assignMgRepository
       .createQueryBuilder("amo")
       .addSelect(
@@ -41,9 +41,24 @@ export class AssignMgService {
         "image_temp_cnt"
       )
       .innerJoinAndSelect("amo.mgObject", "mg")
-      .where("amo.user_id = :user", { user: user.userId });
+      .where("amo.user_id = :user", { user: user.userId })
+      .orderBy("mg.updated_at", "DESC");
 
-    const results = await paginateRawAndEntities(queryBuilder, options);
+    if (query.startDate && query.endDate) {
+      queryBuilder.andWhere(
+        `${
+          query.startDate == query.endDate
+            ? `mg.updated_at::date = :startDate`
+            : `mg.updated_at::date between :startDate and :endDate`
+        }`,
+        {
+          startDate: query.startDate,
+          endDate: query.endDate,
+        }
+      );
+    }
+
+    const results = await paginateRawAndEntities(queryBuilder, query);
     const entities = results[0];
     const raws = results[1];
 

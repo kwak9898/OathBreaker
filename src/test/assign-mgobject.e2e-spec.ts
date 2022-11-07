@@ -16,6 +16,7 @@ import { User } from "../domains/users/entities/user.entity";
 import { AssignMgobjectFactory } from "./factory/assign-mgobject-factory";
 import { MgObject } from "../domains/mg-object/entities/mg-object.entity";
 import { MgObjectService } from "../domains/mg-object/mg-object.service";
+import { AssignMgPaginationQuery } from "../domains/assign-mg-object/dto/request/assignMgPaginationQuery";
 
 describe("AssignMgObject 테스트", () => {
   let app: INestApplication;
@@ -88,6 +89,25 @@ describe("AssignMgObject 테스트", () => {
       expect(body).toHaveProperty("meta");
       expect(body.meta.totalItems).toBe(100);
       expect(body.meta.itemCount).toBe(10);
+      expect(body.meta.currentPage).toBe(1);
+    });
+
+    it("조회 성공, 작업일(updatedAt) 기준으로 date range", async () => {
+      // Given
+      const assignMgPaginationQuery = new AssignMgPaginationQuery();
+      assignMgPaginationQuery.userId = user.userId;
+      assignMgPaginationQuery.page = 1;
+      assignMgPaginationQuery.limit = 10;
+      assignMgPaginationQuery.startDate = new Date();
+      assignMgPaginationQuery.endDate = new Date();
+
+      // When
+      const { body } = await requestHelper.get(DOMAIN, assignMgPaginationQuery);
+
+      // Then
+      expect(body).toHaveProperty("items");
+      expect(body).toHaveProperty("meta");
+      expect(body.meta.totalItems).toBe(100);
       expect(body.meta.currentPage).toBe(1);
     });
   });

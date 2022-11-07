@@ -89,17 +89,21 @@ export class MgoImageService {
     return new MyPagination(imageListResponseDtoWithIsErrorImage, meta);
   }
 
-  async updateImageStatus(ids: string[], statusFlag: ImageStatusFlag) {
+  async updateImageStatus(
+    ids: string[],
+    statusFlag: ImageStatusFlag
+  ): Promise<void> {
     await this.dataSource.transaction(async () => {
+      const mgoImage = await this.findOneOrFail(ids[0], ["mgObject"]);
+      const mgoObject = mgoImage.mgObject;
       await this.repository.update(ids, { statusFlag });
       if (statusFlag === ImageStatusFlag.TEMP) {
-        const mgoImage = await this.findOneOrFail(ids[0], ["mgObject"]);
-        const mgoObject = mgoImage.mgObject;
         mgoObject.setTransferToTempAtToCurrentDate();
-        await this.mgoRepository.save(mgoObject);
       } else if (statusFlag === ImageStatusFlag.OTHER) {
         await this.repository.update(ids, { mgObject: null });
       }
+      mgoObject.updatedAt = new Date();
+      await this.mgoRepository.save(mgoObject);
     });
   }
 
