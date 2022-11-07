@@ -8,10 +8,10 @@ import {
 } from "@nestjs/common";
 import { AssignMgService } from "./assign-mg-service";
 import { AssignMgCountsResponseDto } from "./dto/response/assign-mg-counts-response.dto";
-import { MyPaginationQuery } from "../base/pagination-query";
 import { UsersService } from "../users/users.service";
 import { Public } from "../../dacorators/skip-auth.decorator";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AssignMgPaginationQuery } from "./dto/request/assignMgPaginationQuery";
 
 @Controller("/assign-mgo")
 @ApiTags("assign-mgo")
@@ -32,14 +32,8 @@ export class AssignMgController {
   }
 
   @Get("/")
-  async pagination(
-    @Query() query: MyPaginationQuery,
-    @Query("userId") userId?: string
-  ) {
-    if (userId == null) {
-      throw new BadRequestException("userId is required");
-    }
-    const user = await this.userService.getUserById(userId);
+  async pagination(@Query() query: AssignMgPaginationQuery) {
+    const user = await this.userService.getUserById(query.userId);
     return this.assignMgService.pagination(query, user);
   }
 
