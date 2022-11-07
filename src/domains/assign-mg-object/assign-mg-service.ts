@@ -21,7 +21,10 @@ export class AssignMgService {
     private userRepository: UserRepository
   ) {}
 
-  async pagination(query: AssignMgPaginationQuery, user: User) {
+  async pagination(
+    query: AssignMgPaginationQuery,
+    user: User
+  ): Promise<MyPagination<MgObjectListResponseDto>> {
     const queryBuilder = await this.assignMgRepository
       .createQueryBuilder("amo")
       .addSelect(

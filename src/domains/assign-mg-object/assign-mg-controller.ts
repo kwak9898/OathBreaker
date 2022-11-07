@@ -10,8 +10,10 @@ import { AssignMgService } from "./assign-mg-service";
 import { AssignMgCountsResponseDto } from "./dto/response/assign-mg-counts-response.dto";
 import { UsersService } from "../users/users.service";
 import { Public } from "../../dacorators/skip-auth.decorator";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AssignMgPaginationQuery } from "./dto/request/assignMgPaginationQuery";
+import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
+import { MgObjectListResponseDto } from "../mg-object/dto/response/mgobject-list-response.dto";
 
 @Controller("/assign-mgo")
 @ApiTags("assign-mgo")
@@ -32,12 +34,29 @@ export class AssignMgController {
   }
 
   @Get("/")
+  @ApiQuery({
+    name: "userId",
+    required: true,
+    description: "USER ID",
+  })
+  @ApiQuery({
+    name: "startDate",
+    required: false,
+    description: "작업일 기준 시작일",
+  })
+  @ApiQuery({
+    name: "endDate",
+    required: false,
+    description: "작업일 기준 완료일",
+  })
+  @ApiPaginatedResponse(MgObjectListResponseDto)
   async pagination(@Query() query: AssignMgPaginationQuery) {
     const user = await this.userService.getUserById(query.userId);
     return this.assignMgService.pagination(query, user);
   }
 
   @Get("/counts")
+  @ApiResponse({ type: AssignMgCountsResponseDto })
   async countForDashboard(
     @Query("userId") userId: string
   ): Promise<AssignMgCountsResponseDto> {
