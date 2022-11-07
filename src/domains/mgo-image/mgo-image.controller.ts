@@ -47,7 +47,7 @@ export class MgoImageController {
     description: "MG-OBJECT ID",
   })
   @ApiPaginatedResponse(MgoImageListResponseDto)
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async paginate(
     @Query() query: MyPaginationQuery,
     @Query() queryParams?: MgoImagePaginationQueryRequestDto
@@ -67,7 +67,7 @@ export class MgoImageController {
   @ApiOperation({
     summary: "UPDATE STATUS",
   })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async updateStatus(@Body() dto: UpdateMgoImageStatusDto): Promise<void> {
     await this.mgoImageService.updateImageStatus(dto.imageIds, dto.statusFlag);
   }
@@ -80,7 +80,7 @@ export class MgoImageController {
     summary: "UPDATE MGOBJECT",
   })
   @ApiResponse({ type: MgoImage })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async updateMgObject(
     @Body() dto: UpdateMgoImageMgObjectDto
   ): Promise<MgoImage> {
