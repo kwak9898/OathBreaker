@@ -56,7 +56,7 @@ export class MgObjectController {
   @Get("/counts")
   @ApiOperation({ summary: "COUNTS FOR DASHBOARD" })
   @ApiOkResponse({ type: CountForDashboardResponseDto })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async cntForDashboard(): Promise<CountForDashboardResponseDto> {
     const mgObjectCnt = await this.mgObjectService.totalCount();
     const { imageTotalCnt, tmpCnt } =
@@ -68,7 +68,7 @@ export class MgObjectController {
   @ApiPaginateQuery(MgoImagePaginationQueryData)
   @ApiOperation({ summary: "PAGING" })
   @ApiPaginatedResponse(MgObjectListResponseDto)
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async paginate(
     @Query() query: MyPaginationQuery
   ): Promise<Pagination<MgObjectListResponseDto>> {
@@ -78,7 +78,7 @@ export class MgObjectController {
   @Get("/:id")
   @ApiOperation({ summary: "DETAIL" })
   @ApiOkResponse({ type: MgobjectUpdateRequestDto })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async findOne(@Param("id") id: string): Promise<MgobjectDetailResponseDto> {
     const mgObject = await this.mgObjectService.findOneOrFail(id);
     const { imageTotalCount, imageTempCount } =
@@ -92,7 +92,7 @@ export class MgObjectController {
   @Patch("/:id")
   @ApiOperation({ summary: "UPDATE" })
   @ApiOkResponse({ type: MgobjectUpdateRequestDto })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async update(
     @Param("id") id: string,
     @Body() updateDto: MgobjectUpdateRequestDto
@@ -108,7 +108,7 @@ export class MgObjectController {
   @Get("/ai/search")
   @ApiOperation({ summary: "AI SEARCH MG-OBJECT" })
   @ApiParam({ name: "query", type: "string" })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async search(
     @Param("query") searchQuery: string
   ): Promise<MgobjectAiSearchListResponseDto[]> {
@@ -121,7 +121,7 @@ export class MgObjectController {
   @Get("/ai/recommend/:imageId")
   @ApiOperation({ summary: "추천 MG-OBJECT" })
   @ApiParam({ name: "imageId", type: "string", description: "IMAGE ID" })
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.manager)
   async recommend(
     @Param("imageId") imageId: string
   ): Promise<MgObjectRecommendListResponseDto[]> {
