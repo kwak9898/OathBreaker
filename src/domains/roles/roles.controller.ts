@@ -25,6 +25,7 @@ import { CreateRoleDto } from "./dto/create-role.dto";
 import { MyPaginationQuery } from "../base/pagination-query";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { ApiPaginatedResponse } from "../../dacorators/paginate.decorator";
+import { UpdateRoleDto } from "./dto/updateRole.dto";
 
 @Controller("roles")
 @UseGuards(RolesGuard)
@@ -73,9 +74,9 @@ export class RolesController {
   })
   async updateRole(
     @Param("roleId") roleId: number,
-    @Body() role: RoleEntity
+    @Body() dto: UpdateRoleDto
   ): Promise<RoleEntity> {
-    return await this.rolesService.updateRole(roleId, role);
+    return await this.rolesService.updateRole(roleId, dto.roleName);
   }
 
   /**
