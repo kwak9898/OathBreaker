@@ -22,4 +22,16 @@ export class AuthFactory {
       (await this.userRepository.save(user)).userId
     );
   }
+
+  async createTestRefreshToken() {
+    const user = new User();
+    user.userId = "user12345";
+    user.username = "testerAdmin";
+    user.password = "password123@";
+    user.team = "운영";
+    user.roleName = Role.admin;
+    return this.authService.createRefreshToken(
+      (await this.userRepository.save(user)).userId
+    );
+  }
 }
