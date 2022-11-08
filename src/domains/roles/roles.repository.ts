@@ -30,19 +30,6 @@ export class RolesRepository extends Repository<RoleEntity> {
     return saveRole;
   }
 
-  // 역할 수정
-  async updateRole(roleId: number, role: RoleEntity): Promise<RoleEntity> {
-    role.updatedAt = new Date();
-    const existRole = await this.findOne({ where: { roleId } });
-
-    if (!existRole) {
-      throw new NotFoundException(ROLE_EXCEPTION.ROLE_NOT_FOUND);
-    }
-
-    await this.update(roleId, { roleName: role.roleName });
-    return existRole;
-  }
-
   // 역할 삭제
   async deleteRole(roleId: number): Promise<void> {
     const role = await this.findOne({ where: { roleId } });

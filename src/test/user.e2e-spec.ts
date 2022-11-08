@@ -242,7 +242,6 @@ describe("계정 생성/조회/수정/삭제 테스트", () => {
 
       // When
       const response = await requestHelper.get(`${UserDomain}/${userId}`);
-      console.log(response.body);
 
       // Then
       const body = response.body;
@@ -355,7 +354,6 @@ describe("계정 생성/조회/수정/삭제 테스트", () => {
       const response = await requestHelper.patch(
         `${UserDomain}/access/last-date`
       );
-      console.log(response.body);
 
       // Then
       expect(response.statusCode).toBe(HttpStatus.OK);
