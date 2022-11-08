@@ -78,7 +78,7 @@ export class UsersController {
     summary: "특정 유저 조회",
   })
   async getUserById(@Param("userId") userId: string): Promise<User> {
-    return this.usersService.findOneByUser(userId);
+    return await this.usersService.findOneByUser(userId);
   }
 
   /**
@@ -98,6 +98,6 @@ export class UsersController {
    */
   @Patch("/access/last-date")
   async updateLastAccessAt(@CurrentUser() user: User) {
-    await this.usersService.updateLastAccessAt(user.userId);
+    return this.usersService.updateLastAccessAt(user.userId);
   }
 }

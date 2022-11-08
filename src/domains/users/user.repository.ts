@@ -4,7 +4,6 @@ import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../roles/enum/role.enum";
-import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -81,25 +80,6 @@ export class UserRepository extends Repository<User> {
     });
 
     return findUser;
-  }
-
-  // 특정 유저 수정
-  async updateUser(
-    userId: string,
-    plainPassword?: string,
-    roleName?: string
-  ): Promise<User> {
-    const existUser = await this.getUserById(userId);
-
-    if (plainPassword) {
-      existUser.password = await bcrypt.hash(plainPassword, 12);
-    }
-
-    if (roleName) {
-      existUser.roleName = roleName;
-    }
-
-    return this.save(existUser);
   }
 
   // 특정 유저 삭제

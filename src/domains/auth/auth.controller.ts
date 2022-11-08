@@ -84,6 +84,7 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post("signout")
   @ApiBearerAuth("access-token")
+  @HttpCode(200)
   async signOut(@CurrentUser() user: User) {
     await this.usersService.removeRefreshToken(user.userId);
   }
@@ -120,6 +121,6 @@ export class AuthController {
     @Param("userId") userId: string,
     @Body() dto: ChangeUserDto
   ) {
-    await this.usersService.updateUser(userId, dto.password, dto.roleName);
+    return this.usersService.updateUser(userId, dto.password, dto.roleName);
   }
 }

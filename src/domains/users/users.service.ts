@@ -101,12 +101,22 @@ export class UsersService {
     return this.userRepository.getAllByRegisterCnt();
   }
 
-  // 특정 유저 조회
+  // 비밀번호 관련 로직에만 사용하는 특정 유저 조회
   async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
       throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
     }
+    return user;
+  }
+
+  // 특정 유저 조회
+  async findOneByUser(userId: string): Promise<User> {
+    const user = await this.userRepository.findOneByUser(userId);
+    if (!user) {
+      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
+    }
+
     return user;
   }
 
@@ -116,7 +126,8 @@ export class UsersService {
     plainPassword?: string,
     roleName?: string
   ): Promise<User> {
-    const user = await this.getUserById(userId);
+    const user = await this.findOneByUser(userId);
+
     if (plainPassword) {
       user.password = await bcrypt.hash(plainPassword, 12);
     }
@@ -132,15 +143,6 @@ export class UsersService {
   async deleteUser(userId: string): Promise<void> {
     const user = await this.findOneByUser(userId);
     await this.userRepository.delete(user.userId);
-  }
-
-  // 특정 유저 조회
-  async findOneByUser(userId: string): Promise<User> {
-    if (!userId) {
-      throw new NotFoundException(USER_EXCEPTION.USER_NOT_FOUND);
-    }
-
-    return this.userRepository.findOneByUser(userId);
   }
 
   // DB에 발급받은 Refresh Token 암호화 저장
@@ -162,7 +164,7 @@ export class UsersService {
 
   // 유저의 최종 접속일 업데이트
   async updateLastAccessAt(userId: string) {
-    const user = await this.findOneByUser(userId);
+    const user = await this.getUserById(userId);
     return this.userRepository.updateLastAccessAt(user.userId);
   }
 }
