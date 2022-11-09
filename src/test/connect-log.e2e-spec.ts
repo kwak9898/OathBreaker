@@ -150,8 +150,6 @@ describe("접속 로그 생성/조회/삭제 테스트", () => {
 
     it("접속 로그의 ID가 없을 경우 실패", async () => {
       // Given
-
-      // LogId
       logId = 0;
 
       // When
