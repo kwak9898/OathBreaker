@@ -9,5 +9,6 @@ import { ConnectLogsRepository } from "./connect-logs.repository";
   imports: [TypeOrmModule.forFeature([ConnectLog])],
   providers: [ConnectLogsService, ConnectLogsRepository],
   controllers: [ConnectLogsController],
+  exports: [ConnectLogsService, ConnectLogsRepository],
 })
 export class ConnectLogsModule {}

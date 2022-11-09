@@ -19,6 +19,16 @@ export class UserFactory {
     return this.repository.save(user);
   }
 
+  async createUser() {
+    const user = new User();
+    user.userId = "user12345";
+    user.username = "testerAdmin";
+    user.password = await hash("password123@", 12);
+    user.team = "운영";
+    user.roleName = Role.admin;
+    return this.repository.save(user);
+  }
+
   async createManagerUser() {
     const user = new User();
     user.userId = "manager1";

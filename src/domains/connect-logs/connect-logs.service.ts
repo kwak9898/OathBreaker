@@ -52,11 +52,13 @@ export class ConnectLogsService {
   }
 
   // 접속 로그 삭제
-  deleteLog(logId: number): Promise<void> {
-    if (!logId) {
+  async deleteLog(logId: number): Promise<void> {
+    const connectLog = await this.logsRepository.findOne({ where: { logId } });
+
+    if (!connectLog) {
       throw new NotFoundException(CONNECT_LOG_EXCEPTION.CONNECT_LOG_NOT_FOUND);
     }
 
-    return this.logsRepository.deleteLog(logId);
+    await this.logsRepository.delete(logId);
   }
 }

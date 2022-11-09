@@ -29,9 +29,4 @@ export class ConnectLogsRepository extends Repository<ConnectLog> {
 
     return new MyPagination<ConnectLogListResponseDto>(data, results.meta);
   }
-
-  // 접속 로그 삭제
-  async deleteLog(logId: number): Promise<void> {
-    await this.delete(logId);
-  }
 }
